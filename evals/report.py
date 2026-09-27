@@ -57,6 +57,7 @@ def summarize(rows: List[Row]) -> List[Dict[str, Any]]:
     for size in sorted(by_size):
         rs = by_size[size]
         scored = [r for r in rs if r["reason"] not in _UNSCORED]
+        # a clarifying question is a routing decision too; only doing nothing is a compliance failure
         delegated = [r for r in scored if r["reason"] != "no_delegation"]
         reuse = [r for r in delegated if r["kind"] == "reuse"]
 
@@ -70,6 +71,7 @@ def summarize(rows: List[Row]) -> List[Dict[str, Any]]:
             "runs": len(rs),
             "unscored": len(rs) - len(scored),
             "delegation_rate": _ratio(len(delegated), len(scored)),
+            "ask_rate": _ratio(sum(1 for r in scored if r["reason"] == "asked_user"), len(scored)),
             # routing accuracy is conditional on delegating at all; no_delegation is a model-compliance failure
             "by_kind": {k: _pass_rate([r for r in delegated if r["kind"] == k]) for k in sorted({r["kind"] for r in rs})},
             "names_per_request": _names_per_request(rs),
@@ -109,22 +111,38 @@ def _failures(rows: List[Row]) -> Dict[str, int]:
     return dict(sorted(counts.items(), key=lambda kv: -kv[1]))
 
 
-def _pct(x: float) -> str:
-    return "-" if x != x else f"{x:.0%}"
+def json_safe(summary: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """NaN (an empty denominator) becomes null so the summary is valid JSON."""
+
+    def clean(v: Any) -> Any:
+        if isinstance(v, float):
+            return None if v != v else round(v, 4)
+        if isinstance(v, dict):
+            return {k: clean(x) for k, x in v.items()}
+        return v
+
+    return [clean(s) for s in summary]
+
+
+def _pct(x: float | None) -> str:
+    return "-" if x is None or x != x else f"{x:.0%}"
 
 
 def print_summary(summary: List[Dict[str, Any]]) -> None:
     kinds = sorted({k for s in summary for k in s["by_kind"]})
     head = " ".join(f"{k[:9]:>9}" for k in kinds)
-    print(f"{'roster':>6} {'runs':>4} {'unsc':>4} {'deleg':>5} {head} {'dup':>5} {'pass^k':>6} {'names/req':>9} "
+    print(f"{'roster':>6} {'runs':>4} {'unsc':>4} {'deleg':>5} {'ask':>4} {head} {'dup':>5} {'pass^k':>6} {'names/req':>9} "
           f"{'tokens':>7} {'cost':>7}  failures")
-    print("        (per-kind accuracy is among runs that delegated; pass^k is over all runs; unsc = error or no recording)")
+    print("        (deleg = routed or asked; per-kind accuracy is among those runs; pass^k is over all runs;\n"
+          "         unsc = error or no recording)")
     for s in summary:
-        cols = " ".join(f"{_pct(s['by_kind'].get(k, float('nan'))):>9}" for k in kinds)
+        cols = " ".join(f"{_pct(s['by_kind'].get(k)):>9}" for k in kinds)
         npr = s["names_per_request"]
-        print(f"{s['roster_size']:>6} {s['runs']:>4} {s['unscored']:>4} {_pct(s['delegation_rate']):>5} {cols} "
+        npr = float("nan") if npr is None else npr
+        print(f"{s['roster_size']:>6} {s['runs']:>4} {s['unscored']:>4} {_pct(s['delegation_rate']):>5} "
+              f"{_pct(s.get('ask_rate')):>4} {cols} "
               f"{_pct(s['dup_rate']):>5} {_pct(s['pass_all_trials']):>6} {'-' if npr != npr else f'{npr:.1f}':>9} "
-              f"{s['mean_prompt_tokens']:>7.0f} ${s['cost_usd']:>6.3f}  {s['failures']}")
+              f"{s['mean_prompt_tokens'] or 0:>7.0f} ${s['cost_usd']:>6.3f}  {s['failures']}")
 
 
 if __name__ == "__main__":

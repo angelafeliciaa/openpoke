@@ -19,7 +19,7 @@ from typing import Callable, Dict, List, Optional, Tuple
 from evals.cases import SUITES, Case, load_cases
 from evals.graders import Verdict, grade
 from evals.harness import RECORDINGS_DIR, CaseRun, Mode, default_model, run_case
-from evals.report import print_summary, summarize, to_row
+from evals.report import json_safe, print_summary, summarize, to_row
 
 RESULTS_DIR = Path(__file__).parent / "results"
 BASELINES_DIR = Path(__file__).parent / "baselines"
@@ -61,9 +61,16 @@ def unused_recordings(model: str, suite: str, graded: List[Graded]) -> List[Path
 
 
 def write_baseline(model: str, suite: str, trials: int, graded: List[Graded]) -> Path:
+    """Verdicts are what pytest checks; the summary is what `evals.compare` diffs across commits."""
     path = baseline_path(model, suite)
     path.parent.mkdir(parents=True, exist_ok=True)
-    body = {"model": model, "suite": suite, "trials": trials, "verdicts": dict(sorted(verdict_map(graded).items()))}
+    body = {
+        "model": model,
+        "suite": suite,
+        "trials": trials,
+        "summary": json_safe(summarize([to_row(run, v) for run, v in graded])),
+        "verdicts": dict(sorted(verdict_map(graded).items())),
+    }
     path.write_text(json.dumps(body, indent=1) + "\n")
     return path
 
@@ -75,7 +82,7 @@ def main() -> None:
     ap.add_argument("--cases", choices=SUITES, default="routing")
     ap.add_argument("--trials", type=int, default=TRIALS)
     ap.add_argument("--sizes", default="", help="comma list, e.g. 5,50,500")
-    ap.add_argument("--kinds", default="", help="comma list: reuse,create,drift")
+    ap.add_argument("--kinds", default="", help="comma list: reuse,create,drift,ambiguous")
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--update-baseline", action="store_true", help="write baselines/<model>/<suite>.json")
     args = ap.parse_args()

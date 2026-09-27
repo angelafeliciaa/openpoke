@@ -40,7 +40,13 @@ verdict moved:
 .venv/bin/python -m evals.run --mode live --model anthropic/claude-sonnet-4 --cases routing --update-baseline
 ```
 
-`--update-baseline` also deletes that model's recordings for the suite that nothing replays.
+`--update-baseline` also deletes that model's recordings for the suite that nothing replays, and
+stores the summary table in the baseline. To see what a change did, tag the commit before it and
+print both tables side by side:
+
+```bash
+.venv/bin/python -m evals.compare stage-0 --model anthropic/claude-sonnet-4
+```
 
 ## Files
 
@@ -48,10 +54,11 @@ verdict moved:
 |---|---|
 | `cases/__init__.py` | typed `Case` and the one loader for `cases/<suite>.jsonl` |
 | `cases/generate.py` | 15 reuse + 15 create scenarios at roster sizes 5, 50, 500 -> `routing.jsonl` |
-| `cases/generate_hard.py` | paraphrase, trap, drift families at sizes 5 and 500 -> `hard.jsonl` |
+| `cases/generate_hard.py` | paraphrase, trap, drift, ambiguous families at sizes 5 and 500 -> `hard.jsonl` |
 | `harness.py` | sandbox (temp roster and logs, dispatch recorder), LLM record/replay, multi-turn |
 | `graders.py` | code-only verdict per run |
 | `run.py`, `report.py` | run a suite, write `results/*.jsonl` and baselines, print the table |
+| `compare.py` | baseline summaries at a git ref next to the working tree's |
 | `recordings/<model>/` | one JSON per LLM call: request and response |
 | `baselines/<model>/<suite>.json` | the verdict for every case and trial that pytest holds replays to |
 
@@ -61,13 +68,21 @@ verdict moved:
   `paraphrase` follow-ups share no words with the agent name; `trap` rosters add three near-duplicates.
 - **create**: nothing matching exists. Pass = a new agent is spawned.
 - **drift**: turn 1 creates an agent, turn 2 is a paraphrased follow-up. Pass = turn 2 reuses turn 1's agent.
+- **ambiguous**: two agents fit (Email to Alice Park, Email to Alice Wong) and nothing in the
+  message or history breaks the tie. Pass = the agent asks the user which one. Messaging one is
+  `guessed_candidate`; messaging both is `messaged_every_candidate`, kept apart because it is harmless
+  for "did the renewal go through?" and wrong for "tell alice i'm late".
+
+A turn that routes nothing and replies with a question is `asked_user`. It passes only on
+ambiguous cases; everywhere else a question is friction for the user and fails.
 
 ## Reading the table
 
 - **unsc**: runs that errored or had no recording. They are excluded from every rate except pass^k.
-- **deleg**: share of scored runs that called `send_message_to_agent` at all. Below 100% is a
-  prompt-compliance problem with the model, not a roster problem, so per-kind accuracy is computed
-  among delegated runs only.
+- **deleg**: share of scored runs that routed to an agent or asked the user. Below 100% means the
+  model answered on its own, a prompt-compliance problem rather than a roster problem, so per-kind
+  accuracy is computed among these runs only.
+- **ask**: share of scored runs that asked the user instead of routing.
 - **dup**: reuse runs that spawned a new agent when one existed.
 - **pass^k**: cases where every trial passed. Consistency, not average.
 - **names/req**: distinct names invented for the same request across trials. Above 1.0 is how rosters grow.
@@ -77,14 +92,16 @@ verdict moved:
 
 - Sonnet 4, the production model, routed every delegated routing case correctly at 5, 50 and 500
   agents. What grew was the roster's cost: 3.4k -> 9.2k prompt tokens and 2.2x the price per turn at 500.
-- On the hard set Sonnet was also right on every delegated case at both sizes; its only failures
-  were 2 turns at 500 where it answered without delegating. The 500-agent half cost 3.9x the 5-agent half.
-- Sonnet invented 1.2 to 1.5 distinct names per repeated request. That drift, not mis-routing on
+- On the hard set Sonnet was right on every paraphrase, trap and drift case at both sizes. The
+  500-agent half cost 3.7x the 5-agent half.
+- Sonnet almost never asks: on ambiguous cases it picked one of the two agents (or messaged both)
+  in 47 of 48 runs. With names as the only handle, "tell alice" goes to whichever Alice it guesses.
+- Sonnet invented 1.2 to 1.8 distinct names per repeated request. That drift, not mis-routing on
   exact names, is the mechanism that fills the roster.
-- gpt-5-mini delegated on only 32 to 47% of turns, and its reuse accuracy fell to 71% at 500 agents.
-  Smaller models feel the roster first.
-- gpt-5 on the hard set delegated 77 to 79% of the time, reused correctly on every delegated
-  paraphrase and trap case, and came back to its own turn-1 agent on 67 to 71% of delegated drift cases.
+- gpt-5-mini asks far too much: 53 to 67% of turns end in a question ("what's your ZIP?", "which
+  reservation?") that an agent could have answered. It rarely picks the wrong agent.
+- gpt-5 sits between them: it asks on 20 to 24% of hard-set turns, which sinks its drift score
+  (28 to 33%) but makes it the best of the three on ambiguous cases (31 to 38%).
 
 ## Limits
 

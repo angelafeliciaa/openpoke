@@ -1,8 +1,9 @@
-"""Harder routing cases. Three families, roster sizes 5 and 500.
+"""Harder routing cases. Four families, roster sizes 5 and 500.
 
   paraphrase  follow-up shares no keyword with the agent name; history shows which agent did the work
   trap        same, but the roster also holds 3 near-duplicate names (Email to Alice vs Email to Alicia)
   drift       two turns: turn 1 creates an agent, turn 2 is a paraphrased follow-up that must find it
+  ambiguous   two agents fit and nothing breaks the tie; the right move is to ask the user which one
 
 Run:  python -m evals.cases.generate_hard   -> evals/cases/hard.jsonl
 """
@@ -90,6 +91,25 @@ DRIFT = [
 ]
 
 
+# (candidates that fit equally, message with no history to break the tie, keywords excluded from distractors)
+AMBIGUOUS = [
+    (["Email to Alice Park", "Email to Alice Wong"], "tell alice im running 10 min late", ["alice"]),
+    (["Dentist Appointment", "Dentist Appointment for Kids"], "move the dentist appointment to friday", ["dentist"]),
+    (["Hotel in Paris", "Hotel in Paris for Mom"], "does the paris hotel have late checkout?", ["paris"]),
+    (["Car Insurance Renewal", "Home Insurance Renewal"], "did the insurance renewal go through?", ["insurance"]),
+    (["Birthday Gift for Mom", "Birthday Dinner for Mom"], "whats the status on mom's birthday thing", ["mom", "birthday"]),
+    (["Flight to Tokyo", "Flight to Tokyo for Sam"], "is the tokyo flight confirmed?", ["tokyo"]),
+    (["Email to Professor Chen", "Email to Professor Cheng"], "follow up with the professor about the letter", ["chen", "professor"]),
+    (["Stripe Job Offer", "Stripe Offer Negotiation"], "ask stripe if the offer deadline can move to next week", ["stripe"]),
+]
+
+
+def _with_candidates(rng: random.Random, size: int, pool: list[str], candidates: list[str], exclude: list[str]) -> list[str]:
+    roster = build_roster(rng, size - len(candidates), pool, None, exclude=exclude) + candidates
+    rng.shuffle(roster)
+    return roster
+
+
 def _with_traps(rng: random.Random, size: int, pool: list[str], target: str, traps: list[str]) -> list[str]:
     roster = build_roster(rng, size - len(traps), [p for p in pool if p not in traps], target, exclude=[])
     roster += traps
@@ -119,6 +139,15 @@ def main() -> None:
                 "id": f"drift-{i:02d}@{size}", "kind": "drift", "family": "drift",
                 "target": None, "history": [], "message": turns[0], "turns": turns,
                 "roster_size": size, "roster": build_roster(rng, size, pool, None, exclude=exclude),
+            })
+    # own seed, so adding these never reshuffles the rosters above
+    amb_rng = random.Random(20260927)
+    for i, (candidates, message, exclude) in enumerate(AMBIGUOUS, 1):
+        for size in SIZES:
+            lines.append({
+                "id": f"amb-{i:02d}@{size}", "kind": "ambiguous", "family": "ambiguous",
+                "target": None, "candidates": candidates, "history": [], "message": message,
+                "roster_size": size, "roster": _with_candidates(amb_rng, size, pool, candidates, exclude),
             })
     OUT.write_text("\n".join(json.dumps(l) for l in lines) + "\n")
     print(f"wrote {len(lines)} cases to {OUT}")

@@ -24,16 +24,34 @@ def _any_of(names: Iterable[str], wanted: Iterable[str]) -> bool:
 
 
 def grade(run: CaseRun) -> Verdict:
-    """Grade the last turn; drift also reads turn 1 to learn which agent it created."""
+    """Grade the last turn; drift also reads turn 1 to learn which agent it created.
+
+    A turn that routes nothing and replies with a question is `asked_user`: the right call
+    only when the case is ambiguous, and friction for the user everywhere else.
+    """
     if run.missing_recording:
         return Verdict(False, "missing_recording")
     last = run.turns[-1]
     if last.error:
         return Verdict(False, "error")
+    case = run.case
+    if not last.dispatched and not last.new_agents:
+        if "?" in last.response:
+            return Verdict(case.kind == "ambiguous", "asked_user")
+        return Verdict(False, "no_delegation")
+
+    if case.kind == "ambiguous":
+        if last.new_agents:
+            return Verdict(False, "spawned_duplicate")
+        # harmless for a read-only question, wrong for "tell alice i'm late"; kept apart so it shows
+        if all(_any_of(last.dispatched, [c]) for c in case.candidates):
+            return Verdict(False, "messaged_every_candidate")
+        if _any_of(last.dispatched, case.candidates):
+            return Verdict(False, "guessed_candidate")
+        return Verdict(False, "wrong_existing_agent")
     if not last.dispatched:
         return Verdict(False, "no_delegation")
 
-    case = run.case
     if case.kind == "reuse":
         hit = _any_of(last.dispatched, [case.target])
         if hit and not last.new_agents:

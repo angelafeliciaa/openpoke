@@ -10,9 +10,9 @@ from typing import List, Literal, Optional, Tuple
 CASES_DIR = Path(__file__).parent
 SUITES = ("routing", "hard")
 
-Kind = Literal["reuse", "create", "drift"]
+Kind = Literal["reuse", "create", "drift", "ambiguous"]
 HistoryRole = Literal["user", "assistant", "agent"]
-_KINDS = ("reuse", "create", "drift")
+_KINDS = ("reuse", "create", "drift", "ambiguous")
 _ROLES = ("user", "assistant", "agent")
 
 
@@ -29,6 +29,7 @@ class Case:
     reuse: `target` is in the roster and must be called, with nothing spawned.
     create: nothing in the roster fits, so a new agent must be spawned.
     drift: turn 1 creates an agent and the last turn must come back to it.
+    ambiguous: two or more `candidates` fit equally well, so the agent must ask the user.
     """
 
     id: str
@@ -39,6 +40,7 @@ class Case:
     roster: Tuple[str, ...]
     turns: Tuple[str, ...]
     history: Tuple[HistoryEntry, ...] = ()
+    candidates: Tuple[str, ...] = ()
 
     @property
     def roster_size(self) -> int:
@@ -58,6 +60,9 @@ class Case:
         turns = tuple(raw.get("turns") or [raw["message"]])
         if kind == "drift" and len(turns) < 2:
             raise ValueError(f"{raw['id']}: drift cases need at least two turns")
+        candidates = tuple(raw.get("candidates") or ())
+        if (kind == "ambiguous") != (len(candidates) >= 2):
+            raise ValueError(f"{raw['id']}: ambiguous cases need two or more candidates and only they have them")
         case = cls(
             id=raw["id"],
             suite=suite,
@@ -67,9 +72,12 @@ class Case:
             roster=tuple(raw["roster"]),
             turns=turns,
             history=history,
+            candidates=candidates,
         )
         if case.roster_size != raw["roster_size"]:
             raise ValueError(f"{case.id}: roster has {case.roster_size} names, roster_size says {raw['roster_size']}")
+        if not set(candidates) <= set(case.roster):
+            raise ValueError(f"{case.id}: every candidate must be in the roster")
         return case
 
 
