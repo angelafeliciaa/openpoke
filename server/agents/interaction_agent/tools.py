@@ -8,6 +8,7 @@ from typing import Any, Optional
 from ...logging_config import logger
 from ...services.conversation import get_conversation_log
 from ...services.execution import get_agent_roster, get_execution_agent_logs
+from ...services.execution.roster import AgentRecord
 from ..execution_agent.batch_manager import ExecutionBatchManager
 
 
@@ -26,17 +27,40 @@ TOOL_SCHEMAS = [
         "type": "function",
         "function": {
             "name": "send_message_to_agent",
-            "description": "Deliver instructions to a specific execution agent. Creates a new agent if the name doesn't exist in the roster, or reuses an existing one.",
+            "description": "Send instructions to an existing execution agent. It keeps its history, so follow-ups on work it did (replying on the same thread, changing a booking, checking for an update) belong with it.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "agent_name": {
+                    "agent_id": {
                         "type": "string",
-                        "description": "Human-readable agent name describing its purpose (e.g., 'Vercel Job Offer', 'Email to Sharanjeet'). This name will be used to identify and potentially reuse the agent."
+                        "description": "The id of an agent listed in <active_agents>, e.g. 'a12'.",
                     },
                     "instructions": {"type": "string", "description": "Instructions for the agent to execute."},
                 },
-                "required": ["agent_name", "instructions"],
+                "required": ["agent_id", "instructions"],
+                "additionalProperties": False,
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "create_agent",
+            "description": "Start a new execution agent for work that no agent in <active_agents> already owns, and send it its first instructions.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Short name for the work, e.g. 'Vercel Job Offer'. Must differ from every existing agent's name.",
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "One line on what this agent owns, specific enough to tell it apart from similar agents, e.g. 'Start-date negotiation with the Vercel recruiter'.",
+                    },
+                    "instructions": {"type": "string", "description": "Instructions for the agent to execute."},
+                },
+                "required": ["name", "description", "instructions"],
                 "additionalProperties": False,
             },
         },
@@ -108,45 +132,59 @@ TOOL_SCHEMAS = [
 _EXECUTION_BATCH_MANAGER = ExecutionBatchManager()
 
 
-# Create or reuse execution agent and dispatch instructions asynchronously
-def send_message_to_agent(agent_name: str, instructions: str) -> ToolResult:
-    """Send instructions to an execution agent."""
+def send_message_to_agent(agent_id: str, instructions: str) -> ToolResult:
+    """Dispatch to an existing agent; an unknown id is an error, never a new agent."""
     roster = get_agent_roster()
     roster.load()
-    existing_agents = set(roster.get_agents())
-    is_new = agent_name not in existing_agents
+    record = roster.get(agent_id)
+    if record is None:
+        return ToolResult(
+            success=False,
+            payload={"error": f"No agent has id {agent_id!r}. Use an id from <active_agents>, or create_agent for new work."},
+        )
+    roster.touch(record.id)
+    return _dispatch(record, instructions, created=False)
 
-    if is_new:
-        roster.add_agent(agent_name)
 
-    get_execution_agent_logs().record_request(agent_name, instructions)
+def create_agent(name: str, description: str, instructions: str) -> ToolResult:
+    """Register a new agent and dispatch its first instructions."""
+    roster = get_agent_roster()
+    roster.load()
+    existing = roster.find_by_name(name)
+    if existing is not None:
+        return ToolResult(
+            success=False,
+            payload={
+                "error": f"Agent {existing.id} is already named {existing.name!r}. "
+                "Message it with send_message_to_agent, or choose a name for different work."
+            },
+        )
+    return _dispatch(roster.create(name, description), instructions, created=True)
 
-    action = "Created" if is_new else "Reused"
-    logger.info(f"{action} agent: {agent_name}")
 
-    async def _execute_async() -> None:
-        try:
-            result = await _EXECUTION_BATCH_MANAGER.execute_agent(agent_name, instructions)
-            status = "SUCCESS" if result.success else "FAILED"
-            logger.info(f"Agent '{agent_name}' completed: {status}")
-        except Exception as exc:  # pragma: no cover - defensive
-            logger.error(f"Agent '{agent_name}' failed: {str(exc)}")
-
+def _dispatch(record: AgentRecord, instructions: str, created: bool) -> ToolResult:
     try:
         loop = asyncio.get_running_loop()
     except RuntimeError:
         logger.error("No running event loop available for async execution")
         return ToolResult(success=False, payload={"error": "No event loop available"})
 
+    get_execution_agent_logs().record_request(record.name, instructions)
+    logger.info(f"{'Created' if created else 'Reused'} agent {record.id}: {record.name}")
+
+    async def _execute_async() -> None:
+        try:
+            result = await _EXECUTION_BATCH_MANAGER.execute_agent(record.name, instructions)
+            status = "SUCCESS" if result.success else "FAILED"
+            logger.info(f"Agent '{record.name}' completed: {status}")
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.error(f"Agent '{record.name}' failed: {str(exc)}")
+
     loop.create_task(_execute_async())
 
     return ToolResult(
         success=True,
-        payload={
-            "status": "submitted",
-            "agent_name": agent_name,
-            "new_agent_created": is_new,
-        },
+        payload={"status": "submitted", "agent_id": record.id, "agent_name": record.name, "new_agent_created": created},
     )
 
 
@@ -227,6 +265,8 @@ def handle_tool_call(name: str, arguments: Any) -> ToolResult:
 
         if name == "send_message_to_agent":
             return send_message_to_agent(**args)
+        if name == "create_agent":
+            return create_agent(**args)
         if name == "send_message_to_user":
             return send_message_to_user(**args)
         if name == "send_draft":

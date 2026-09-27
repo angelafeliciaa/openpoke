@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import Iterable
 
@@ -12,6 +13,10 @@ from evals.harness import CaseRun
 class Verdict:
     passed: bool
     reason: str
+
+
+# the user never sees agents; a question that names them leaks the machinery
+_MENTIONS_AGENTS = re.compile(r"\bagents?\b", re.IGNORECASE)
 
 
 def _norm(name: str) -> str:
@@ -36,6 +41,8 @@ def grade(run: CaseRun) -> Verdict:
         return Verdict(False, "error")
     case = run.case
     if not last.dispatched and not last.new_agents:
+        if "?" in last.response and _MENTIONS_AGENTS.search(last.response):
+            return Verdict(False, "asked_about_agents")
         if "?" in last.response:
             return Verdict(case.kind == "ambiguous", "asked_user")
         return Verdict(False, "no_delegation")

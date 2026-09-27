@@ -6,12 +6,14 @@ from typing import List, Optional
 
 import pytest
 
-from evals.cases import Case
+from evals.cases import Case, RosterEntry
 from evals.graders import Verdict, grade
 from evals.harness import CaseRun, TurnResult
 from evals.report import summarize, to_row
 
-ROSTER = ("Email to Alice", "Email to Alicia", "Flight to Tokyo")
+ROSTER = tuple(
+    RosterEntry(f"a{i}", name, "") for i, name in enumerate(("Email to Alice", "Email to Alicia", "Flight to Tokyo"), 1)
+)
 
 
 def _case(kind: str, target: Optional[str] = None, turns=("do the thing",), candidates=()) -> Case:
@@ -58,6 +60,8 @@ AMBIGUOUS = _case("ambiguous", candidates=("Email to Alice", "Email to Alicia"))
         (_run(REUSE, missing="abc.json"), Verdict(False, "missing_recording")),
         (_run(REUSE, _turn([], response=QUESTION)), Verdict(False, "asked_user")),
         (_run(AMBIGUOUS, _turn([], response=QUESTION)), Verdict(True, "asked_user")),
+        (_run(AMBIGUOUS, _turn([], response="I see two dentist agents. Which one?")),
+         Verdict(False, "asked_about_agents")),
         (_run(AMBIGUOUS, _turn([], response="on it")), Verdict(False, "no_delegation")),
         (_run(AMBIGUOUS, _turn(["Email to Alicia"])), Verdict(False, "guessed_candidate")),
         (_run(AMBIGUOUS, _turn(["Email to Alicia", "Email to Alice"])), Verdict(False, "messaged_every_candidate")),

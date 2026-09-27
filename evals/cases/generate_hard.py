@@ -14,7 +14,7 @@ import json
 import random
 from pathlib import Path
 
-from evals.cases.generate import build_roster, distractor_pool
+from evals.cases.generate import agent_id, build_roster, distractor_pool, roster_entries
 
 OUT = Path(__file__).parent / "hard.jsonl"
 SIZES = (5, 500)
@@ -104,6 +104,17 @@ AMBIGUOUS = [
 ]
 
 
+def _with_ids(history: list[dict[str, str]], names: list[str]) -> list[dict[str, str]]:
+    """Agent reports carry `Name (a12):`, as batch_manager writes them."""
+    out = []
+    for h in history:
+        name, sep, rest = h["text"].partition(": ")
+        if h["role"] == "agent" and sep and name in names:
+            h = {**h, "text": f"{name} ({agent_id(names, name)}): {rest}"}
+        out.append(h)
+    return out
+
+
 def _with_candidates(rng: random.Random, size: int, pool: list[str], candidates: list[str], exclude: list[str]) -> list[str]:
     roster = build_roster(rng, size - len(candidates), pool, None, exclude=exclude) + candidates
     rng.shuffle(roster)
@@ -123,22 +134,24 @@ def main() -> None:
     lines = []
     for i, (target, history, follow_up, traps) in enumerate(SCENARIOS, 1):
         for size in SIZES:
+            names = build_roster(rng, size, pool, target, exclude=[])
             lines.append({
                 "id": f"para-{i:02d}@{size}", "kind": "reuse", "family": "paraphrase",
-                "target": target, "history": history, "message": follow_up,
-                "roster_size": size, "roster": build_roster(rng, size, pool, target, exclude=[]),
+                "target": target, "history": _with_ids(history, names), "message": follow_up,
+                "roster_size": size, "roster": roster_entries(names),
             })
+            names = _with_traps(rng, size, pool, target, traps)
             lines.append({
                 "id": f"trap-{i:02d}@{size}", "kind": "reuse", "family": "trap",
-                "target": target, "history": history, "message": follow_up,
-                "roster_size": size, "roster": _with_traps(rng, size, pool, target, traps),
+                "target": target, "history": _with_ids(history, names), "message": follow_up,
+                "roster_size": size, "roster": roster_entries(names),
             })
     for i, (turns, exclude) in enumerate(DRIFT, 1):
         for size in SIZES:
             lines.append({
                 "id": f"drift-{i:02d}@{size}", "kind": "drift", "family": "drift",
                 "target": None, "history": [], "message": turns[0], "turns": turns,
-                "roster_size": size, "roster": build_roster(rng, size, pool, None, exclude=exclude),
+                "roster_size": size, "roster": roster_entries(build_roster(rng, size, pool, None, exclude=exclude)),
             })
     # own seed, so adding these never reshuffles the rosters above
     amb_rng = random.Random(20260927)
@@ -147,7 +160,7 @@ def main() -> None:
             lines.append({
                 "id": f"amb-{i:02d}@{size}", "kind": "ambiguous", "family": "ambiguous",
                 "target": None, "candidates": candidates, "history": [], "message": message,
-                "roster_size": size, "roster": _with_candidates(amb_rng, size, pool, candidates, exclude),
+                "roster_size": size, "roster": roster_entries(_with_candidates(amb_rng, size, pool, candidates, exclude)),
             })
     OUT.write_text("\n".join(json.dumps(l) for l in lines) + "\n")
     print(f"wrote {len(lines)} cases to {OUT}")

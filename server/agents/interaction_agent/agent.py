@@ -41,19 +41,21 @@ def _render_conversation_history(transcript: str) -> str:
     return f"<conversation_history>\n{history}\n</conversation_history>"
 
 
-# Format currently active execution agents into XML tags for LLM awareness
 def _render_active_agents() -> str:
     roster = get_agent_roster()
     roster.load()
-    agents = roster.get_agents()
+    records = roster.records()
 
-    if not agents:
+    if not records:
         return "None"
 
     rendered: List[str] = []
-    for agent_name in agents:
-        name = escape(agent_name or "agent", quote=True)
-        rendered.append(f'<agent name="{name}" />')
+    for record in records:
+        attrs = f'id="{escape(record.id, quote=True)}" name="{escape(record.name, quote=True)}"'
+        if record.description:
+            rendered.append(f"<agent {attrs}>{escape(record.description, quote=False)}</agent>")
+        else:
+            rendered.append(f"<agent {attrs} />")
 
     return "\n".join(rendered)
 

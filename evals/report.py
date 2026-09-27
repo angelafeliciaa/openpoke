@@ -16,6 +16,7 @@ from evals.harness import CaseRun
 
 Row = Dict[str, Any]
 _UNSCORED = ("error", "missing_recording")
+_ASKED = ("asked_user", "asked_about_agents")
 
 
 def to_row(run: CaseRun, verdict: Verdict) -> Row:
@@ -71,7 +72,7 @@ def summarize(rows: List[Row]) -> List[Dict[str, Any]]:
             "runs": len(rs),
             "unscored": len(rs) - len(scored),
             "delegation_rate": _ratio(len(delegated), len(scored)),
-            "ask_rate": _ratio(sum(1 for r in scored if r["reason"] == "asked_user"), len(scored)),
+            "ask_rate": _ratio(sum(1 for r in scored if r["reason"] in _ASKED), len(scored)),
             # routing accuracy is conditional on delegating at all; no_delegation is a model-compliance failure
             "by_kind": {k: _pass_rate([r for r in delegated if r["kind"] == k]) for k in sorted({r["kind"] for r in rs})},
             "names_per_request": _names_per_request(rs),

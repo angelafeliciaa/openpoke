@@ -23,6 +23,15 @@ class HistoryEntry:
 
 
 @dataclass(frozen=True)
+class RosterEntry:
+    """An agent that exists before the case starts; seeded into the roster exactly as given."""
+
+    id: str
+    name: str
+    description: str
+
+
+@dataclass(frozen=True)
 class Case:
     """One routing scenario.
 
@@ -37,7 +46,7 @@ class Case:
     kind: Kind
     family: str
     target: Optional[str]
-    roster: Tuple[str, ...]
+    roster: Tuple[RosterEntry, ...]
     turns: Tuple[str, ...]
     history: Tuple[HistoryEntry, ...] = ()
     candidates: Tuple[str, ...] = ()
@@ -45,6 +54,10 @@ class Case:
     @property
     def roster_size(self) -> int:
         return len(self.roster)
+
+    @property
+    def names(self) -> Tuple[str, ...]:
+        return tuple(r.name for r in self.roster)
 
     @classmethod
     def parse(cls, raw: dict, suite: str) -> "Case":
@@ -69,15 +82,19 @@ class Case:
             kind=kind,
             family=raw.get("family") or kind,
             target=raw.get("target"),
-            roster=tuple(raw["roster"]),
+            roster=tuple(RosterEntry(r["id"], r["name"], r["description"]) for r in raw["roster"]),
             turns=turns,
             history=history,
             candidates=candidates,
         )
         if case.roster_size != raw["roster_size"]:
             raise ValueError(f"{case.id}: roster has {case.roster_size} names, roster_size says {raw['roster_size']}")
-        if not set(candidates) <= set(case.roster):
+        if not set(candidates) <= set(case.names):
             raise ValueError(f"{case.id}: every candidate must be in the roster")
+        if case.target is not None and case.target not in case.names:
+            raise ValueError(f"{case.id}: target {case.target!r} is not in the roster")
+        if len({r.id for r in case.roster}) != case.roster_size:
+            raise ValueError(f"{case.id}: roster ids must be unique")
         return case
 
 

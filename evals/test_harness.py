@@ -23,13 +23,13 @@ async def test_replay_never_reaches_the_real_execution_manager(monkeypatch) -> N
         real_calls.append(agent_name)
 
     monkeypatch.setattr(ExecutionBatchManager, "execute_agent", real_execute_agent)
-    roster_before = get_agent_roster().get_agents()
+    roster_before = get_agent_roster().records()
 
     run = await run_case(_case("reuse-01@50"), 1, "replay", REPLAY_MODEL)
 
     assert run.turns[-1].dispatched == ["Email to Alice"]
     assert real_calls == []
-    assert get_agent_roster().get_agents() == roster_before
+    assert get_agent_roster().records() == roster_before
 
 
 def test_cache_breakpoints_mark_system_and_first_user_message_only() -> None:

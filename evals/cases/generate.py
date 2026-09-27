@@ -71,6 +71,67 @@ Laptop Warranty Claim|Headphones Return|Credit Card Dispute|Mortgage Refinance|S
 Visa Application Japan|Global Entry Renewal|TSA PreCheck""".replace("\n", "|").split("|")
 
 
+# What create_agent would have recorded for the scenario agents; everything else uses a template.
+DESCRIPTIONS = {
+    "Email to Alice": "Email thread with Alice about her invoice.",
+    "Vercel Job Offer": "Offer and start-date negotiation with the Vercel recruiter.",
+    "Flight to Tokyo": "Finding and booking a flight to Tokyo.",
+    "Dentist Appointment": "Booking and rescheduling a dentist appointment.",
+    "Email to Landlord": "Email thread with the landlord about repairs.",
+    "Stripe Interview Prep": "Preparing for the Stripe onsite interview.",
+    "Hotel in Lisbon": "Hotel booking in Lisbon.",
+    "Email to Professor Chen": "Email thread with Professor Chen about a recommendation letter.",
+    "Gym Membership Cancel": "Cancelling the gym membership.",
+    "Birthday Gift for Mom": "Choosing and ordering a birthday gift for Mom.",
+    "Email to Sharanjeet": "Email thread with Sharanjeet about scheduling a demo.",
+    "Car Insurance Renewal": "Comparing quotes for the car insurance renewal.",
+    "Email to Recruiter at Notion": "Email thread with the Notion recruiter.",
+    "Passport Renewal": "Passport renewal application.",
+    "Email to Jai": "Email thread with Jai about the deck.",
+    "Email to Alice Park": "Email thread with Alice Park.",
+    "Email to Alice Wong": "Email thread with Alice Wong.",
+    "Dentist Appointment for Kids": "Booking and rescheduling the kids' dentist appointment.",
+    "Hotel in Paris": "Hotel booking in Paris.",
+    "Hotel in Paris for Mom": "Hotel booking in Paris for Mom.",
+    "Home Insurance Renewal": "Comparing quotes for the home insurance renewal.",
+    "Birthday Dinner for Mom": "Planning Mom's birthday dinner.",
+    "Flight to Tokyo for Sam": "Finding and booking Sam's flight to Tokyo.",
+    "Email to Professor Cheng": "Email thread with Professor Cheng.",
+    "Stripe Job Offer": "The Stripe job offer.",
+    "Stripe Offer Negotiation": "Negotiating the Stripe offer.",
+}
+_TEMPLATES = [
+    ("Email to ", "", "Email thread with {}."),
+    ("Lunch with ", "", "Scheduling lunch with {}."),
+    ("Call ", " Back", "Returning {}'s call."),
+    ("Flight to ", "", "Finding and booking a flight to {}."),
+    ("Hotel in ", "", "Hotel booking in {}."),
+    ("Trip Planning ", "", "Itinerary for a trip to {}."),
+    ("", " Job Offer", "The {} job offer."),
+    ("", " Interview Prep", "Preparing for {} interviews."),
+    ("", " Recruiter Follow-up", "Following up with the {} recruiter."),
+    ("Reminder ", "", "Reminder #{} the user set."),
+]
+
+
+def describe(name: str) -> str:
+    if name in DESCRIPTIONS:
+        return DESCRIPTIONS[name]
+    for prefix, suffix, template in _TEMPLATES:
+        if name.startswith(prefix) and name.endswith(suffix) and len(name) > len(prefix) + len(suffix):
+            return template.format(name[len(prefix):len(name) - len(suffix)])
+    return f"{name}."
+
+
+def roster_entries(names: list[str]) -> list[dict[str, str]]:
+    """Ids follow roster order, as they would for agents created in that order."""
+    return [{"id": f"a{i}", "name": n, "description": describe(n)} for i, n in enumerate(names, 1)]
+
+
+def agent_id(names: list[str], name: str) -> str:
+    return f"a{names.index(name) + 1}"
+
+
 def distractor_pool() -> list[str]:
     pool: list[str] = []
     pool += [f"Email to {n}" for n in FIRST_NAMES]
@@ -115,7 +176,7 @@ def main() -> None:
                 "target": target,
                 "message": message,
                 "roster_size": size,
-                "roster": build_roster(rng, size, pool, target, exclude=[]),
+                "roster": roster_entries(build_roster(rng, size, pool, target, exclude=[])),
             })
     for i, (message, exclude) in enumerate(CREATE, 1):
         for size in SIZES:
@@ -125,7 +186,7 @@ def main() -> None:
                 "target": None,
                 "message": message,
                 "roster_size": size,
-                "roster": build_roster(rng, size, pool, None, exclude=exclude),
+                "roster": roster_entries(build_roster(rng, size, pool, None, exclude=exclude)),
             })
     OUT.write_text("\n".join(json.dumps(l) for l in lines) + "\n")
     print(f"wrote {len(lines)} cases to {OUT}")

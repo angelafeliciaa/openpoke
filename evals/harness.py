@@ -48,6 +48,8 @@ _PRICES = {
 # Returned instead of the post-dispatch LLM call: routing is decided by then, and the
 # "on it" reply would cost a full roster-sized prompt per turn.
 _WRAPUP = {"choices": [{"message": {"role": "assistant", "content": "On it."}}], "usage": {}}
+_DISPATCH_TOOLS = ("send_message_to_agent", "create_agent")
+_SEEDED_AT = "2026-09-01T09:00:00"
 
 
 def default_model() -> str:
@@ -65,7 +67,7 @@ class LLMCall:
 @dataclass
 class TurnResult:
     dispatched: List[str]
-    """Agents `send_message_to_agent` actually delivered to, in order."""
+    """Agents `send_message_to_agent` or `create_agent` actually delivered to, in order."""
     new_agents: List[str]
     calls: List[LLMCall]
     response: str
@@ -131,7 +133,7 @@ def _dispatched_this_turn(messages: List[Dict[str, Any]]) -> bool:
             result = json.loads(message["content"])
         except (json.JSONDecodeError, TypeError):
             continue
-        if result.get("tool") == "send_message_to_agent" and result.get("status") == "success":
+        if result.get("tool") in _DISPATCH_TOOLS and result.get("status") == "success":
             return True
     return False
 
@@ -197,9 +199,16 @@ class Sandbox:
     async def __aenter__(self) -> "Sandbox":
         tmp = Path(self._stack.enter_context(tempfile.TemporaryDirectory(prefix="openpoke-eval-")))
         settings = get_settings()
-        roster = roster_mod.AgentRoster(tmp / "roster.json")
-        for name in self.case.roster:
-            roster.add_agent(name)
+        roster_file = tmp / "roster.json"
+        roster_file.write_text(json.dumps({
+            "next_id": self.case.roster_size + 1,
+            "agents": [
+                {"id": r.id, "name": r.name, "description": r.description,
+                 "created_at": _SEEDED_AT, "last_used_at": _SEEDED_AT}
+                for r in self.case.roster
+            ],
+        }))
+        roster = roster_mod.AgentRoster(roster_file)
 
         self._stack.enter_context(
             patch.object(wm_log, "_working_memory_log", wm_log.WorkingMemoryLog(tmp / "working_memory.log"))
@@ -273,6 +282,10 @@ class Sandbox:
         return data
 
 
+def _roster_names() -> List[str]:
+    return [r.name for r in get_agent_roster().records()]
+
+
 def _seed_history(case: Case) -> None:
     log = conv_log.get_conversation_log()
     record = {"user": log.record_user_message, "assistant": log.record_reply, "agent": log.record_agent_message}
@@ -286,7 +299,7 @@ async def run_case(case: Case, trial: int, mode: Mode, model: str) -> CaseRun:
     async with Sandbox(case, trial, mode, model) as sb:
         _seed_history(case)
         for message in case.turns:
-            before = set(get_agent_roster().get_agents())
+            before = set(_roster_names())
             outcome = await ia_runtime.InteractionAgentRuntime().execute(message)
             await sb.settle()
             if sb.missing:
@@ -296,7 +309,7 @@ async def run_case(case: Case, trial: int, mode: Mode, model: str) -> CaseRun:
             run.turns.append(
                 TurnResult(
                     dispatched=dispatched,
-                    new_agents=[a for a in get_agent_roster().get_agents() if a not in before],
+                    new_agents=[a for a in _roster_names() if a not in before],
                     calls=calls,
                     response=outcome.response,
                     error=outcome.error,
