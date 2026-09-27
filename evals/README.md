@@ -12,8 +12,9 @@ agent it created earlier?
 .venv/bin/python -m evals.report evals/results/<file>.jsonl
 ```
 
-`--model` defaults to `EVAL_MODEL`, then to the production `interaction_agent_model`. Ids with a
-vendor prefix (`anthropic/claude-sonnet-4`) go to OpenRouter, others (`gpt-5-mini`) to OpenAI.
+`--model` defaults to `EVAL_MODEL`, then to the production `interaction_agent_model`. Every live
+call goes through OpenRouter (`OPENROUTER_API_KEY`); bare ids like `gpt-5-mini` are sent as
+`openai/gpt-5-mini` with low reasoning effort. Anthropic calls cache the system prompt and roster.
 Live mode reuses any recording it already has, so it only pays for the gaps.
 
 ## What pytest checks
@@ -72,16 +73,18 @@ verdict moved:
 - **names/req**: distinct names invented for the same request across trials. Above 1.0 is how rosters grow.
 - **tokens**: prompt tokens on the first call, which is where the roster lives.
 
-## Baseline findings (Sept 26, 2026, 2 trials)
+## Baseline findings (Sept 27, 2026; Sonnet hard set 3 trials, the rest 2)
 
 - Sonnet 4, the production model, routed every delegated routing case correctly at 5, 50 and 500
   agents. What grew was the roster's cost: 3.4k -> 9.2k prompt tokens and 2.2x the price per turn at 500.
+- On the hard set Sonnet was also right on every delegated case at both sizes; its only failures
+  were 2 turns at 500 where it answered without delegating. The 500-agent half cost 3.9x the 5-agent half.
 - Sonnet invented 1.2 to 1.5 distinct names per repeated request. That drift, not mis-routing on
   exact names, is the mechanism that fills the roster.
 - gpt-5-mini delegated on only 32 to 47% of turns, and its reuse accuracy fell to 71% at 500 agents.
   Smaller models feel the roster first.
 - gpt-5 on the hard set delegated 77 to 79% of the time, reused correctly on every delegated
-  paraphrase and trap case, and came back to its own turn-1 agent on 67% of delegated drift cases.
+  paraphrase and trap case, and came back to its own turn-1 agent on 67 to 71% of delegated drift cases.
 
 ## Limits
 

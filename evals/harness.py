@@ -37,7 +37,6 @@ Mode = Literal["live", "replay"]
 
 RECORDINGS_DIR = Path(__file__).parent / "recordings"
 MAX_TOKENS = 1024
-OPENAI_BASE_URL = "https://api.openai.com/v1"
 _TIMESTAMP = re.compile(r' timestamp=\\"[^"\\]*\\"')  # matches inside a json.dumps string
 # USD per million tokens (input, cached input, output). OpenAI responses carry no cost field.
 _PRICES = {
@@ -155,20 +154,24 @@ def _with_cache_breakpoints(messages: List[Dict[str, Any]]) -> List[Dict[str, An
     return marked
 
 
+def _openrouter_body(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Bare OpenAI ids like `gpt-5-mini` are served as `openai/<id>` with low reasoning effort."""
+    model = payload["model"]
+    body = {**payload, "max_tokens": MAX_TOKENS, "stream": False}
+    if "/" not in model:
+        body["model"] = f"openai/{model}"
+        body["reasoning"] = {"effort": "low"}
+    if model.startswith("anthropic/"):
+        body["messages"] = _with_cache_breakpoints(payload["messages"])
+    return body
+
+
 async def _live_call(payload: Dict[str, Any]) -> Dict[str, Any]:
-    if "/" in payload["model"]:
-        url = f"{OpenRouterBaseURL.rstrip('/')}/chat/completions"
-        key = os.environ["OPENROUTER_API_KEY"]
-        body = {**payload, "max_tokens": MAX_TOKENS, "stream": False}
-        if payload["model"].startswith("anthropic/"):
-            body["messages"] = _with_cache_breakpoints(payload["messages"])
-    else:
-        url = f"{OPENAI_BASE_URL}/chat/completions"
-        key = os.environ["OPENAI_API_KEY"]
-        body = {**payload, "max_completion_tokens": MAX_TOKENS, "reasoning_effort": "low"}
     async with httpx.AsyncClient(timeout=120) as client:
         response = await client.post(
-            url, headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"}, json=body
+            f"{OpenRouterBaseURL.rstrip('/')}/chat/completions",
+            headers={"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}", "Content-Type": "application/json"},
+            json=_openrouter_body(payload),
         )
         if response.status_code >= 400:
             raise RuntimeError(f"{response.status_code}: {response.text[:300]}")
