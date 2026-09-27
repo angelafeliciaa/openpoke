@@ -25,9 +25,11 @@ Live mode reuses any recording it already has, so it only pays for the gaps.
 - `test_harness.py`: a replayed case never reaches the real execution manager or the real roster,
   and a missing recording is reported as one.
 - `test_graders.py`: every grader outcome and the summary's denominators, on hand-built runs.
+- `server/tests/`: the roster, `send_message_to_agent` / `create_agent` / `search_agents`, BM25
+  search, and the visible agent list, with no LLM.
 
-The pass/fail line is the baseline, not "every case passes". gpt-5-mini skips delegation on over
-half its turns, and that is a measurement, not a broken build.
+The pass/fail line is the baseline, not "every case passes". gpt-5-mini asks the user instead of
+routing on about half its turns, and that is a measurement, not a broken build.
 
 ## After changing the prompt, tools, or cases
 
@@ -54,7 +56,7 @@ print both tables side by side:
 |---|---|
 | `cases/__init__.py` | typed `Case` and the one loader for `cases/<suite>.jsonl` |
 | `cases/generate.py` | 15 reuse + 15 create scenarios at roster sizes 5, 50, 500 -> `routing.jsonl` |
-| `cases/generate_hard.py` | paraphrase, trap, drift, ambiguous families at sizes 5 and 500 -> `hard.jsonl` |
+| `cases/generate_hard.py` | paraphrase, trap, drift, ambiguous, sounds_new families at sizes 5 and 500 -> `hard.jsonl` |
 | `harness.py` | sandbox (temp roster and logs, dispatch recorder), LLM record/replay, multi-turn |
 | `graders.py` | code-only verdict per run |
 | `run.py`, `report.py` | run a suite, write `results/*.jsonl` and baselines, print the table |
@@ -72,9 +74,13 @@ print both tables side by side:
   message or history breaks the tie. Pass = the agent asks the user which one. Messaging one is
   `guessed_candidate`; messaging both is `messaged_every_candidate`, kept apart because it is harmless
   for "did the renewal go through?" and wrong for "tell alice i'm late".
+- **sounds_new** (a reuse family): an agent owns the work, but the request reads as brand new and
+  there is no history ("look into a place to stay in lisbon" with "Hotel in Lisbon" listed).
+  Creating another agent here is how rosters bloat.
 
 A turn that routes nothing and replies with a question is `asked_user`. It passes only on
-ambiguous cases; everywhere else a question is friction for the user and fails.
+ambiguous cases; everywhere else a question is friction for the user and fails. A question that
+mentions agents is `asked_about_agents` and always fails: the user never sees agents.
 
 ## Reading the table
 
@@ -88,20 +94,11 @@ ambiguous cases; everywhere else a question is friction for the user and fails.
 - **names/req**: distinct names invented for the same request across trials. Above 1.0 is how rosters grow.
 - **tokens**: prompt tokens on the first call, which is where the roster lives.
 
-## Baseline findings (Sept 27, 2026; Sonnet hard set 3 trials, the rest 2)
+## Findings
 
-- Sonnet 4, the production model, routed every delegated routing case correctly at 5, 50 and 500
-  agents. What grew was the roster's cost: 3.4k -> 9.2k prompt tokens and 2.2x the price per turn at 500.
-- On the hard set Sonnet was right on every paraphrase, trap and drift case at both sizes. The
-  500-agent half cost 3.7x the 5-agent half.
-- Sonnet almost never asks: on ambiguous cases it picked one of the two agents (or messaged both)
-  in 47 of 48 runs. With names as the only handle, "tell alice" goes to whichever Alice it guesses.
-- Sonnet invented 1.2 to 1.8 distinct names per repeated request. That drift, not mis-routing on
-  exact names, is the mechanism that fills the roster.
-- gpt-5-mini asks far too much: 53 to 67% of turns end in a question ("what's your ZIP?", "which
-  reservation?") that an agent could have answered. It rarely picks the wrong agent.
-- gpt-5 sits between them: it asks on 20 to 24% of hard-set turns, which sinks its drift score
-  (28 to 33%) but makes it the best of the three on ambiguous cases (31 to 38%).
+Results for the original code (tag `stage-0`, Sonnet 4, gpt-5 and gpt-5-mini) and for each stage
+of the fix are in [`AGENT_OVERLOAD.md`](../AGENT_OVERLOAD.md). The baselines in this tree are for
+the current code; the original code's baselines and recordings live under `stage-0`.
 
 ## Limits
 
