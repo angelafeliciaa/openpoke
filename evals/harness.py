@@ -137,11 +137,31 @@ def _dispatched_this_turn(messages: List[Dict[str, Any]]) -> bool:
     return False
 
 
+def _with_cache_breakpoints(messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Mark the system prompt and the first user message as cacheable prefixes.
+
+    Anthropic caches only up to explicit breakpoints. The system prompt is shared by
+    every call; the first user message holds the roster, which repeats across trials.
+    """
+    marked: List[Dict[str, Any]] = []
+    user_marked = False
+    for message in messages:
+        content = message.get("content")
+        is_prefix = message["role"] == "system" or (message["role"] == "user" and not user_marked)
+        if is_prefix and isinstance(content, str) and content:
+            user_marked = user_marked or message["role"] == "user"
+            message = {**message, "content": [{"type": "text", "text": content, "cache_control": {"type": "ephemeral"}}]}
+        marked.append(message)
+    return marked
+
+
 async def _live_call(payload: Dict[str, Any]) -> Dict[str, Any]:
     if "/" in payload["model"]:
         url = f"{OpenRouterBaseURL.rstrip('/')}/chat/completions"
         key = os.environ["OPENROUTER_API_KEY"]
         body = {**payload, "max_tokens": MAX_TOKENS, "stream": False}
+        if payload["model"].startswith("anthropic/"):
+            body["messages"] = _with_cache_breakpoints(payload["messages"])
     else:
         url = f"{OPENAI_BASE_URL}/chat/completions"
         key = os.environ["OPENAI_API_KEY"]

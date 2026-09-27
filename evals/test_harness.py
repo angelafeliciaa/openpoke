@@ -7,7 +7,7 @@ from server.services.execution import get_agent_roster
 
 from evals.cases import load_cases
 from evals.graders import grade
-from evals.harness import run_case
+from evals.harness import _with_cache_breakpoints, run_case
 
 REPLAY_MODEL = "gpt-5-mini"
 
@@ -30,6 +30,23 @@ async def test_replay_never_reaches_the_real_execution_manager(monkeypatch) -> N
     assert run.turns[-1].dispatched == ["Email to Alice"]
     assert real_calls == []
     assert get_agent_roster().get_agents() == roster_before
+
+
+def test_cache_breakpoints_mark_system_and_first_user_message_only() -> None:
+    messages = [
+        {"role": "system", "content": "prompt"},
+        {"role": "user", "content": "roster and turn"},
+        {"role": "assistant", "content": "ok"},
+        {"role": "user", "content": "later"},
+    ]
+    cached = {"cache_control": {"type": "ephemeral"}}
+
+    assert _with_cache_breakpoints(messages) == [
+        {"role": "system", "content": [{"type": "text", "text": "prompt", **cached}]},
+        {"role": "user", "content": [{"type": "text", "text": "roster and turn", **cached}]},
+        {"role": "assistant", "content": "ok"},
+        {"role": "user", "content": "later"},
+    ]
 
 
 async def test_missing_recording_fails_instead_of_skipping() -> None:
