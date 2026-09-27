@@ -4,6 +4,8 @@
   trap        same, but the roster also holds 3 near-duplicate names (Email to Alice vs Email to Alicia)
   drift       two turns: turn 1 creates an agent, turn 2 is a paraphrased follow-up that must find it
   ambiguous   two agents fit and nothing breaks the tie; the right move is to ask the user which one
+  sounds_new  an agent already owns the work but the request reads as brand new, with no history;
+              creating another agent here is how rosters bloat
 
 Run:  python -m evals.cases.generate_hard   -> evals/cases/hard.jsonl
 """
@@ -104,6 +106,21 @@ AMBIGUOUS = [
 ]
 
 
+# (agent that already owns the work, request phrased as brand new with no history, keywords kept out of distractors)
+SOUNDS_NEW = [
+    ("Hotel in Lisbon", "look into a place to stay in lisbon for my trip", ["lisbon"]),
+    ("Passport Renewal", "i need to get my passport renewed, can you get that going", ["passport"]),
+    ("Gym Membership Cancel", "i want to quit my gym, can you handle it", ["gym"]),
+    ("Car Insurance Renewal", "shop around for cheaper auto insurance, mine renews soon", ["insurance"]),
+    ("Birthday Gift for Mom", "help me figure out a present for my mom's birthday", ["mom", "gift"]),
+    ("Stripe Interview Prep", "i need to get ready for my stripe interviews", ["stripe"]),
+    ("Flight to Tokyo", "look up flights to tokyo for me", ["tokyo"]),
+    ("Email to Landlord", "write to my landlord about the leaky sink", ["landlord"]),
+    ("Vercel Job Offer", "negotiate the start date on my vercel offer", ["vercel"]),
+    ("Email to Professor Chen", "reach out to professor chen about a reference letter", ["chen"]),
+]
+
+
 def _with_ids(history: list[dict[str, str]], names: list[str]) -> list[dict[str, str]]:
     """Agent reports carry `Name (a12):`, as batch_manager writes them."""
     out = []
@@ -161,6 +178,14 @@ def main() -> None:
                 "id": f"amb-{i:02d}@{size}", "kind": "ambiguous", "family": "ambiguous",
                 "target": None, "candidates": candidates, "history": [], "message": message,
                 "roster_size": size, "roster": roster_entries(_with_candidates(amb_rng, size, pool, candidates, exclude)),
+            })
+    new_rng = random.Random(20260928)
+    for i, (target, message, exclude) in enumerate(SOUNDS_NEW, 1):
+        for size in SIZES:
+            lines.append({
+                "id": f"new-{i:02d}@{size}", "kind": "reuse", "family": "sounds_new",
+                "target": target, "history": [], "message": message,
+                "roster_size": size, "roster": roster_entries(build_roster(new_rng, size, pool, target, exclude=exclude)),
             })
     OUT.write_text("\n".join(json.dumps(l) for l in lines) + "\n")
     print(f"wrote {len(lines)} cases to {OUT}")

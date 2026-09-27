@@ -5,22 +5,22 @@
  "summary": [
   {
    "roster_size": 5,
-   "runs": 48,
+   "runs": 58,
    "unscored": 0,
-   "delegation_rate": 0.9792,
-   "ask_rate": 0.5,
+   "delegation_rate": 0.9828,
+   "ask_rate": 0.5345,
    "by_kind": {
     "ambiguous": 1.0,
     "drift": 0.1,
-    "reuse": 0.7241
+    "reuse": 0.6154
    },
    "names_per_request": 1.0,
    "dup_rate": 0.0,
-   "pass_all_trials": 0.625,
-   "mean_prompt_tokens": 2947.7292,
-   "cost_usd": 0.0613,
+   "pass_all_trials": 0.569,
+   "mean_prompt_tokens": 2937.6897,
+   "cost_usd": 0.0732,
    "failures": {
-    "asked_user": 15,
+    "asked_user": 22,
     "asked_about_agents": 1,
     "no_delegation": 1,
     "turn1_did_not_create": 1
@@ -28,24 +28,25 @@
   },
   {
    "roster_size": 500,
-   "runs": 48,
+   "runs": 58,
    "unscored": 0,
-   "delegation_rate": 1.0,
-   "ask_rate": 0.4583,
+   "delegation_rate": 0.9655,
+   "ask_rate": 0.4828,
    "by_kind": {
     "ambiguous": 0.375,
     "drift": 0.2,
-    "reuse": 0.6333
+    "reuse": 0.5526
    },
    "names_per_request": 1.0,
    "dup_rate": 0.0,
-   "pass_all_trials": 0.5,
-   "mean_prompt_tokens": 13578.2708,
-   "cost_usd": 0.2257,
+   "pass_all_trials": 0.4483,
+   "mean_prompt_tokens": 13568.4483,
+   "cost_usd": 0.2638,
    "failures": {
-    "asked_user": 16,
+    "asked_user": 22,
     "guessed_candidate": 5,
-    "asked_about_agents": 3
+    "asked_about_agents": 3,
+    "no_delegation": 2
    }
   }
  ],
@@ -86,6 +87,26 @@
   "drift-09@500#1": "asked_user",
   "drift-10@5#1": "asked_user",
   "drift-10@500#1": "asked_user",
+  "new-01@5#1": "asked_user",
+  "new-01@500#1": "asked_user",
+  "new-02@5#1": "reused_target",
+  "new-02@500#1": "reused_target",
+  "new-03@5#1": "asked_user",
+  "new-03@500#1": "no_delegation",
+  "new-04@5#1": "asked_user",
+  "new-04@500#1": "asked_user",
+  "new-05@5#1": "asked_user",
+  "new-05@500#1": "asked_user",
+  "new-06@5#1": "reused_target",
+  "new-06@500#1": "reused_target",
+  "new-07@5#1": "asked_user",
+  "new-07@500#1": "asked_user",
+  "new-08@5#1": "reused_target",
+  "new-08@500#1": "asked_user",
+  "new-09@5#1": "asked_user",
+  "new-09@500#1": "asked_user",
+  "new-10@5#1": "asked_user",
+  "new-10@500#1": "no_delegation",
   "para-01@5#1": "reused_target",
   "para-01@500#1": "asked_user",
   "para-02@5#1": "asked_user",
