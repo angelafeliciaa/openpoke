@@ -7,8 +7,11 @@ from typing import Any, Optional
 
 from ...logging_config import logger
 from ...services.conversation import get_conversation_log
-from ...services.execution import get_agent_roster, get_execution_agent_logs
+from ...services.execution import get_agent_roster, get_execution_agent_logs, search
 from ...services.execution.roster import AgentRecord
+
+SIMILAR_SHOWN = 3
+SEARCH_RESULTS = 5
 from ..execution_agent.batch_manager import ExecutionBatchManager
 
 
@@ -46,7 +49,7 @@ TOOL_SCHEMAS = [
         "type": "function",
         "function": {
             "name": "create_agent",
-            "description": "Start a new execution agent for work that no agent in <active_agents> already owns, and send it its first instructions.",
+            "description": "Start a new execution agent for work that no existing agent owns, and send it its first instructions. If existing agents look similar, nothing is created and they are returned instead; reuse one, or call again with confirm_new if the work is really different.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -59,8 +62,27 @@ TOOL_SCHEMAS = [
                         "description": "One line on what this agent owns, specific enough to tell it apart from similar agents, e.g. 'Start-date negotiation with the Vercel recruiter'.",
                     },
                     "instructions": {"type": "string", "description": "Instructions for the agent to execute."},
+                    "confirm_new": {
+                        "type": "boolean",
+                        "description": "Set only after a previous create_agent call returned similar agents and none of them owns this work.",
+                    },
                 },
                 "required": ["name", "description", "instructions"],
+                "additionalProperties": False,
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_agents",
+            "description": "Find existing agents by topic when the one you need is not listed in <active_agents>. Searches every agent's name, description, and recent instructions.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "Words the agent's work would involve, e.g. 'lisbon hotel booking'."},
+                },
+                "required": ["query"],
                 "additionalProperties": False,
             },
         },
@@ -146,8 +168,12 @@ def send_message_to_agent(agent_id: str, instructions: str) -> ToolResult:
     return _dispatch(record, instructions, created=False)
 
 
-def create_agent(name: str, description: str, instructions: str) -> ToolResult:
-    """Register a new agent and dispatch its first instructions."""
+def create_agent(name: str, description: str, instructions: str, confirm_new: bool = False) -> ToolResult:
+    """Register a new agent and dispatch its first instructions, unless existing agents look like the same work.
+
+    Search supplies the candidates and the model makes the call: a keyword match alone can't
+    tell "Hotel in Lisbon" owning a Lisbon stay from "Reminder 2" matching "table for 2".
+    """
     roster = get_agent_roster()
     roster.load()
     existing = roster.find_by_name(name)
@@ -159,7 +185,34 @@ def create_agent(name: str, description: str, instructions: str) -> ToolResult:
                 "Message it with send_message_to_agent, or choose a name for different work."
             },
         )
+    if not confirm_new:
+        similar = search.top(
+            roster.records(), f"{name} {description} {instructions}", SIMILAR_SHOWN, search.recent_requests()
+        )
+        if similar:
+            return ToolResult(
+                success=False,
+                payload={
+                    "error": "Nothing created: these existing agents may already own this work. If one does, "
+                    "use send_message_to_agent with its id. If none does, call create_agent again with confirm_new: true.",
+                    "similar_agents": [_summary(r) for r in similar],
+                },
+            )
     return _dispatch(roster.create(name, description), instructions, created=True)
+
+
+def search_agents(query: str) -> ToolResult:
+    """Every agent is searchable, including the ones <active_agents> leaves out."""
+    roster = get_agent_roster()
+    roster.load()
+    found = search.top(roster.records(), query, SEARCH_RESULTS, search.recent_requests())
+    if not found:
+        return ToolResult(success=True, payload={"agents": [], "note": "No agent matches; create_agent if this is new work."})
+    return ToolResult(success=True, payload={"agents": [_summary(r) for r in found]})
+
+
+def _summary(record: AgentRecord) -> dict:
+    return {"id": record.id, "name": record.name, "description": record.description}
 
 
 def _dispatch(record: AgentRecord, instructions: str, created: bool) -> ToolResult:
@@ -267,6 +320,8 @@ def handle_tool_call(name: str, arguments: Any) -> ToolResult:
             return send_message_to_agent(**args)
         if name == "create_agent":
             return create_agent(**args)
+        if name == "search_agents":
+            return search_agents(**args)
         if name == "send_message_to_user":
             return send_message_to_user(**args)
         if name == "send_draft":

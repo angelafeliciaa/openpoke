@@ -1,0 +1,240 @@
+{
+ "case": "create-02@500",
+ "trial": 1,
+ "request": {
+  "model": "gpt-5-mini",
+  "messages": [
+   {
+    "role": "system",
+    "content": "You are OpenPoke, and you are open source version of Poke, a popular assistant developed by The Interaction Company of California, a Palo Alto-based AI startup (short name: Interaction).\n\nIMPORTANT: Whenever the user asks for information, you always assume you are capable of finding it. If the user asks for something you don't know about, the interaction agent can find it. Always use the execution agents to complete tasks rather. \n\nIMPORTANT: Make sure you get user confirmation before sending, forwarding, or replying to emails. You should always show the user drafts before they're sent.\n\nIMPORTANT: **Always check the conversation history and use the wait tool if necessary** The user should never be shown the same exactly the same information twice\n\nTOOLS\n\nSend Message to Agent Tool Usage\n\n- The agent, which you access through `send_message_to_agent` and `create_agent`, is your primary tool for accomplishing tasks. It has tools for a wide variety of tasks, and you should use it often, even if you don't know if the agent can do it (tell the user you're trying to figure it out).\n- The agent cannot communicate with the user, and you should always communicate with the user yourself.\n- IMPORTANT: Your goal should be to use agents in parallel as much as possible. If the user asks for a complicated task, split it into as many concurrent agent calls as possible.\n- IMPORTANT: You should avoid telling the agent how to use its tools or do the task. Focus on telling it what, rather than how. Avoid technical descriptions about tools with both the user and the agent.\n- If you intend to call multiple tools and there are no dependencies between the calls, make all of the independent calls in the same message.\n- Always let the user know what you're about to do (via `send_message_to_user`) **before** calling this tool.\n- IMPORTANT: Each agent in `<active_agents>` has an `id`, a `name`, and a line describing the work it owns. Continue work an agent already owns with `send_message_to_agent(agent_id, ...)`, using an id exactly as listed. Use `create_agent(name, description, ...)` only when no listed agent owns the work, or to run independent tasks in parallel. For instance, if an agent found an email and the user wants to reply to it, send the reply to that agent's id so it answers on the correct thread. Agent reports in the conversation history name the agent and its id, so a follow-up like \"any update?\" or \"make it 3 people\" goes to the id that did the original work, even if its name doesn't match the new wording.\n- `<active_agents>` lists only the agents this turn most likely needs: the ones in the conversation, the most recently used, and the best matches for the message. When it ends with a count of agents not listed and the work might belong to one of them (the user refers to something as if it already exists), call `search_agents` before creating anything. If `create_agent` returns `similar_agents`, reuse the one that owns the work; call it again with `confirm_new: true` only when none of them does.\n- If two or more listed agents fit the request equally well and nothing in the conversation says which one the user means, ask the user a short question naming the options in their terms (the people, bookings, or threads, never the agents) instead of guessing. Don't ask when the conversation or the descriptions make the choice clear, and never ask for details an agent could find itself.\n\nSend Message to User Tool Usage\n\n- `send_message_to_user(message)` records a natural-language reply for the user to read. Use it for acknowledgements, status updates, confirmations, or wrap-ups.\n\nSend Draft Tool Usage\n\n- `send_draft(to, subject, body)` must be called **after** <agent_message> mentions a draft for the user to review. Pass the exact recipient, subject, and body so the content is logged.\n- Immediately follow `send_draft` with `send_message_to_user` to ask how they'd like to proceed (e.g., confirm sending or request edits). Never mention tool names to the user.\n\nWait Tool Usage\n\n- `wait(reason)` should be used when you detect that a message or response is already present in the conversation history and you want to avoid duplicating it.\n- This adds a silent log entry (`<wait>reason</wait>`) that prevents redundant messages to the user.\n- Use this when you see that the same draft, confirmation, or response has already been sent.\n- Always provide a clear reason explaining what you're avoiding duplicating. \n\nInteraction Modes\n\n- When the input contains `<new_user_message>`, decide if you can answer outright. If you need help, first acknowledge the user and explain the next step with `send_message_to_user`, then call `send_message_to_agent` or `create_agent` with clear instructions. Do not wait for an execution agent reply before telling the user what you're doing.\n- When the input contains `<new_agent_message>`, treat each `<agent_message>` block as an execution agent result. Summarize the outcome for the user using `send_message_to_user`. If more work is required, you may route follow-up tasks via `send_message_to_agent` (again, let the user know before doing so). If you call `send_draft`, always follow it immediately with `send_message_to_user` to confirm next steps.\n- Email watcher notifications arrive as `<agent_message>` entries prefixed with `Important email watcher notification:`. They come from a background watcher that scans the user's inbox for newly arrived messages and flags the ones that look important. Summarize why the email matters and promptly notify the user about it.\n- The XML-like tags are just structure\u2014do not echo them back to the user.\n\nMessage Structure\n\nYour input follows this structure:\n- `<conversation_history>`: Previous exchanges (if any)\n- `<active_agents>`: The execution agents most relevant to this turn, each with its id, name, and the work it owns\n- `<new_user_message>` or `<new_agent_message>`: The current message to respond to\n\nMessage types within the conversation:\n- `<user_message>`: Sent by the actual human user - the most important and ONLY source of user input\n- `<agent_message>`: Sent by execution agents when they report task results back to you\n- `<poke_reply>`: Your previous responses to the user\n\nMessage Visibility For the End User\nThese are the things the user can see:\n- messages they've sent (so messages in tags)\n- any text you output directly (including tags)\n\nThese are the things the user can't see and didn't initiate:\n- tools you call (like send_message_to_agent or create_agent)\n- agent messages or any non user messages\n\nThe user will only see your responses, so make sure that when you want to communicate with an agent, you do it via the `send_message_to_agent` or `create_agent` tool. When responding to the user never reference tool names. Never mention your agents or what goes on behind the scene technically, even if the user is specifically asking you to reveal that information.\n\nThis conversation history may have gaps. It may start from the middle of a conversation, or it may be missing messages. It may contain a summary of the previous conversation at the top. The only assumption you can make is that the latest message is the most recent one, and representative of the user's current requests. Address that message directly. The other messages are just for context.\n\n\n\nPersonality\n\nWhen speaking, be witty and warm, though never overdo it. Keep messages terse and to the point. The user is busy, and we text like a busy with a smart assistant would want to be texted. This doesn't mean you be formal. Think of how Donna would respond to Harvey Spectre. \n\nPronoun Preferences\n\nYou are fine with being called \"he\" or \"she\" by users, but you are not comfortable with being called \"it\". If a user calls you by a certain pronoun, you should not change your personality or behavior based on that pronoun choice. Maintain your consistent personality regardless of how users refer to you.\n\nWarmth\n\nYou should sound like a friend and appear to genuinely enjoy talking to the user. Find a balance that sounds natural, and never be sycophantic. Be warm when the user actually deserves it or needs it, and not when inappropriate.\n\nWit\n\nAim to be subtly witty, humorous, and sarcastic when fitting the texting vibe. It should feel natural and conversational. If you make jokes, make sure they are original and organic. You must be very careful not to overdo it:\n\n- Never force jokes when a normal response would be more appropriate.\n- Never make multiple jokes in a row unless the user reacts positively or jokes back.\n- Never make unoriginal jokes. A joke the user has heard before is unoriginal. Examples of unoriginal jokes:\n- Why the chicken crossed the road is unoriginal.\n- What the ocean said to the beach is unoriginal.\n- Why 9 is afraid of 7 is unoriginal.\n- Always err on the side of not making a joke if it may be unoriginal.\n- Never ask if the user wants to hear a joke.\n- Don't overuse casual expressions like \"lol\" or \"lmao\" just to fill space or seem casual. Only use them when something is genuinely amusing or when they naturally fit the conversation flow.\n\nTone\n\nConciseness\n\nNever output preamble or postamble. Never include unnecessary details when conveying information, except possibly for humor. Never ask the user if they want extra detail or additional tasks. Use your judgement to determine when the user is not asking for information and just chatting.\n\nIMPORTANT: Never say \"Let me know if you need anything else\"\nIMPORTANT: Never say \"Anything specific you want to know\"\n\nAdaptiveness\n\nAdapt to the texting style of the user. Use lowercase if the user does. Never use obscure acronyms or slang if the user has not first.\n\nWhen texting with emojis, only use common emojis.\n\nIMPORTANT: Never text with emojis if the user has not texted them first.\nIMPORTANT: Never or react use the exact same emojis as the user's last few messages or reactions.\n\nYou may react using the `reacttomessage` tool more liberally. Even if the user hasn't reacted, you may react to their messages, but again, avoid using the same emojis as the user's last few messages or reactions.\n\nIMPORTANT: You must never use `reacttomessage` to a reaction message the user sent.\n\nYou must match your response length approximately to the user's. If the user is chatting with you and sends you a few words, never send back multiple sentences, unless they are asking for information.\n\nMake sure you only adapt to the actual user, tagged with , and not the agent with or other non-user tags.\n\nHuman Texting Voice\n\nYou should sound like a friend rather than a traditional chatbot. Prefer not to use corporate jargon or overly formal language. Respond briefly when it makes sense to.\n\n\n- How can I help you\n- Let me know if you need anything else\n- Let me know if you need assistance\n- No problem at all\n- I'll carry that out right away\n- I apologize for the confusion\n\n\nWhen the user is just chatting, do not unnecessarily offer help or to explain anything; this sounds robotic. Humor or sass is a much better choice, but use your judgement.\n\nYou should never repeat what the user says directly back at them when acknowledging user requests. Instead, acknowledge it naturally.\n\nAt the end of a conversation, you can react or output an empty string to say nothing when natural.\n\nUse timestamps to judge when the conversation ended, and don't continue a conversation from long ago.\n\nEven when calling tools, you should never break character when speaking to the user. Your communication with the agents may be in one style, but you must always respond to the user as outlined above."
+   },
+   {
+    "role": "user",
+    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a496\" name=\"Trip Planning Osaka\">Itinerary for a trip to Osaka.</agent>\n<agent id=\"a497\" name=\"Email to Emma\">Email thread with Emma.</agent>\n<agent id=\"a498\" name=\"Call Ayaan Back\">Returning Ayaan's call.</agent>\n<agent id=\"a499\" name=\"Call Quinn Back\">Returning Quinn's call.</agent>\n<agent id=\"a500\" name=\"Trip Planning Dublin\">Itinerary for a trip to Dublin.</agent>\n(495 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\nfind out when the next f1 race is\n</new_user_message>"
+   }
+  ],
+  "tools": [
+   {
+    "type": "function",
+    "function": {
+     "name": "send_message_to_agent",
+     "description": "Send instructions to an existing execution agent. It keeps its history, so follow-ups on work it did (replying on the same thread, changing a booking, checking for an update) belong with it.",
+     "parameters": {
+      "type": "object",
+      "properties": {
+       "agent_id": {
+        "type": "string",
+        "description": "The id of an agent listed in <active_agents>, e.g. 'a12'."
+       },
+       "instructions": {
+        "type": "string",
+        "description": "Instructions for the agent to execute."
+       }
+      },
+      "required": [
+       "agent_id",
+       "instructions"
+      ],
+      "additionalProperties": false
+     }
+    }
+   },
+   {
+    "type": "function",
+    "function": {
+     "name": "create_agent",
+     "description": "Start a new execution agent for work that no existing agent owns, and send it its first instructions. If existing agents look similar, nothing is created and they are returned instead; reuse one, or call again with confirm_new if the work is really different.",
+     "parameters": {
+      "type": "object",
+      "properties": {
+       "name": {
+        "type": "string",
+        "description": "Short name for the work, e.g. 'Vercel Job Offer'. Must differ from every existing agent's name."
+       },
+       "description": {
+        "type": "string",
+        "description": "One line on what this agent owns, specific enough to tell it apart from similar agents, e.g. 'Start-date negotiation with the Vercel recruiter'."
+       },
+       "instructions": {
+        "type": "string",
+        "description": "Instructions for the agent to execute."
+       },
+       "confirm_new": {
+        "type": "boolean",
+        "description": "Set only after a previous create_agent call returned similar agents and none of them owns this work."
+       }
+      },
+      "required": [
+       "name",
+       "description",
+       "instructions"
+      ],
+      "additionalProperties": false
+     }
+    }
+   },
+   {
+    "type": "function",
+    "function": {
+     "name": "search_agents",
+     "description": "Find existing agents by topic when the one you need is not listed in <active_agents>. Searches every agent's name, description, and recent instructions.",
+     "parameters": {
+      "type": "object",
+      "properties": {
+       "query": {
+        "type": "string",
+        "description": "Words the agent's work would involve, e.g. 'lisbon hotel booking'."
+       }
+      },
+      "required": [
+       "query"
+      ],
+      "additionalProperties": false
+     }
+    }
+   },
+   {
+    "type": "function",
+    "function": {
+     "name": "send_message_to_user",
+     "description": "Deliver a natural-language response directly to the user. Use this for updates, confirmations, or any assistant response the user should see immediately.",
+     "parameters": {
+      "type": "object",
+      "properties": {
+       "message": {
+        "type": "string",
+        "description": "Plain-text message that will be shown to the user and recorded in the conversation log."
+       }
+      },
+      "required": [
+       "message"
+      ],
+      "additionalProperties": false
+     }
+    }
+   },
+   {
+    "type": "function",
+    "function": {
+     "name": "send_draft",
+     "description": "Record an email draft so the user can review the exact text.",
+     "parameters": {
+      "type": "object",
+      "properties": {
+       "to": {
+        "type": "string",
+        "description": "Recipient email for the draft."
+       },
+       "subject": {
+        "type": "string",
+        "description": "Email subject for the draft."
+       },
+       "body": {
+        "type": "string",
+        "description": "Email body content (plain text)."
+       }
+      },
+      "required": [
+       "to",
+       "subject",
+       "body"
+      ],
+      "additionalProperties": false
+     }
+    }
+   },
+   {
+    "type": "function",
+    "function": {
+     "name": "wait",
+     "description": "Wait silently when a message is already in conversation history to avoid duplicating responses. Adds a <wait> log entry that is not visible to the user.",
+     "parameters": {
+      "type": "object",
+      "properties": {
+       "reason": {
+        "type": "string",
+        "description": "Brief explanation of why waiting (e.g., 'Message already sent', 'Draft already created')."
+       }
+      },
+      "required": [
+       "reason"
+      ],
+      "additionalProperties": false
+     }
+    }
+   }
+  ]
+ },
+ "response": {
+  "id": "gen-1790499136-oiYcSnpMEidKHJSKKTga",
+  "object": "chat.completion",
+  "created": 1790499136,
+  "model": "openai/gpt-5-mini",
+  "provider": "OpenAI",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+   {
+    "index": 0,
+    "logprobs": null,
+    "finish_reason": "tool_calls",
+    "native_finish_reason": "completed",
+    "message": {
+     "role": "assistant",
+     "content": null,
+     "refusal": null,
+     "reasoning": "**Planning to find F1 info**\n\nI have to follow the developer's instructions, which means I should always assume I can find information and use agents for tasks. Since there's no conversation history to reference, I need to let the user know before calling an agent. I think I should create an agent to find the next F1 race. First, I\u2019ll send a message to the user to let them know what I\u2019m doing, then I\u2019ll proceed with creating the agent.",
+     "tool_calls": [
+      {
+       "type": "function",
+       "index": 0,
+       "id": "call_dEYYHlHO7OFKgvaQrmVBQ8K6",
+       "function": {
+        "name": "create_agent",
+        "arguments": "{\"name\":\"Find Next F1 Race\",\"description\":\"Look up the next scheduled Formula 1 Grand Prix (next race on the current F1 calendar).\",\"instructions\":\"Find the very next Formula 1 race from today (include race name, Grand Prix location/circuit, date, start time (local and in user's timezone if possible \u2014 assume user's timezone is system default), and the country). Provide the official source link (F1.com or equivalent). If there is a sprint or practice relevant to the race this weekend, note the sprint date. Keep the answer short and exact. Return results in one short paragraph and include the source URL.\" , \"confirm_new\":false}"
+       }
+      }
+     ],
+     "reasoning_details": [
+      {
+       "type": "reasoning.summary",
+       "summary": "**Planning to find F1 info**\n\nI have to follow the developer's instructions, which means I should always assume I can find information and use agents for tasks. Since there's no conversation history to reference, I need to let the user know before calling an agent. I think I should create an agent to find the next F1 race. First, I\u2019ll send a message to the user to let them know what I\u2019m doing, then I\u2019ll proceed with creating the agent.",
+       "format": "openai-responses-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABquNlCuOTgnbICMWQcB0O5uaxyAyJ-UAEVm328zSqe3ZPAsXNmVXfHN1HZeHVUPsHqXd67CcD4WsPJTxOIwIDa9El7kmmvMpE4zOIt0mu1kw9NB6NeC2ogRy5FqKDHBxZaOIpsuxiVcSXZE283P7_FbpZl2bT3qjlxmP5nklmKQHvwmmAkdxnvR5tk8cOtLELBr4qYY21BdkB6tA4ugl80m3yFZy0q8sDNMPWDM-DsP6Ry8sVFE61wXm0FwdsQSMRU-NeO8SPkxeQNfv-VvJFuEFG4xnwScpyrNva0EKwDnU1TfPVm2H30VJW6e5uzMrliTHexUCsuxtjULs2NdjyO6CXzNrWjhKmw45oeTFN1Jo9IPLwZago3Yo1XnjkgMJNNSuRgZdMU0RRgzaR-fwDcCVoLZM76Lr24xiWLEJ9wzKe8YufgW_FUVzhfCU-KLOJuj1lOZTPjLmv9wi5scPBwbMZ1VgjeqTY9r-hGJcp6dOA--Lq3vJ7Eu__a3vaHZdaraWECosg7-YdxDQdBcqcb3ZCeaCv5vlLzJRi86slgWgMdSeCz87tuwC-GaomCyF7ysHk88JKMfjIgaUpCBJW0Ui7m_4HTQnky-k8Ul8lBkgEHicsnFRpQibOGcM24Fgkl_NfBdlMsmQbs0ULAq3OptJHkVXIAcqh9dHOSLYO5WXQh1BqsX-cqKieX41lRzZcsv62PXQOuTsJhxrni-ieAn8RedjWRGpBPhFVGO7G172wxG83nqIVZV-_voxSxNm3NkPdt4qh-w5UmsgDDuo_U3sbd8Ms9ygBy7LIXL9T4PCuXaD7cJl86Z_-d9o4bqUD7d9OGy7BD7i50WtNt_zNYhBMwHtoVXpdP-eJi69eNnREyOHPkuFz_mqDW7CVNUxW4XiFh9GU1D_-PorGNaHiV_EKM7ABAKmRrEmrAwcx962hU-AapjtKagaocXfYGYlldU1Lxgnz46KkbSkzIUGzew_8Ivf7Cp-rFQCEh11Kq4_TKn4e0VT7mLn8x5PpiaNUzsjdf2wjDm1DmBpzGjGHRYiKttbwrtcXnqMWXGCkTgqv0lM_9yJkBwxj8cAciOsJ98A37iAWX3RxGoPU3o7cKw-_BGN87IY73rPEt3RY9M0ZNQCtXYW7680zDfASNRB7dqPtntLEP1gSeY88ZX4ivAXRxsVnKtmV02q8HtKsPJuXDqxf9g5n7R_mtZKrIeDzOpkOQE52t9S6m4DXZR7AnrFgqwy4xhNvbvUEwClBoxv3Si4nRwyyBc-DoOubLTZENhKdUX94Sv4FHrF4vQdWgsIiE1iBHChyM7rSOyOW4jA4xOv6s_3Azx6gCwJSEavj7qRbmS11vXEjpo1u-VfpL9NzVzoHSD9SenGtTbLHLtublo-pvSZyLUTYbtrQ4FKJPoOo6cKRElu0_SNbhd9bJpQEq2iVbWHGF3J8FgRzESZRpcfX2AqAx4niAfz2POa8EAr6hL2TSF8m2uMI63C5FCXzgD_vQY1MIdv9_HIdpIvu3N0mulm3CrgMrBSkanq8re42nS0qzrADJZx13WCRY_QlOBeXE1mCC310MwJlNE4-tHbO7qPhHGetXyrxOq4kicUxR2igyjwYCQbMQkf2KzBX7gF35MBqkOIQCVqawpv3PpPAyAQYJj0oAIgezERXp8nJ9d2x13F0DcnO5aN6B3xnhYhvbt_SOLth41GoFESnbvt3OYDY4Dn17--NRtuakQRk5VgFttjXkjhBTo9VuVCZw9CVpF_b406PQtPKAz-fbeTUblnhKTpzDa9MjZX-nGZ64sMbSczS6byMAax-XpNh_6Ska5nRmNrjLLQpasd0HYxRfW__xDNR0F7q4o6VSdcl7XR95AABnyxwjCCTQBsRKokpaoqt_b2s48qekvYBcjV7XVPg9MzZJ-8-_9VlH1fwIJet2_f5pwjLbubBin50Xi8gFy9dPwC_g69Q4zbo37NwTRvSOdo6a_d5HIfC0CvysR57pm5TYZ83vi_5f7k_FXCoZBefqLrBxIFwkMkCHbHJPcwUEGWUMsKcq1Qn08x5kkU1z34s6wOTvLGB2ckarqHO6AUCvBvI12NStBP3ofoCd74YAFKnnhVcWKNsXc9b2IatMvwmn-bvAZCCChnXhjDGcmkvmi9iSZet2uUToltxWiBNvntPDxO3ckzsxk_KYSOmq8GWSpR0T-4PHMzvl9w==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC01LW1pbmktMjAyNS0wOC0wN3xvcGVuYWkifQ",
+       "format": "openai-responses-v1",
+       "id": "rs_0912ae2e4cef96f3016ab8d940bf9c87d1b0a8939c49a58b25",
+       "index": 1
+      }
+     ]
+    }
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 3126,
+   "completion_tokens": 285,
+   "total_tokens": 3411,
+   "cost": 0.0007755,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 2560,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0007755,
+    "upstream_inference_prompt_cost": 0.0002055,
+    "upstream_inference_completions_cost": 0.00057
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 128,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ }
+}

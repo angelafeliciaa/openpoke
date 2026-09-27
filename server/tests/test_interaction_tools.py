@@ -94,6 +94,39 @@ async def test_create_agent_with_a_taken_name_points_at_the_existing_id(env) -> 
     assert recorder.calls == []
 
 
+async def test_create_agent_returns_similar_agents_instead_of_creating(env) -> None:
+    roster, recorder = env
+
+    result = tools.handle_tool_call(
+        "create_agent", {"name": "Alice Invoice Reply", "description": "Reply to alice", "instructions": "say approved"}
+    )
+    await _settle()
+
+    assert not result.success
+    assert [a["id"] for a in result.payload["similar_agents"]] == ["a1"]
+    assert len(roster.records()) == 1 and recorder.calls == []
+
+
+async def test_confirm_new_creates_despite_similar_agents(env) -> None:
+    roster, recorder = env
+
+    result = tools.handle_tool_call(
+        "create_agent",
+        {"name": "Alice Birthday", "description": "Gift for alice", "instructions": "find a gift", "confirm_new": True},
+    )
+    await _settle()
+
+    assert result.success and result.payload["agent_id"] == "a2"
+    assert recorder.calls == [("Alice Birthday", "find a gift")]
+
+
+def test_search_agents_matches_description_words(env) -> None:
+    result = tools.handle_tool_call("search_agents", {"query": "the invoice thread"})
+
+    assert [a["id"] for a in result.payload["agents"]] == ["a1"]
+    assert tools.handle_tool_call("search_agents", {"query": "tokyo flight"}).payload["agents"] == []
+
+
 def test_active_agents_render_id_name_and_escaped_description(env) -> None:
     roster, _ = env
     roster.create("Q&A <Prep>", "")
