@@ -174,6 +174,7 @@ The evals live in `evals/`, and `evals/README.md` has the commands. The design c
 | first prompt, tokens | 3.4k | 3.9k | 9.2k |
 | reuse / create / paraphrase / trap / drift accuracy | 100% | 100% | 100% |
 | ambiguous cases where it asked | 4% | - | 0% |
+| sounds_new (1 trial) | 10/10 | - | 9/10, one duplicate |
 
 Sonnet routes the obvious cases perfectly at every size. Its problems are cost, which grows with
 the roster, and guessing: on ambiguous cases it picked one Alice, or messaged both, in 47 of 48
@@ -204,18 +205,30 @@ runs.
 
 ### After (stages 1 to 3, Sonnet 4)
 
-**Pending:** the Sonnet run on the final code, and the sounds_new cases on the original code,
-need about $5 of API credit. To produce them:
+1 trial per case. `python -m evals.compare stage-0 --model anthropic/claude-sonnet-4` prints the
+full diff.
 
-```bash
-python -m evals.run --mode live --model anthropic/claude-sonnet-4 --cases routing --trials 1 --update-baseline
-python -m evals.run --mode live --model anthropic/claude-sonnet-4 --cases hard --trials 1 --update-baseline
-python -m evals.compare stage-0 --model anthropic/claude-sonnet-4
-```
+| | before, 5 | after, 5 | before, 500 | after, 500 |
+|---|---|---|---|---|
+| first prompt, tokens | 3.4k | 4.2k | 9.2k | **4.2k** |
+| reuse / create / paraphrase / trap / drift | 100% | 100% | 100% | 100% |
+| sounds_new (reused) | 10/10 | 10/10 | 9/10 | **10/10** |
+| duplicates created | 0 | 0 | 1 | **0** |
+| ambiguous (asked) | 4% | 25% | 0% | 12% |
 
-Partial evidence from stage 1, recorded with an earlier wording of the ask rule: Sonnet asked on
-5 of 5 ambiguous runs (up from 1 of 48) and reused the right agent on all 64 paraphrase and trap
-runs.
+- **Overload is solved for prompt size and for duplicates.** The prompt no longer grows with the
+  roster: at 500 agents it is less than half its old size. The original code created a duplicate
+  ("Auto Insurance Shopping" beside "Car Insurance Renewal") when the request didn't share words
+  with the existing agent's name. With the new code, the similarity check caught it.
+- **At 5 agents the prompt is about 0.8k tokens bigger** because of descriptions and the new tools.
+  That's the fixed price of routing on meaning rather than names.
+- **Asking on real ambiguity is still weak.** Sonnet asked on 3 of 16 ambiguous runs, up from 1 of
+  48, and otherwise still picked one candidate or messaged every candidate. With an earlier,
+  blunter wording of the ask rule it asked on 5 of 5 but mentioned "agents" to the user. The
+  current wording fixed the leak but lost most of the asking. This is the main open gap: the
+  prompt alone doesn't reliably make Sonnet ask. A structural fix would have the tool itself
+  refuse to send when two visible agents match the request equally well and return both. The
+  model would then have to ask the user, the same way `create_agent` returns `similar_agents`.
 
 ## Other problems found along the way
 
