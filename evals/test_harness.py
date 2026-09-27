@@ -25,9 +25,9 @@ async def test_replay_never_reaches_the_real_execution_manager(monkeypatch) -> N
     monkeypatch.setattr(ExecutionBatchManager, "execute_agent", real_execute_agent)
     roster_before = get_agent_roster().records()
 
-    run = await run_case(_case("reuse-01@50"), 1, "replay", REPLAY_MODEL)
+    run = await run_case(_case("reuse-03@50"), 1, "replay", REPLAY_MODEL)
 
-    assert run.turns[-1].dispatched == ["Email to Alice"]
+    assert run.turns[-1].dispatched == ["Flight to Tokyo"]
     assert real_calls == []
     assert get_agent_roster().records() == roster_before
 
