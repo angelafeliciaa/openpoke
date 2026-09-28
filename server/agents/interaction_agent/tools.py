@@ -9,10 +9,10 @@ from ...logging_config import logger
 from ...services.conversation import get_conversation_log
 from ...services.execution import get_agent_roster, get_execution_agent_logs, search
 from ...services.execution.roster import AgentRecord
+from ..execution_agent.batch_manager import ExecutionBatchManager
 
 SIMILAR_SHOWN = 3
 SEARCH_RESULTS = 5
-from ..execution_agent.batch_manager import ExecutionBatchManager
 
 
 @dataclass
