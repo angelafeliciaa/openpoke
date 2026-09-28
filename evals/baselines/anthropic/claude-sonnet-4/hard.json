@@ -5,10 +5,10 @@
  "summary": [
   {
    "roster_size": 5,
-   "runs": 62,
+   "runs": 72,
    "unscored": 0,
-   "delegation_rate": 0.9839,
-   "ask_rate": 0.0484,
+   "delegation_rate": 0.9861,
+   "ask_rate": 0.0417,
    "by_kind": {
     "ambiguous": 1.0,
     "drift": 1.0,
@@ -17,19 +17,19 @@
    },
    "names_per_request": 1.0,
    "dup_rate": 0.0,
-   "pass_all_trials": 0.9839,
-   "mean_prompt_tokens": 4174.4677,
-   "cost_usd": 0.588,
+   "pass_all_trials": 0.9861,
+   "mean_prompt_tokens": 3894.0972,
+   "cost_usd": 0.8074,
    "failures": {
     "no_delegation": 1
    }
   },
   {
    "roster_size": 500,
-   "runs": 62,
+   "runs": 72,
    "unscored": 0,
    "delegation_rate": 1.0,
-   "ask_rate": 0.0645,
+   "ask_rate": 0.0556,
    "by_kind": {
     "ambiguous": 0.8571,
     "drift": 1.0,
@@ -38,9 +38,9 @@
    },
    "names_per_request": 1.0,
    "dup_rate": 0.0,
-   "pass_all_trials": 0.9839,
-   "mean_prompt_tokens": 4267.9355,
-   "cost_usd": 0.6495,
+   "pass_all_trials": 0.9861,
+   "mean_prompt_tokens": 3974.5833,
+   "cost_usd": 0.8672,
    "failures": {
     "guessed_candidate": 1
    }
@@ -81,6 +81,26 @@
   "drift-09@500#1": "reused_turn1_agent",
   "drift-10@5#1": "reused_turn1_agent",
   "drift-10@500#1": "reused_turn1_agent",
+  "long-01@5#1": "reused_target",
+  "long-01@500#1": "reused_target",
+  "long-02@5#1": "reused_target",
+  "long-02@500#1": "reused_target",
+  "long-03@5#1": "reused_target",
+  "long-03@500#1": "reused_target",
+  "long-04@5#1": "reused_target",
+  "long-04@500#1": "reused_target",
+  "long-05@5#1": "reused_target",
+  "long-05@500#1": "reused_target",
+  "long-06@5#1": "reused_target",
+  "long-06@500#1": "reused_target",
+  "long-07@5#1": "reused_target",
+  "long-07@500#1": "reused_target",
+  "long-08@5#1": "reused_target",
+  "long-08@500#1": "reused_target",
+  "long-09@5#1": "reused_target",
+  "long-09@500#1": "reused_target",
+  "long-10@5#1": "reused_target",
+  "long-10@500#1": "reused_target",
   "new-01@5#1": "reused_target",
   "new-01@500#1": "reused_target",
   "new-02@5#1": "reused_target",

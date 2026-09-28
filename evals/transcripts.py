@@ -27,6 +27,7 @@ _FAMILY_BLURB = {
     "ambiguous": "two agents fit; ask, or for a question check both",
     "sounds_new": "an agent owns the work but the request reads as new; reuse it",
     "relay": "one question spans two agents; check both and tell the user both answers",
+    "long": "the agent's report is behind the conversation summary, 100+ messages back; the follow-up must still reach it",
 }
 
 

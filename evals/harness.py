@@ -29,6 +29,7 @@ from server.agents.interaction_agent import tools as ia_tools
 from server.config import get_settings
 from server.openrouter_client.client import OpenRouterBaseURL, _build_messages
 from server.services.conversation import log as conv_log
+from server.services.conversation.summarization import summarizer as summarizer_mod
 from server.services.conversation.summarization import working_memory_log as wm_log
 from server.services.execution import get_agent_roster
 from server.services.execution import log_store as exec_logs
@@ -283,6 +284,7 @@ class Sandbox:
             patch.object(roster_mod, "_agent_roster", roster),
             patch.object(exec_logs, "_execution_agent_logs", exec_logs.ExecutionAgentLogStore(tmp / "execution_agents")),
             patch.object(ia_runtime, "request_chat_completion", self._llm),
+            patch.object(summarizer_mod, "request_chat_completion", self._llm),
             patch.object(ia_tools, "_EXECUTION_BATCH_MANAGER", self._manager),
             patch.object(roster_mod, "_now", self._clock.now),
             patch.object(settings, "conversation_summary_threshold", 0),
@@ -311,6 +313,16 @@ class Sandbox:
 
     def tick(self) -> None:
         self._clock.tick()
+
+    async def summarize(self) -> None:
+        """Compress the seeded history the way production does after 100 messages, then leave
+        summarisation on so the turn reads the summary plus the tail instead of the full log."""
+        settings = get_settings()
+        self._stack.enter_context(patch.object(settings, "conversation_summary_threshold", 100))
+        try:
+            await summarizer_mod.summarize_conversation()
+        except _RecordingMissing:
+            pass
 
     def take_turn(self) -> tuple[List[str], List[LLMCall]]:
         dispatched, calls = self._manager.dispatched, self._calls
@@ -380,6 +392,11 @@ async def run_case(case: Case, trial: int, mode: Mode, model: str) -> CaseRun:
     run = CaseRun(case=case, trial=trial, model=model)
     async with Sandbox(case, trial, mode, model) as sb:
         _seed_history(case)
+        if case.summarize:
+            await sb.summarize()
+            if sb.missing:
+                run.missing_recording = sb.missing
+                return run
         for message in case.turns:
             sb.tick()
             before = set(_roster_names())

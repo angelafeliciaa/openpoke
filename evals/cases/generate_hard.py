@@ -7,6 +7,8 @@
   sounds_new  an agent already owns the work but the request reads as brand new, with no history;
               creating another agent here is how rosters bloat
   relay       one question spans two agents; both must be checked and both answers told to the user
+  long        the agent's report is 100+ messages back, behind the conversation summary; the
+              follow-up must still find it
 
 Run:  python -m evals.cases.generate_hard   -> evals/cases/hard.jsonl
 """
@@ -139,6 +141,63 @@ RELAY = [
 ]
 
 
+# (target, what the user asked back then, what the agent reported, the follow-up much later)
+LONG = [
+    ("Vercel Job Offer", "ask vercel if they can bump the start date to november",
+     "Emailed the recruiter asking to push the start date to November. Waiting on a reply.", "any word back from vercel yet?"),
+    ("Email to Landlord", "tell the landlord the sink is still leaking",
+     "Sent. He says a plumber can come Tuesday.", "did the plumber thing with the landlord ever get sorted?"),
+    ("Flight to Tokyo", "find me a flight to tokyo on the 12th",
+     "Found ANA departing 11:40am for $840. Want me to book it?", "ok let's book that tokyo flight after all"),
+    ("Dentist Appointment", "book me a dentist cleaning",
+     "Booked Thursday 3pm at Bright Smile Dental.", "can we push my dentist appointment a week"),
+    ("Stripe Interview Prep", "i have a stripe onsite next week, help me prep",
+     "Put together a study plan covering system design and the payments API.", "send me that stripe study plan again"),
+    ("Car Insurance Renewal", "my car insurance is up for renewal, get me quotes",
+     "Geico $92/mo, Progressive $88/mo. You currently pay $105.", "go ahead and switch my car insurance to the cheaper one"),
+    ("Passport Renewal", "start my passport renewal",
+     "Filled out the DS-82. I need a new photo from you.", "i finally uploaded the passport photo, keep going"),
+    ("Hotel in Lisbon", "book a hotel in lisbon for the 3rd to the 6th",
+     "Booked Hotel Avenida, confirmation A1B2.", "does the lisbon hotel have parking?"),
+    ("Email to Professor Chen", "ask prof chen for a rec letter",
+     "Asked. She wants your CV first.", "send prof chen my cv for the letter"),
+    ("Gym Membership Cancel", "cancel my gym membership",
+     "They need written notice. I drafted one.", "ok send the gym the cancellation notice"),
+]
+
+# Small talk that names no agent's work, so the summariser has nothing to confuse it with.
+SMALL_TALK = [
+    ("whats the weather looking like", "Sunny and 72 this afternoon, light rain after 8pm."),
+    ("any good podcasts lately", "People keep recommending Acquired's Costco episode."),
+    ("how many ounces in a cup", "8 fluid ounces."),
+    ("tell me a fun fact", "Octopuses have three hearts."),
+    ("whats a good name for a grey cat", "Pebble, Ash, or Earl Grey."),
+    ("is it too late for coffee", "It's 4pm, so probably one more is fine."),
+    ("how do you say thank you in portuguese", "Obrigado, or obrigada if you're a woman."),
+    ("whats the capital of australia", "Canberra, not Sydney."),
+    ("im bored", "Go for a walk, the rain's stopped."),
+    ("how long do you boil an egg for jammy", "Six and a half minutes, then ice water."),
+    ("recommend a movie for tonight", "Past Lives if you want quiet, Heat if you don't."),
+    ("what year did the berlin wall fall", "1989."),
+    ("good morning", "Morning. Coffee first?"),
+    ("how far is a 10k in miles", "6.2 miles."),
+    ("whats the plural of octopus", "Octopuses. Octopi is common but not Greek."),
+    ("do you like jazz", "Kind of Blue is a safe yes."),
+    ("whats 15 percent of 84", "12.60."),
+    ("night", "Night. Sleep well."),
+]
+
+
+def _long_history(user_then: str, agent_name: str, agent_text: str, names: list[str]) -> list[dict[str, str]]:
+    """The scenario at the very start, then 108 lines of small talk, so the report is behind the summary."""
+    history = _with_ids(_hist(user_then, agent_name, agent_text), names)
+    for i in range(54):
+        user, reply = SMALL_TALK[i % len(SMALL_TALK)]
+        history.append({"role": "user", "text": user})
+        history.append({"role": "assistant", "text": reply})
+    return history
+
+
 def _reports(candidates: list[str]) -> list[dict[str, str]]:
     return [{"agent": c, "says": REPORTS[c][0], "must_relay": REPORTS[c][1]} for c in candidates]
 
@@ -233,6 +292,15 @@ def main() -> None:
                 "target": None, "candidates": candidates, "history": [], "message": message,
                 "reports": _reports(candidates),
                 "roster_size": size, "roster": roster_entries(_with_candidates(relay_rng, size, pool, candidates, exclude)),
+            })
+    long_rng = random.Random(20260930)
+    for i, (target, user_then, agent_text, follow_up) in enumerate(LONG, 1):
+        for size in SIZES:
+            names = build_roster(long_rng, size, pool, target, exclude=[])
+            lines.append({
+                "id": f"long-{i:02d}@{size}", "kind": "reuse", "family": "long", "summarize": True,
+                "target": target, "history": _long_history(user_then, target, agent_text, names), "message": follow_up,
+                "roster_size": size, "roster": roster_entries(names),
             })
     OUT.write_text("\n".join(json.dumps(l) for l in lines) + "\n")
     print(f"wrote {len(lines)} cases to {OUT}")

@@ -71,6 +71,9 @@ class Case:
     candidates: Tuple[str, ...] = ()
     read_only: bool = False
     reports: Tuple[Report, ...] = ()
+    summarize: bool = False
+    """Run OpenPoke's conversation summariser over the seeded history before the first turn, so
+    the turn sees a summary plus the last few lines, as a long-running chat would."""
 
     @property
     def roster_size(self) -> int:
@@ -120,6 +123,7 @@ class Case:
             candidates=candidates,
             read_only=read_only,
             reports=reports,
+            summarize=bool(raw.get("summarize")),
         )
         if case.roster_size != raw["roster_size"]:
             raise ValueError(f"{case.id}: roster has {case.roster_size} names, roster_size says {raw['roster_size']}")

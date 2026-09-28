@@ -135,8 +135,12 @@ def transcript(case: Case, model: str, trial: int, verdicts: Dict[str, str]) -> 
     }
     # asking passes only when the case is ambiguous; everywhere else it is friction (see graders.py)
     header["passed"] = header["verdict"] in _PASSING or (header["verdict"] == "asked_user" and case.kind == "ambiguous")
-    for entry in case.history:
-        _say(_ROLE[entry.role], entry.text)
+    shown = case.history if len(case.history) <= 8 else [*case.history[:3], None, *case.history[-2:]]
+    for entry in shown:
+        if entry is None:
+            _say("", f"... {len(case.history) - 5} more lines of small talk; the summariser ran over all of this ...")
+        else:
+            _say(_ROLE[entry.role], entry.text)
 
     recordings = [r for r in recordings_for(model, case.suite).records() if r["case"] == case.id and r["trial"] == trial]
     next_id = case.roster_size + 1

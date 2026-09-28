@@ -157,6 +157,8 @@ The evals live in `evals/`, and `evals/README.md` has the commands. The design c
   | drift (20) | turn 1 creates, turn 2 is a paraphrased follow-up | come back to turn 1's agent |
   | ambiguous (14) | two agents fit and nothing breaks the tie | see below |
   | sounds_new (20) | an agent owns the work but the request reads as new, no history | reuse, don't create |
+  | relay (20) | one question spans two agents; both answer with scripted reports | check both, tell the user both |
+  | long (20) | the agent's report is 108 lines back, behind the conversation summary | reuse it |
 - **How ambiguous cases pass.** Each one is marked as an action or a question:
   - an action ("tell alice i'm running late", "move the dentist appointment") must be asked
     about, since doing it to both or to the wrong one changes something real;
@@ -407,6 +409,29 @@ free and every verdict is a file in `evals/recordings/`.
   The cap and `wait` are the fix, not the rail.
 - **Cost of the rail in the evals:** one extra call per reply, 120 calls, $0.25 on Sonnet for the
   whole suite.
+
+### Memory compression: does a follow-up still find its agent after the summary? (tested)
+
+OpenPoke rewrites everything but the last 10 messages into a briefing once a chat passes 100
+messages. Routing leans on agent reports in the history carrying an id (`Email to Alice (a4)`),
+and a summariser is exactly the thing that drops small tokens like that. The `long` family
+seeds the scenario at the top of a 111-line history, runs the real summariser over it through
+the recorder (so it replays free), and asks the follow-up.
+
+- **20 of 20 pass on Sonnet 4, at 5 and 500 agents.** The prompt after summarisation is 2.2k
+  tokens, half the usual, because the briefing is shorter than the chat it replaced.
+- **The id survived, but not in a form we read.** The briefing said "Vercel job offer start date
+  change request (tracking ID: a5)". The conversation-mention check looks for `(a5)` or the agent's
+  name, so it counted as no mention. Every follow-up in this family names its topic ("any word
+  back from vercel yet?"), so the keyword match put the agent on the short list anyway.
+- **What is therefore still unmeasured:** a follow-up with no shared words after a summary
+  ("any word back yet?"). It would depend on the model reading "tracking ID: a5" from the
+  briefing. Widening the mention check to bare ids, or telling the summariser to keep reports
+  as `Name (id)`, is a one-line fix each; the case family to prove it is the same generator with
+  the topic word removed.
+- **The summariser noticed the filler.** Its notes said the small talk "suggests possible testing
+  or system validation". 18 exchanges repeated three times is not a real chat. It didn't change
+  the outcome, but real transcripts would be the better substrate here too.
 
 ### Filler that was the target's job under another name (fixed)
 
