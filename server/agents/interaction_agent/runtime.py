@@ -5,7 +5,8 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Set
 
 from .agent import build_system_prompt, prepare_message_with_history
-from .tools import ToolResult, get_tool_schemas, handle_tool_call
+from . import reply_rail
+from .tools import ToolResult, TurnContext, get_tool_schemas, handle_tool_call
 from ...config import get_settings
 from ...services.conversation import get_conversation_log, get_working_memory_log
 from ...openrouter_client import request_chat_completion
@@ -75,7 +76,9 @@ class InteractionAgentRuntime:
             )
 
             logger.info("Processing user message through interaction agent")
-            summary = await self._run_interaction_loop(system_prompt, messages)
+            summary = await self._run_interaction_loop(
+                system_prompt, messages, TurnContext(user_message, transcript_before)
+            )
 
             final_response = self._finalize_response(summary)
 
@@ -110,7 +113,9 @@ class InteractionAgentRuntime:
             )
 
             logger.info("Processing execution agent results")
-            summary = await self._run_interaction_loop(system_prompt, messages)
+            summary = await self._run_interaction_loop(
+                system_prompt, messages, TurnContext(agent_message, transcript_before, user_turn=False)
+            )
 
             final_response = self._finalize_response(summary)
 
@@ -136,6 +141,7 @@ class InteractionAgentRuntime:
         self,
         system_prompt: str,
         messages: List[Dict[str, Any]],
+        turn: Optional[TurnContext] = None,
     ) -> _LoopSummary:
         """Iteratively query the LLM until it issues a final response."""
 
@@ -163,15 +169,21 @@ class InteractionAgentRuntime:
             if not parsed_tool_calls:
                 break
 
+            if turn is not None:
+                turn.batch_ids = {
+                    tc.arguments.get("agent_id") for tc in parsed_tool_calls
+                    if tc.name == "send_message_to_agent" and isinstance(tc.arguments.get("agent_id"), str)
+                }
             for tool_call in parsed_tool_calls:
                 summary.tool_names.append(tool_call.name)
 
-                if tool_call.name == "send_message_to_agent":
-                    agent_name = tool_call.arguments.get("agent_name")
-                    if isinstance(agent_name, str) and agent_name:
-                        summary.execution_agents.add(agent_name)
+                if tool_call.name in ("send_message_to_agent", "create_agent"):
+                    agent_ref = tool_call.arguments.get("agent_id") or tool_call.arguments.get("name")
+                    if isinstance(agent_ref, str) and agent_ref:
+                        summary.execution_agents.add(agent_ref)
 
-                result = self._execute_tool(tool_call)
+                held = await self._hold_reply(tool_call, turn)
+                result = held or self._execute_tool(tool_call, turn)
 
                 if result.user_message:
                     summary.user_messages.append(result.user_message)
@@ -189,6 +201,32 @@ class InteractionAgentRuntime:
             logger.warning("Interaction loop exited without assistant content")
 
         return summary
+
+    async def _hold_reply(self, tool_call: _ToolCall, turn: Optional[TurnContext]) -> Optional[ToolResult]:
+        """Run the reply rail on a send_message_to_user before it is recorded or shown.
+
+        Returns a refusal for the model to rewrite from, or None to let the tool run. One rewrite
+        per turn; after that the reply goes through so a stubborn model cannot loop on the cap.
+        """
+        message = tool_call.arguments.get("message")
+        if tool_call.name != "send_message_to_user" or turn is None or not isinstance(message, str):
+            return None
+        reason = await reply_rail.check(message, self._complete, self.settings.reply_rail_model)
+        if reason is None:
+            return None
+        if turn.rail_trips >= 1:
+            logger.warning("Reply rail tripped again; letting the reply through", extra={"reason": reason})
+            return None
+        turn.rail_trips += 1
+        return ToolResult(
+            success=False,
+            payload={"error": f"Not sent: {reason}. Rewrite it in the user's terms (the people, bookings, "
+                     "threads and what you will do) and send it again."},
+        )
+
+    async def _complete(self, **kwargs: Any) -> Dict[str, Any]:
+        """A plain completion, no tools, through the same client as the main call."""
+        return await request_chat_completion(api_key=self.api_key, **kwargs)
 
     # Load conversation history, preferring summarized version if available
     def _load_conversation_transcript(self) -> str:
@@ -284,7 +322,7 @@ class InteractionAgentRuntime:
         return {}, f"unsupported argument type: {type(raw_arguments).__name__}"
 
     # Execute tool calls with error handling and logging, returning standardized results
-    def _execute_tool(self, tool_call: _ToolCall) -> ToolResult:
+    def _execute_tool(self, tool_call: _ToolCall, turn: Optional[TurnContext] = None) -> ToolResult:
         """Execute a tool call and convert low-level errors into structured results."""
 
         if "__invalid_arguments__" in tool_call.arguments:
@@ -294,7 +332,7 @@ class InteractionAgentRuntime:
 
         try:
             self._log_tool_invocation(tool_call, stage="start")
-            result = handle_tool_call(tool_call.name, tool_call.arguments)
+            result = handle_tool_call(tool_call.name, tool_call.arguments, turn)
         except Exception as exc:  # pragma: no cover - defensive
             logger.error(
                 "Tool execution crashed",

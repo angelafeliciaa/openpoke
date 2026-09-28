@@ -2,13 +2,38 @@
 
 import asyncio
 import json
-from dataclasses import dataclass
-from typing import Any, Optional
+from dataclasses import dataclass, field
+from typing import Any, Optional, Set
 
 from ...logging_config import logger
 from ...services.conversation import get_conversation_log
-from ...services.execution import get_agent_roster, get_execution_agent_logs
+from ...services.execution import get_agent_roster, get_execution_agent_logs, search
+from ...services.execution.roster import AgentRecord
 from ..execution_agent.batch_manager import ExecutionBatchManager
+from .ambiguity import close_alternatives
+
+SIMILAR_SHOWN = 3
+SEARCH_RESULTS = 5
+
+
+@dataclass
+class TurnContext:
+    """What was just said and what came before it, for the checks the tools run on a turn.
+
+    The ambiguity check runs on user turns only; an agent report names the agent it came from.
+    The reply rail runs on every turn. `batch_ids` are
+    the agents the model's current response dispatches to together, so a question that spans
+    two agents is not mistaken for a guess. `shown_ids` are the candidates a refusal already
+    handed back this turn: sending to any of them after that is the model's decision, not a guess.
+    """
+
+    latest_text: str
+    transcript: str
+    user_turn: bool = True
+    batch_ids: Set[str] = field(default_factory=set)
+    shown_ids: Set[str] = field(default_factory=set)
+    rail_trips: int = 0
+    """Replies the rail sent back for a rewrite this turn. One rewrite, then the reply goes through."""
 
 
 @dataclass
@@ -26,17 +51,59 @@ TOOL_SCHEMAS = [
         "type": "function",
         "function": {
             "name": "send_message_to_agent",
-            "description": "Deliver instructions to a specific execution agent. Creates a new agent if the name doesn't exist in the roster, or reuses an existing one.",
+            "description": "Send instructions to an existing execution agent. It keeps its history, so follow-ups on work it did (replying on the same thread, changing a booking, checking for an update) belong with it.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "agent_name": {
+                    "agent_id": {
                         "type": "string",
-                        "description": "Human-readable agent name describing its purpose (e.g., 'Vercel Job Offer', 'Email to Sharanjeet'). This name will be used to identify and potentially reuse the agent."
+                        "description": "The id of an agent listed in <active_agents>, e.g. 'a12'.",
                     },
                     "instructions": {"type": "string", "description": "Instructions for the agent to execute."},
                 },
-                "required": ["agent_name", "instructions"],
+                "required": ["agent_id", "instructions"],
+                "additionalProperties": False,
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "create_agent",
+            "description": "Start a new execution agent for work that no existing agent owns, and send it its first instructions. If existing agents look similar, nothing is created and they are returned instead; reuse one, or call again with confirm_new if the work is really different.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Short name for the work, e.g. 'Vercel Job Offer'. Must differ from every existing agent's name.",
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "One line on what this agent owns, specific enough to tell it apart from similar agents, e.g. 'Start-date negotiation with the Vercel recruiter'.",
+                    },
+                    "instructions": {"type": "string", "description": "Instructions for the agent to execute."},
+                    "confirm_new": {
+                        "type": "boolean",
+                        "description": "Set only after a previous create_agent call returned similar agents and none of them owns this work.",
+                    },
+                },
+                "required": ["name", "description", "instructions"],
+                "additionalProperties": False,
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_agents",
+            "description": "Find existing agents by topic when the one you need is not listed in <active_agents>. Searches every agent's name, description, and recent instructions.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "Words the agent's work would involve, e.g. 'lisbon hotel booking'."},
+                },
+                "required": ["query"],
                 "additionalProperties": False,
             },
         },
@@ -108,45 +175,110 @@ TOOL_SCHEMAS = [
 _EXECUTION_BATCH_MANAGER = ExecutionBatchManager()
 
 
-# Create or reuse execution agent and dispatch instructions asynchronously
-def send_message_to_agent(agent_name: str, instructions: str) -> ToolResult:
-    """Send instructions to an execution agent."""
+def send_message_to_agent(agent_id: str, instructions: str, turn: Optional[TurnContext] = None) -> ToolResult:
+    """Dispatch to an existing agent; an unknown id is an error, never a new agent.
+
+    On a user turn, a pick that another listed agent fits just as well is refused with both
+    handed back, so the model asks the user (or, for a question, checks each) instead of guessing.
+    """
     roster = get_agent_roster()
     roster.load()
-    existing_agents = set(roster.get_agents())
-    is_new = agent_name not in existing_agents
+    record = roster.get(agent_id)
+    if record is None:
+        return ToolResult(
+            success=False,
+            payload={"error": f"No agent has id {agent_id!r}. Use an id from <active_agents>, or create_agent for new work."},
+        )
+    if turn is not None and turn.user_turn and record.id not in turn.shown_ids:
+        others = close_alternatives(
+            roster.records(), record, turn.latest_text, turn.transcript, also_sent_to=turn.batch_ids - {record.id}
+        )
+        if others:
+            candidates = [record, *others]
+            turn.shown_ids.update(c.id for c in candidates)
+            return ToolResult(
+                success=False,
+                payload={
+                    "error": "Not sent: more than one agent fits this request equally and nothing in the "
+                    "conversation says which. If the user is asking a question, send it to each of them. "
+                    "If they want something done, ask them which one they mean, in their terms, never naming agents.",
+                    "candidates": [_summary(c) for c in candidates],
+                },
+            )
+    roster.touch(record.id)
+    return _dispatch(record, instructions, created=False)
 
-    if is_new:
-        roster.add_agent(agent_name)
 
-    get_execution_agent_logs().record_request(agent_name, instructions)
+def create_agent(name: str, description: str, instructions: str, confirm_new: bool = False) -> ToolResult:
+    """Register a new agent and dispatch its first instructions, unless existing agents look like the same work.
 
-    action = "Created" if is_new else "Reused"
-    logger.info(f"{action} agent: {agent_name}")
+    Search supplies the candidates and the model makes the call: a keyword match alone can't
+    tell "Hotel in Lisbon" owning a Lisbon stay from "Reminder 2" matching "table for 2".
+    """
+    roster = get_agent_roster()
+    roster.load()
+    existing = roster.find_by_name(name)
+    if existing is not None:
+        return ToolResult(
+            success=False,
+            payload={
+                "error": f"Agent {existing.id} is already named {existing.name!r}. "
+                "Message it with send_message_to_agent, or choose a name for different work."
+            },
+        )
+    if not confirm_new:
+        similar = search.top(
+            roster.records(), f"{name} {description} {instructions}", SIMILAR_SHOWN, search.recent_requests()
+        )
+        if similar:
+            return ToolResult(
+                success=False,
+                payload={
+                    "error": "Nothing created: these existing agents may already own this work. If one does, "
+                    "use send_message_to_agent with its id. If none does, call create_agent again with confirm_new: true.",
+                    "similar_agents": [_summary(r) for r in similar],
+                },
+            )
+    return _dispatch(roster.create(name, description), instructions, created=True)
 
-    async def _execute_async() -> None:
-        try:
-            result = await _EXECUTION_BATCH_MANAGER.execute_agent(agent_name, instructions)
-            status = "SUCCESS" if result.success else "FAILED"
-            logger.info(f"Agent '{agent_name}' completed: {status}")
-        except Exception as exc:  # pragma: no cover - defensive
-            logger.error(f"Agent '{agent_name}' failed: {str(exc)}")
 
+def search_agents(query: str) -> ToolResult:
+    """Every agent is searchable, including the ones <active_agents> leaves out."""
+    roster = get_agent_roster()
+    roster.load()
+    found = search.top(roster.records(), query, SEARCH_RESULTS, search.recent_requests())
+    if not found:
+        return ToolResult(success=True, payload={"agents": [], "note": "No agent matches; create_agent if this is new work."})
+    return ToolResult(success=True, payload={"agents": [_summary(r) for r in found]})
+
+
+def _summary(record: AgentRecord) -> dict:
+    return {"id": record.id, "name": record.name, "description": record.description}
+
+
+def _dispatch(record: AgentRecord, instructions: str, created: bool) -> ToolResult:
     try:
         loop = asyncio.get_running_loop()
     except RuntimeError:
         logger.error("No running event loop available for async execution")
         return ToolResult(success=False, payload={"error": "No event loop available"})
 
+    get_execution_agent_logs().record_request(record.name, instructions)
+    logger.info(f"{'Created' if created else 'Reused'} agent {record.id}: {record.name}")
+
+    async def _execute_async() -> None:
+        try:
+            result = await _EXECUTION_BATCH_MANAGER.execute_agent(record.name, instructions)
+            status = "SUCCESS" if result.success else "FAILED"
+            logger.info(f"Agent '{record.name}' completed: {status}")
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.error(f"Agent '{record.name}' failed: {str(exc)}")
+
     loop.create_task(_execute_async())
 
     return ToolResult(
         success=True,
-        payload={
-            "status": "submitted",
-            "agent_name": agent_name,
-            "new_agent_created": is_new,
-        },
+        payload={"status": "submitted", "agent_id": record.id, "agent_name": record.name, "new_agent_created": created},
     )
 
 
@@ -215,7 +347,7 @@ def get_tool_schemas():
 
 
 # Route tool calls to appropriate handlers with argument validation and error handling
-def handle_tool_call(name: str, arguments: Any) -> ToolResult:
+def handle_tool_call(name: str, arguments: Any, turn: Optional[TurnContext] = None) -> ToolResult:
     """Handle tool calls from interaction agent."""
     try:
         if isinstance(arguments, str):
@@ -226,7 +358,11 @@ def handle_tool_call(name: str, arguments: Any) -> ToolResult:
             return ToolResult(success=False, payload={"error": "Invalid arguments format"})
 
         if name == "send_message_to_agent":
-            return send_message_to_agent(**args)
+            return send_message_to_agent(**args, turn=turn)
+        if name == "create_agent":
+            return create_agent(**args)
+        if name == "search_agents":
+            return search_agents(**args)
         if name == "send_message_to_user":
             return send_message_to_user(**args)
         if name == "send_draft":

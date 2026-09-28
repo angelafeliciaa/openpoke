@@ -10,6 +10,13 @@ from typing import Dict, List, Optional
 
 from .runtime import ExecutionAgentRuntime, ExecutionResult
 from ...logging_config import logger
+from ...services.execution.roster import AgentRoster, get_agent_roster
+
+
+def _agent_label(roster: AgentRoster, agent_name: str) -> str:
+    """`Name (a12)`, so the interaction agent can route a follow-up to the agent that reported."""
+    record = roster.find_by_name(agent_name)
+    return f"{agent_name} ({record.id})" if record else agent_name
 
 
 @dataclass
@@ -170,11 +177,13 @@ class ExecutionBatchManager:
     def _format_batch_payload(self, results: List[ExecutionResult]) -> str:
         """Render execution results into the interaction-agent format."""
 
+        roster = get_agent_roster()
+        roster.load()
         entries: List[str] = []
         for result in results:
             status = "SUCCESS" if result.success else "FAILED"
             response_text = (result.response or "(no response provided)").strip()
-            entries.append(f"[{status}] {result.agent_name}: {response_text}")
+            entries.append(f"[{status}] {_agent_label(roster, result.agent_name)}: {response_text}")
         return "\n".join(entries)
 
     # Forward combined execution results to interaction agent for user response generation
