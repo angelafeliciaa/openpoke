@@ -12,20 +12,20 @@
    "by_kind": {
     "ambiguous": 0.7143,
     "drift": 0.2,
-    "relay": 0.8,
+    "relay": 0.4,
     "reuse": 0.5789
    },
    "names_per_request": 1.0,
    "dup_rate": 0.0,
-   "pass_all_trials": 0.5323,
+   "pass_all_trials": 0.5,
    "mean_prompt_tokens": 3158.7742,
-   "cost_usd": 0.0983,
+   "cost_usd": 0.1193,
    "failures": {
     "asked_user": 23,
+    "hit_tool_iteration_limit": 3,
     "asked_about_agents": 2,
     "no_delegation": 2,
-    "guessed_candidate": 1,
-    "hit_tool_iteration_limit": 1
+    "guessed_candidate": 1
    }
   },
   {
@@ -35,20 +35,20 @@
    "delegation_rate": 0.9839,
    "ask_rate": 0.4677,
    "by_kind": {
-    "ambiguous": 0.8571,
+    "ambiguous": 1.0,
     "drift": 0.2,
     "relay": 0.8,
     "reuse": 0.6154
    },
    "names_per_request": 1.0,
    "dup_rate": 0.0,
-   "pass_all_trials": 0.5806,
+   "pass_all_trials": 0.5968,
    "mean_prompt_tokens": 3237.5161,
-   "cost_usd": 0.0958,
+   "cost_usd": 0.1161,
    "failures": {
     "asked_user": 22,
-    "asked_about_agents": 2,
     "no_delegation": 1,
+    "asked_about_agents": 1,
     "hit_tool_iteration_limit": 1
    }
   }
@@ -65,7 +65,7 @@
   "amb-05@5#1": "relayed_every_report",
   "amb-05@500#1": "relayed_every_report",
   "amb-06@5#1": "asked_user",
-  "amb-06@500#1": "asked_about_agents",
+  "amb-06@500#1": "asked_user",
   "amb-07@5#1": "guessed_candidate",
   "amb-07@500#1": "asked_user",
   "drift-01@5#1": "reused_turn1_agent",
@@ -144,9 +144,9 @@
   "relay-02@500#1": "relayed_every_report",
   "relay-03@5#1": "hit_tool_iteration_limit",
   "relay-03@500#1": "hit_tool_iteration_limit",
-  "relay-04@5#1": "relayed_every_report",
+  "relay-04@5#1": "hit_tool_iteration_limit",
   "relay-04@500#1": "relayed_every_report",
-  "relay-05@5#1": "relayed_every_report",
+  "relay-05@5#1": "hit_tool_iteration_limit",
   "relay-05@500#1": "relayed_every_report",
   "trap-01@5#1": "asked_about_agents",
   "trap-01@500#1": "asked_user",

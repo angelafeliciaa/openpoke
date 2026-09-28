@@ -17,10 +17,9 @@
    "dup_rate": 0.0,
    "pass_all_trials": 0.5667,
    "mean_prompt_tokens": 3112.4333,
-   "cost_usd": 0.0359,
+   "cost_usd": 0.0426,
    "failures": {
-    "asked_user": 12,
-    "asked_about_agents": 1
+    "asked_user": 13
    }
   },
   {
@@ -37,7 +36,7 @@
    "dup_rate": 0.0,
    "pass_all_trials": 0.4667,
    "mean_prompt_tokens": 3154.7333,
-   "cost_usd": 0.0334,
+   "cost_usd": 0.0384,
    "failures": {
     "asked_user": 15,
     "no_delegation": 1
@@ -57,7 +56,7 @@
    "dup_rate": 0.0,
    "pass_all_trials": 0.4667,
    "mean_prompt_tokens": 3178.3667,
-   "cost_usd": 0.0369,
+   "cost_usd": 0.0404,
    "failures": {
     "asked_user": 15,
     "no_delegation": 1
@@ -104,7 +103,7 @@
   "create-13@5#1": "asked_user",
   "create-13@50#1": "asked_user",
   "create-13@500#1": "asked_user",
-  "create-14@5#1": "asked_about_agents",
+  "create-14@5#1": "asked_user",
   "create-14@50#1": "asked_user",
   "create-14@500#1": "asked_user",
   "create-15@5#1": "asked_user",

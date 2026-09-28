@@ -18,7 +18,7 @@ from typing import Callable, Dict, List, Optional, Tuple
 
 from evals.cases import SUITES, Case, load_cases
 from evals.graders import Verdict, grade
-from evals.harness import RECORDINGS_DIR, CaseRun, Mode, default_model, run_case
+from evals.harness import CaseRun, Mode, default_model, recordings_for, run_case
 from evals.report import json_safe, print_summary, summarize, to_row
 
 RESULTS_DIR = Path(__file__).parent / "results"
@@ -50,14 +50,10 @@ def baseline_path(model: str, suite: str) -> Path:
     return BASELINES_DIR / model / f"{suite}.json"
 
 
-def unused_recordings(model: str, suite: str, graded: List[Graded]) -> List[Path]:
-    """Recordings for this model and suite that no replayed case asked for: stale after a prompt change."""
-    case_ids = {c.id for c in load_cases(suite)}
-    used = {p for run, _ in graded for p in run.recordings}
-    return sorted(
-        p for p in (RECORDINGS_DIR / model).glob("*.json")
-        if p not in used and json.loads(p.read_text())["case"] in case_ids
-    )
+def unused_recordings(model: str, suite: str, graded: List[Graded]) -> List[str]:
+    """Recording keys for this model and suite that no replayed case asked for: stale after a prompt change."""
+    used = {k for run, _ in graded for k in run.recordings}
+    return sorted(k for k in recordings_for(model, suite).keys() if k not in used)
 
 
 def write_baseline(model: str, suite: str, trials: int, graded: List[Graded]) -> Path:
@@ -122,10 +118,8 @@ def main() -> None:
                          f"first: {unscored[:5]}")
     if args.update_baseline:
         print(f"\nbaseline: {write_baseline(args.model, args.cases, args.trials, graded)}")
-        stale = unused_recordings(args.model, args.cases, graded)
-        for path in stale:
-            path.unlink()
-        print(f"pruned {len(stale)} recordings no case uses")
+        used = {k for run, _ in graded for k in run.recordings}
+        print(f"pruned {recordings_for(args.model, args.cases).prune(used)} recordings no case uses")
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
 
 The sandbox points the roster and conversation logs at a temp dir, replaces the
 execution batch manager with a recorder (routing is under test, not execution),
-and serves LLM calls from `recordings/<model>/` so replays need no network.
+and serves LLM calls from `recordings/<model>/<suite>.jsonl` so replays need no network.
 """
 
 from __future__ import annotations
@@ -37,6 +37,62 @@ from server.services.execution import roster as roster_mod
 Mode = Literal["live", "replay"]
 
 RECORDINGS_DIR = Path(__file__).parent / "recordings"
+
+
+class Recordings:
+    """Every recorded LLM call for one model and suite, one JSON line each, keyed by request hash.
+
+    One file per model per suite keeps a suite's recordings browsable (lines are in run order,
+    each carries its case and trial) and keeps a re-record to a diff of lines, not of files.
+    """
+
+    def __init__(self, path: Path) -> None:
+        self.path = path
+        self._by_key: Optional[Dict[str, Dict[str, Any]]] = None
+
+    def _load(self) -> Dict[str, Dict[str, Any]]:
+        if self._by_key is None:
+            self._by_key = {}
+            if self.path.exists():
+                for line in self.path.read_text().splitlines():
+                    if line.strip():
+                        record = json.loads(line)
+                        self._by_key[record["key"]] = record
+        return self._by_key
+
+    def get(self, key: str) -> Optional[Dict[str, Any]]:
+        return self._load().get(key)
+
+    def put(self, record: Dict[str, Any]) -> None:
+        self._load()[record["key"]] = record
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        with self.path.open("a") as fh:
+            fh.write(json.dumps(record) + "\n")
+
+    def keys(self) -> List[str]:
+        return list(self._load())
+
+    def records(self) -> List[Dict[str, Any]]:
+        return list(self._load().values())
+
+    def prune(self, keep: set) -> int:
+        """Rewrite the file with only `keep`, in their existing order. Returns how many were dropped."""
+        kept = [r for r in self.records() if r["key"] in keep]
+        dropped = len(self._load()) - len(kept)
+        if dropped:
+            self._by_key = {r["key"]: r for r in kept}
+            self.path.write_text("".join(json.dumps(r) + "\n" for r in kept))
+        return dropped
+
+
+_open: Dict[Path, Recordings] = {}
+
+
+def recordings_for(model: str, suite: str) -> Recordings:
+    path = RECORDINGS_DIR / model / f"{suite}.jsonl"
+    if path not in _open:
+        _open[path] = Recordings(path)
+    return _open[path]
 MAX_TOKENS = 1024
 _TIMESTAMP = re.compile(r' timestamp=\\"[^"\\]*\\"')  # matches inside a json.dumps string
 # USD per million tokens (input, cached input, output). OpenAI responses carry no cost field.
@@ -103,7 +159,8 @@ class CaseRun:
     """The turn after every candidate reported back, when the case scripts reports. Its `response`
     is everything the user was told in that turn, not only the last message."""
     missing_recording: Optional[str] = None
-    recordings: List[Path] = field(default_factory=list)
+    recordings: List[str] = field(default_factory=list)
+    """Keys of every recording this run replayed or made."""
 
     @property
     def first_prompt_tokens(self) -> int:
@@ -210,9 +267,9 @@ class Sandbox:
         self.trial = trial
         self.mode = mode
         self.model = model
-        self.recordings = RECORDINGS_DIR / model
+        self.store = recordings_for(model, case.suite)
         self.missing: Optional[str] = None
-        self.used: List[Path] = []
+        self.used: List[str] = []
         self._manager = _RecordingBatchManager()
         self._clock = _Clock()
         self._wrapup_after_dispatch = not case.reports
@@ -285,19 +342,18 @@ class Sandbox:
         payload: Dict[str, Any] = {"model": self.model, "messages": _build_messages(messages, system)}
         if tools:
             payload["tools"] = tools
-        path = self.recordings / f"{_recording_key(payload, self.case.id, self.trial)}.json"
+        key = _recording_key(payload, self.case.id, self.trial)
 
-        if path.exists():
-            data = json.loads(path.read_text())["response"]
+        recorded = self.store.get(key)
+        if recorded is not None:
+            data = recorded["response"]
         elif self.mode == "live":
             data = await _live_call(payload)
-            path.parent.mkdir(parents=True, exist_ok=True)
-            record = {"case": self.case.id, "trial": self.trial, "request": payload, "response": data}
-            path.write_text(json.dumps(record, indent=1))
+            self.store.put({"key": key, "case": self.case.id, "trial": self.trial, "request": payload, "response": data})
         else:
-            self.missing = path.name
-            raise _RecordingMissing(f"{self.case.id} trial {self.trial}: no recording at {path}")
-        self.used.append(path)
+            self.missing = key
+            raise _RecordingMissing(f"{self.case.id} trial {self.trial}: no recording {key} in {self.store.path}")
+        self.used.append(key)
 
         usage = data.get("usage") or {}
         self._calls.append(

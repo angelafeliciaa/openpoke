@@ -17,7 +17,7 @@
    "dup_rate": 0.0,
    "pass_all_trials": 1.0,
    "mean_prompt_tokens": 4123.3333,
-   "cost_usd": 0.2175,
+   "cost_usd": 0.2518,
    "failures": {}
   },
   {
@@ -34,7 +34,7 @@
    "dup_rate": 0.0,
    "pass_all_trials": 1.0,
    "mean_prompt_tokens": 4171.9667,
-   "cost_usd": 0.2484,
+   "cost_usd": 0.2607,
    "failures": {}
   },
   {
@@ -51,7 +51,7 @@
    "dup_rate": 0.0,
    "pass_all_trials": 1.0,
    "mean_prompt_tokens": 4199.9667,
-   "cost_usd": 0.278,
+   "cost_usd": 0.3002,
    "failures": {}
   }
  ],
