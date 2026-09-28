@@ -1,8 +1,8 @@
 {
- "case": "amb-03@5",
+ "case": "amb-05@5",
  "trial": 1,
  "request": {
-  "model": "anthropic/claude-sonnet-4",
+  "model": "gpt-5-mini",
   "messages": [
    {
     "role": "system",
@@ -10,47 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a1\" name=\"Reminder 36\">Reminder #36 the user set.</agent>\n<agent id=\"a2\" name=\"Hotel in Paris\">Hotel booking in Paris.</agent>\n<agent id=\"a3\" name=\"Email to Chen\">Email thread with Chen.</agent>\n<agent id=\"a4\" name=\"Pinterest Interview Prep\">Preparing for Pinterest interviews.</agent>\n<agent id=\"a5\" name=\"Hotel in Paris for Mom\">Hotel booking in Paris for Mom.</agent>\n</active_agents>\n\n<new_user_message>\ndoes the paris hotel have late checkout?\n</new_user_message>"
-   },
-   {
-    "role": "assistant",
-    "content": "",
-    "tool_calls": [
-     {
-      "type": "function",
-      "index": 0,
-      "id": "toolu_bdrk_01TgX3fjHEmPW7cHBYktU6Ws",
-      "function": {
-       "name": "send_message_to_user",
-       "arguments": "{\"message\": \"let me check on the late checkout policy for your paris hotel\"}"
-      }
-     }
-    ]
-   },
-   {
-    "role": "tool",
-    "tool_call_id": "toolu_bdrk_01TgX3fjHEmPW7cHBYktU6Ws",
-    "content": "{\"tool\": \"send_message_to_user\", \"status\": \"success\", \"arguments\": {\"message\": \"let me check on the late checkout policy for your paris hotel\"}, \"result\": {\"status\": \"delivered\"}}"
-   },
-   {
-    "role": "assistant",
-    "content": "",
-    "tool_calls": [
-     {
-      "type": "function",
-      "index": 0,
-      "id": "toolu_bdrk_01G1tJ75Rf3dz7E1E2WLgBJq",
-      "function": {
-       "name": "send_message_to_agent",
-       "arguments": "{\"agent_id\": \"a2\", \"instructions\": \"Check if the Paris hotel has late checkout options available and what the policy is\"}"
-      }
-     }
-    ]
-   },
-   {
-    "role": "tool",
-    "tool_call_id": "toolu_bdrk_01G1tJ75Rf3dz7E1E2WLgBJq",
-    "content": "{\"tool\": \"send_message_to_agent\", \"status\": \"success\", \"arguments\": {\"agent_id\": \"a2\", \"instructions\": \"Check if the Paris hotel has late checkout options available and what the policy is\"}, \"result\": {\"status\": \"submitted\", \"agent_id\": \"a2\", \"agent_name\": \"Hotel in Paris\", \"new_agent_created\": false}}"
+    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 23:31:30\">whats the status on mom's birthday thing</user_message>\n<poke_reply timestamp=\"2026-09-27 23:31:30\">Got it \u2014 I\u2019ll pull status updates from the team handling Mom\u2019s birthday dinner and the gift now and report back in a moment.</poke_reply>\n<wait timestamp=\"2026-09-27 23:31:49\">Avoid duplicating same update \u2014 already asked agents for status and will report back when they reply.</wait>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a1\" name=\"Lunch with Sam\">Scheduling lunch with Sam.</agent>\n<agent id=\"a2\" name=\"Birthday Dinner for Mom\">Planning Mom's birthday dinner.</agent>\n<agent id=\"a3\" name=\"Birthday Gift for Mom\">Choosing and ordering a birthday gift for Mom.</agent>\n<agent id=\"a4\" name=\"Databricks Recruiter Follow-up\">Following up with the Databricks recruiter.</agent>\n<agent id=\"a5\" name=\"Water Heater Repair\">Water Heater Repair.</agent>\n</active_agents>\n\n<new_agent_message>\n[SUCCESS] Birthday Gift for Mom (a3): The Le Creuset set ships Tuesday.\n[SUCCESS] Birthday Dinner for Mom (a2): Table for 6 at Osteria Mozza booked for 7:30pm.\n</new_agent_message>"
    }
   ],
   "tools": [
@@ -206,46 +166,66 @@
   ]
  },
  "response": {
-  "id": "gen-1790575564-hSGdqPDIL4K7LLtLHji5",
+  "id": "gen-1790577111-0Cgi3BYK9ae5vKWGmzNt",
   "object": "chat.completion",
-  "created": 1790575564,
-  "model": "anthropic/claude-sonnet-4",
-  "provider": "Amazon Bedrock",
+  "created": 1790577111,
+  "model": "openai/gpt-5-mini",
+  "provider": "OpenAI",
   "system_fingerprint": null,
-  "service_tier": null,
+  "service_tier": "default",
   "choices": [
    {
     "index": 0,
     "logprobs": null,
-    "finish_reason": "stop",
-    "native_finish_reason": "end_turn",
+    "finish_reason": "tool_calls",
+    "native_finish_reason": "completed",
     "message": {
      "role": "assistant",
      "content": null,
      "refusal": null,
-     "reasoning": null
+     "reasoning": null,
+     "tool_calls": [
+      {
+       "type": "function",
+       "index": 0,
+       "id": "call_TIRDwW5x5LUtVhSGFwSfrudI",
+       "function": {
+        "name": "send_message_to_user",
+        "arguments": "{\"message\":\"Update: gift \u2014 the Le Creuset set ships Tuesday. Dinner \u2014 table for 6 at Osteria Mozza booked for 7:30 PM. Want me to track the shipment, add a reminder, or make any changes to the reservation or gift?\"}"
+       }
+      }
+     ],
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqugncBANRImzHeLdYmNA_nZKa-v0f_D3HW_ABzgEd8p_Xy_WcEMKqOLxjqFf8_5BUnqM1162SACIvJI7ndaOTV8gvl9V4SX3ejC07tN6NVRr5ka9ZejOEZby7CVNpGcY9FBp-2-oH55EIfSS1RUGUdGkS01je-S7TjSmFir2w3TfrXvTARIlhUye3g1VHfP7oOh2z1p5EJBHX-E2B5R_qIQMXM_6YDH3pWuygfFLMtZaWcuQEIfCspE72_bh2pwrQ3N5HboTRiebS0Wsc-weR9Dic9c8E0IXuDyprQ6RxR4FL9Tyqub8CpcywJuXKJTGQ4A4PMp7tEVS3yiNtZhM1g5N9NnXqgSSS6jn4K8JfKhaAGNVp8C1U48p7mBDNPYlcXSK95BdEyxrkoUSuJ8lZUb0-wtqvsBRiEi74XMtAh6kGbMoPWe5Rg4df7dBVZUMr-v25SVwa1HDH37xffHBC4G-9Est-kvKPJDuE1subK4wPu_6T2P8bX9nVudd1YW1Q4EbPtzq3q099ayCSh8gAWF_DWv9ZIu5jasVETi9uy3irdI5S1L0bQLIUV0yiBzSNSoVKUUavSGdmmOJNIXHTJn3l6n2N66mKK0NW68ACP3zY4EhKgnHHhsbDtPLCF0Mwb40BnB__vkX3ikcV-ISzsRyh_G0scDEKvPcCsKB67Vr81o7XGTFZccFdqw_hfAuPkqdIKE_-vz6TwN-sA4k2hRWd-9OyFaOd3anhnKwkQwX3p9FwUgC-l0ddgxzQ7cHY4eJ4o7HZrk1_eElhDYP1Ib4weaUzUewV96tYYWLbyJUXQy6vF51Orr8SgAKAdFWfZ0tkCZuYLcABVxTWoWsANxBpZvEQpNxZzLwz4QIbCp3M-xlr2AuGX6TGmGrLsECtefa7WXEsqRBPBRZh-u-5OLKDuo7jz7pVdHWLd3NqPfQxBFFO68jrJgllc4XGH95jyvqRg-7_pd0RoWV0SQUXefXxv_FNxPl_boQyqFVWQTUsu6yxkoTeBxuxEa9dwUiqgoHKGGmFo_EoAgR9EFC-HazqJpuiU6XwPluo1r7dOb35Jchrao7Tu8j8w1QLjGZ_lf71i3VnVBHUlFOgSKqmWPyU-sXvmzJpEfxd6CyTqe2nbEX41JiqXKzAKFJYN2Ja2MCz1kyK-FQjK2EaEjpnH9OXUUZ1u4OaLQjR4H1AwVL-1Pq7T6XaOUgrp1ysSKn3xNKcU8ukzx3Pc02AG7kTtQ-swA32zWJkdtQMdSkotZ2w8U3yot-cUurvhB5AAP9HZmjspscGTb3SzOAM7av0-QAUTRT_nWaoy-A22yrTDUU8VEaZSW_PTOdxcIDW2G8dywFRVRbSaOHXn4tuqgwH7SYOpkk7s7IWW8h8Cs3XuTLxDJDAGak28rkbtCVPbyVQSVwql839cRfX1d3c7frEL985B841F6MGeKWKyvOKv_iPFFogg68eKRbK40j0fY5DKjtKFMt71zlbQeADCE5W8DzF75wdWlhClzgKuJxU8ippRT28MZf41kR-_yid2xREywhgU8YRNHv9hClWsNPo8QTd6JY0CC4CnWrkVeg4Q5CO2ePDgJXyXMfbXJREqW03LD-oTA6a5RvrIAaAu4UoKpIJqdA4S6JRwrhspASLuBitbNeRHD7mHHCgUEtDXogSKYq7oYi0r0-kh5GY0ZWKnwTsLrl6xU0r2daApmR3rKLyCmliSGYKogtUSGfF_zDQQ0jHT19Bd1nYqmPkwEc2MclKXzg9U5-bBSryqk4qdwmlj2NYEOVz9Y2WmTLyNGBo747tZGXUkEjKN4z5y4LDIo9IOqnX02-3PV22j9n5IGM0Fd8GLMutZ8WG_fi8BfhByKBZHS_3A11l5L7LGZeLzAA3e40KbSKvsl1b8y14lqKliDHyuxlkFUc02JgpD0DUN613DKuZkWdV99vAPnlM3a0R-nD1gjce6m6VvrEKFneAJnTODw8gA-WOIzrJ51OgmhYnH0s6KMYxTxWMA7HwaY5sG9RTLtbdxeoozUGEVLXApJrcPJmADcYt2V1xhOYHNu5Iy3Moepklv2orge7jv2Pw_eAsQ0BucM6q6EWSfDAK2INUzd1AXjXljZ60P4NQn2s4I3Be0KdjdV7a9B-RA9vcUCQr6AE-JLrnhacC-arAlIVZYz4mj7fnMd7ISM5031s-Vgfwhap8xAdpIYaEQQ_o4K72xpo9EKT5xjCvoHv2KwIUb2HUnj934arAxToHCuDk74x46_QXYGkd7V7V_hoeQdcKUJ9L9iLjqdadNKCvii28T0TaZibMkZB1t4Jwg3WkLYVEAWOCbSTueV_oY99b2Uh5dRzDUkFXeJvIj6e9RiqVMK-Q7V-b_3OzS7eoph-q3yjEujHPf8rmDdBLdmuHy7xQbs-IwqoMjCzBN3xt-TRndsds0Mln6Uyekgf1Q8gaYl09IsGEr07jV9qLA8VAPoNyedcKMDPjkUSqteta5dGD06hvXT2ok_3YR6Zk0I1o7K4nH2ejDJnC7YxayG41yBU_E3_cs9dC96PmL5MPzpj4i1J8RlBQDgUfTp9yqDizzb373nAAKjmVEt85__utJNOHcSGYuIxR7B-RMQDM-qwdQrhgubEpmS6QJGPBBidqYMWQynOVvr0CJ-QEGKGsEKlLFIc7EWzEBtPwU-I-8H8=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC01LW1pbmktMjAyNS0wOC0wN3xvcGVuYWkifQ",
+       "format": "openai-responses-v1",
+       "id": "rs_04d6870df53b89f3016aba09d8cb9887d1ac50a4438edd2d74",
+       "index": 0
+      }
+     ]
     }
    }
   ],
   "usage": {
-   "prompt_tokens": 4430,
-   "completion_tokens": 2,
-   "total_tokens": 4432,
-   "cost": 0.00327645,
+   "prompt_tokens": 3270,
+   "completion_tokens": 278,
+   "total_tokens": 3548,
+   "cost": 0.0007975,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 3804,
-    "cache_write_tokens": 303,
+    "cached_tokens": 2560,
+    "cache_write_tokens": 0,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.00327645,
-    "upstream_inference_prompt_cost": 0.00324645,
-    "upstream_inference_completions_cost": 3e-05
+    "upstream_inference_cost": 0.0007975,
+    "upstream_inference_prompt_cost": 0.0002415,
+    "upstream_inference_completions_cost": 0.000556
    },
    "completion_tokens_details": {
-    "reasoning_tokens": 0,
+    "reasoning_tokens": 192,
     "image_tokens": 0,
     "audio_tokens": 0
    }

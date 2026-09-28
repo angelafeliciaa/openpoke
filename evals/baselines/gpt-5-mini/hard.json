@@ -19,7 +19,7 @@
    "dup_rate": 0.0,
    "pass_all_trials": 0.5323,
    "mean_prompt_tokens": 3158.7742,
-   "cost_usd": 0.0973,
+   "cost_usd": 0.0983,
    "failures": {
     "asked_user": 23,
     "asked_about_agents": 2,
@@ -44,7 +44,7 @@
    "dup_rate": 0.0,
    "pass_all_trials": 0.5806,
    "mean_prompt_tokens": 3237.5161,
-   "cost_usd": 0.0949,
+   "cost_usd": 0.0958,
    "failures": {
     "asked_user": 22,
     "asked_about_agents": 2,

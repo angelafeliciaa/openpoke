@@ -10,7 +10,121 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 23:07:07\">whats the status on mom's birthday thing</user_message>\n<poke_reply timestamp=\"2026-09-27 23:07:07\">I'll check both the gift and dinner plans for Mom and get status updates now.</poke_reply>\n<wait timestamp=\"2026-09-27 23:07:11\">Awaiting agent updates; avoid duplicating status messages.</wait>\n<poke_reply timestamp=\"2026-09-27 23:07:15\">Quick update: I\u2019ve asked the teams handling Mom\u2019s gift and the dinner for status. I\u2019m waiting on their replies now and will summarize what\u2019s been shortlisted, what (if anything) is ordered, delivery ETAs, venue/reservation details, and next steps as soon as they report back. Want me to prioritize speeding up the gift order or lock the dinner reservation first?</poke_reply>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a82\" name=\"Reminder 9\">Reminder #9 the user set.</agent>\n<agent id=\"a83\" name=\"Reminder 1\">Reminder #1 the user set.</agent>\n<agent id=\"a168\" name=\"Reminder 7\">Reminder #7 the user set.</agent>\n<agent id=\"a203\" name=\"Reminder 3\">Reminder #3 the user set.</agent>\n<agent id=\"a263\" name=\"Birthday Gift for Mom\">Choosing and ordering a birthday gift for Mom.</agent>\n<agent id=\"a306\" name=\"Reminder 2\">Reminder #2 the user set.</agent>\n<agent id=\"a381\" name=\"Birthday Dinner for Mom\">Planning Mom's birthday dinner.</agent>\n<agent id=\"a391\" name=\"Reminder 5\">Reminder #5 the user set.</agent>\n<agent id=\"a498\" name=\"Flight to Rome\">Finding and booking a flight to Rome.</agent>\n<agent id=\"a499\" name=\"Plaid Recruiter Follow-up\">Following up with the Plaid recruiter.</agent>\n<agent id=\"a500\" name=\"Email to Tara\">Email thread with Tara.</agent>\n(489 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_agent_message>\n[SUCCESS] Birthday Gift for Mom (a263): The Le Creuset set ships Tuesday.\n[SUCCESS] Birthday Dinner for Mom (a381): Table for 6 at Osteria Mozza booked for 7:30pm.\n</new_agent_message>"
+    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a263\" name=\"Birthday Gift for Mom\">Choosing and ordering a birthday gift for Mom.</agent>\n<agent id=\"a381\" name=\"Birthday Dinner for Mom\">Planning Mom's birthday dinner.</agent>\n<agent id=\"a496\" name=\"Wine Club Cancel\">Wine Club Cancel.</agent>\n<agent id=\"a497\" name=\"Call Emma Back\">Returning Emma's call.</agent>\n<agent id=\"a498\" name=\"Flight to Rome\">Finding and booking a flight to Rome.</agent>\n<agent id=\"a499\" name=\"Plaid Recruiter Follow-up\">Following up with the Plaid recruiter.</agent>\n<agent id=\"a500\" name=\"Email to Tara\">Email thread with Tara.</agent>\n(493 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\nwhats the status on mom's birthday thing\n</new_user_message>"
+   },
+   {
+    "role": "assistant",
+    "content": "",
+    "tool_calls": [
+     {
+      "type": "function",
+      "index": 0,
+      "id": "call_MSpkPI1E7mJ2Nzl7HKtOb5P2",
+      "function": {
+       "name": "send_message_to_user",
+       "arguments": "{\"message\":\"I'll check both the gift and dinner plans for Mom and get status updates now.\"}"
+      }
+     }
+    ]
+   },
+   {
+    "role": "tool",
+    "tool_call_id": "call_MSpkPI1E7mJ2Nzl7HKtOb5P2",
+    "content": "{\"tool\": \"send_message_to_user\", \"status\": \"success\", \"arguments\": {\"message\": \"I'll check both the gift and dinner plans for Mom and get status updates now.\"}, \"result\": {\"status\": \"delivered\"}}"
+   },
+   {
+    "role": "assistant",
+    "content": "",
+    "tool_calls": [
+     {
+      "type": "function",
+      "index": 0,
+      "id": "call_VIN6hwBApqlrrdEJ6JP1x7l4",
+      "function": {
+       "name": "send_message_to_agent",
+       "arguments": "{\"agent_id\":\"a263\",\"instructions\":\"Provide a concise status update on choosing and ordering a birthday gift for Mom: what options were shortlisted, what's been ordered (if anything), delivery ETA, any decisions pending, and next steps we should take.\"}"
+      }
+     }
+    ]
+   },
+   {
+    "role": "tool",
+    "tool_call_id": "call_VIN6hwBApqlrrdEJ6JP1x7l4",
+    "content": "{\"tool\": \"send_message_to_agent\", \"status\": \"error\", \"arguments\": {\"agent_id\": \"a263\", \"instructions\": \"Provide a concise status update on choosing and ordering a birthday gift for Mom: what options were shortlisted, what's been ordered (if anything), delivery ETA, any decisions pending, and next steps we should take.\"}, \"error\": {\"error\": \"Not sent: more than one agent fits this request equally and nothing in the conversation says which. If the user is asking a question, send it to each of them. If they want something done, ask them which one they mean, in their terms, never naming agents.\", \"candidates\": [{\"id\": \"a263\", \"name\": \"Birthday Gift for Mom\", \"description\": \"Choosing and ordering a birthday gift for Mom.\"}, {\"id\": \"a381\", \"name\": \"Birthday Dinner for Mom\", \"description\": \"Planning Mom's birthday dinner.\"}]}}"
+   },
+   {
+    "role": "assistant",
+    "content": "",
+    "tool_calls": [
+     {
+      "type": "function",
+      "index": 0,
+      "id": "call_MRULnH0wVbOItI1ZeE0CpDbf",
+      "function": {
+       "name": "send_message_to_agent",
+       "arguments": "{\"agent_id\":\"a263\",\"instructions\":\"Provide a concise status update on choosing and ordering a birthday gift for Mom: what options were shortlisted, what's been ordered (if anything), delivery ETA, any decisions pending, and next steps we should take.\"}"
+      }
+     },
+     {
+      "type": "function",
+      "index": 1,
+      "id": "call_y5fizkdRcL47d1p4hjmTUEhP",
+      "function": {
+       "name": "send_message_to_agent",
+       "arguments": "{\"agent_id\":\"a381\",\"instructions\":\"Provide a concise status update on planning Mom's birthday dinner: chosen venue or at-home plan, reservations made (time/date), guest list status, menu decisions, any outstanding items, and next steps.\"}"
+      }
+     }
+    ]
+   },
+   {
+    "role": "tool",
+    "tool_call_id": "call_MRULnH0wVbOItI1ZeE0CpDbf",
+    "content": "{\"tool\": \"send_message_to_agent\", \"status\": \"success\", \"arguments\": {\"agent_id\": \"a263\", \"instructions\": \"Provide a concise status update on choosing and ordering a birthday gift for Mom: what options were shortlisted, what's been ordered (if anything), delivery ETA, any decisions pending, and next steps we should take.\"}, \"result\": {\"status\": \"submitted\", \"agent_id\": \"a263\", \"agent_name\": \"Birthday Gift for Mom\", \"new_agent_created\": false}}"
+   },
+   {
+    "role": "tool",
+    "tool_call_id": "call_y5fizkdRcL47d1p4hjmTUEhP",
+    "content": "{\"tool\": \"send_message_to_agent\", \"status\": \"success\", \"arguments\": {\"agent_id\": \"a381\", \"instructions\": \"Provide a concise status update on planning Mom's birthday dinner: chosen venue or at-home plan, reservations made (time/date), guest list status, menu decisions, any outstanding items, and next steps.\"}, \"result\": {\"status\": \"submitted\", \"agent_id\": \"a381\", \"agent_name\": \"Birthday Dinner for Mom\", \"new_agent_created\": false}}"
+   },
+   {
+    "role": "assistant",
+    "content": "",
+    "tool_calls": [
+     {
+      "type": "function",
+      "index": 0,
+      "id": "call_yg04mijmo3wxk2BZj5x4xqI1",
+      "function": {
+       "name": "wait",
+       "arguments": "{\"reason\":\"Avoid duplicating status update if agents already reported recently\"}"
+      }
+     }
+    ]
+   },
+   {
+    "role": "tool",
+    "tool_call_id": "call_yg04mijmo3wxk2BZj5x4xqI1",
+    "content": "{\"tool\": \"wait\", \"status\": \"success\", \"arguments\": {\"reason\": \"Avoid duplicating status update if agents already reported recently\"}, \"result\": {\"status\": \"waiting\", \"reason\": \"Avoid duplicating status update if agents already reported recently\"}}"
+   },
+   {
+    "role": "assistant",
+    "content": "",
+    "tool_calls": [
+     {
+      "type": "function",
+      "index": 0,
+      "id": "call_ltm0mgwOMarLTQsrAtG3WIyX",
+      "function": {
+       "name": "send_message_to_user",
+       "arguments": "{\"message\":\"Checking gift and dinner plans now \u2014 I asked the teams handling both and will summarize their status in a sec.\"}"
+      }
+     }
+    ]
+   },
+   {
+    "role": "tool",
+    "tool_call_id": "call_ltm0mgwOMarLTQsrAtG3WIyX",
+    "content": "{\"tool\": \"send_message_to_user\", \"status\": \"success\", \"arguments\": {\"message\": \"Checking gift and dinner plans now \\u2014 I asked the teams handling both and will summarize their status in a sec.\"}, \"result\": {\"status\": \"delivered\"}}"
    }
   ],
   "tools": [
@@ -166,9 +280,9 @@
   ]
  },
  "response": {
-  "id": "gen-1790575637-9gneQUO622v2fXRUFWq3",
+  "id": "gen-1790577131-IkB2AjcwkXlmFtDJXOEP",
   "object": "chat.completion",
-  "created": 1790575637,
+  "created": 1790577131,
   "model": "openai/gpt-5-mini",
   "provider": "OpenAI",
   "system_fingerprint": null,
@@ -177,36 +291,25 @@
    {
     "index": 0,
     "logprobs": null,
-    "finish_reason": "tool_calls",
+    "finish_reason": "stop",
     "native_finish_reason": "completed",
     "message": {
      "role": "assistant",
-     "content": null,
+     "content": "Got it \u2014 I\u2019ve pinged the teams handling the gift and the dinner. Do you want me to:\n\n- pick and order a gift now (and set a budget), or\n- focus on locking the dinner reservation first (preferred restaurant/time)?\n\nAlso tell me a budget for the gift if you want me to order it. I\u2019ll report back with the agents\u2019 status in ~5 minutes.",
      "refusal": null,
-     "reasoning": "**Summarizing user updates**\n\nFirst, I need to summarize the agent updates for the user. I should start by sending the message via the function, as per the instructions. I'll keep it warm and friendly, mentioning gift ships on Tuesday and a dinner reservation for six at Osteria Mozza at 7:30 PM. I\u2019ll also check if they want expedited shipping, a note, tracking, or to confirm the guest list. Finally, I\u2019ll keep everything concise and to the point!",
-     "tool_calls": [
-      {
-       "type": "function",
-       "index": 0,
-       "id": "call_YbYXDmvXpwFo4uZrEEfMRKtG",
-       "function": {
-        "name": "send_message_to_user",
-        "arguments": "{\"message\":\"Update: gift and dinner sorted. The Le Creuset set ships Tuesday. Dinner reservation confirmed for 6 people at Osteria Mozza, 7:30 PM. Want me to: 1) speed up the gift shipping or add a gift note/wrapping? 2) confirm the guest list or request any dietary notes with the restaurant? Tell me which to prioritize.\"}"
-       }
-      }
-     ],
+     "reasoning": "**Waiting for agent updates**\n\nI've called the agents, and now I just need to wait for their replies. The system indicates that if a new agent message comes in, I should treat it accordingly. Since I haven't heard back yet, I'll inform the user that I'll report when I receive updates. I want to ask if they have any changes or preferences, whether to prioritize a gift or dinner, and if they'd like me to handle the gift order or finalize dinner reservations. I'll estimate a 5-minute wait for updates.",
      "reasoning_details": [
       {
        "type": "reasoning.summary",
-       "summary": "**Summarizing user updates**\n\nFirst, I need to summarize the agent updates for the user. I should start by sending the message via the function, as per the instructions. I'll keep it warm and friendly, mentioning gift ships on Tuesday and a dinner reservation for six at Osteria Mozza at 7:30 PM. I\u2019ll also check if they want expedited shipping, a note, tracking, or to confirm the guest list. Finally, I\u2019ll keep everything concise and to the point!",
+       "summary": "**Waiting for agent updates**\n\nI've called the agents, and now I just need to wait for their replies. The system indicates that if a new agent message comes in, I should treat it accordingly. Since I haven't heard back yet, I'll inform the user that I'll report when I receive updates. I want to ask if they have any changes or preferences, whether to prioritize a gift or dinner, and if they'd like me to handle the gift order or finalize dinner reservations. I'll estimate a 5-minute wait for updates.",
        "format": "openai-responses-v1",
        "index": 0
       },
       {
        "type": "reasoning.encrypted",
-       "data": "gAAAAABqugQZup4j9iz_HxAPS4YBIYWYBKx3J96VLGSG4uKZFhpc7SSa8My1dKCk72K9uIhbsu7uykheKF-9Y_w8YRs-PV43ogSZ54JaRYI16VsacWZnJrYE16X1W3kAfaisYhiV7HZJDbuyx3rdS40z2g9G3JCGefOL61AP8V0xm-fEGcKL-5HDIHQifTkdxhPromONQGMIjH8NibvRxSxGsW4Sms5kJphZ7P7RO3l6fYOQD7_cee9i75wGV2Wehein2gpaAnlYfwrVyPNmiXy1l49K1Yyp1U8Yllbb-JL5kToKuL5xkc_v-cRiKXAah0bt6wKJliuofUBO13ONb3TG7GfzBY6ku8r6FbwRVb-DwK4KkFwBfdBngSl70DRc5yhSoo8jcONizbEkNuS-vs4fWA58G_Jjs7pEmHVtd2nt6vDeNJvXuvjHCQ5l389lcqLfrZ_tClaQHDbRww6cjF_Xmh86FmgkojAjdGvw_4TVH_D7LPzpRI10dgfsVdJe5zeKxcmzNbuHc3GHlGo-pEjruiqn_DqysQZLokWkdXor1NNFKKOwndYcaoVbdyMKDxutfF4FY8DwT3kLUTGlv4xtilJRZnA18ziOdtcdsEAemKOiwWa366X0Mbyn03v8zTuQQrxy4VJ8Hts0IvM52Y5KIFhAmm0EZXvXthXjXiL3Ys-klhbLa4BdQqpr_JNt51kgUPSMaYYIAKXrQNyqxzIkrIfWaMpokS8OU30utesRCZBfVmxCsjpWxKI5CMohn8ckeh2tbjVX6g3piT4Wb67GEDe1Xpr4I9r2cn7-7liI_vKUWTcXxGLVm7BdotqDT2j9Z6lxqmu6G8FTJ3B8Y3gOXtjYFZIN3AwfCy4GYjWqpZGwWy3ED-Gj0xCjblUPZu1afJsoWAeP8WSE9gzCMrFj-67pplWaHVpxqyywDst_28OoCuc9eCI3u1bYxWi2aokWXe6upvrYTDHlVywMpQ6vzEzaPtUmcXq4MVYdg9s6nErqU3HTrf152GDEd4WgxwzV_VPqMSVbaSKbVuLmR86dLC_ql34Hy2ItTG-0h7ONnvwdAWxJ94K2I8YwEXRgPvKt74qfa1qw8C5WSGbNQ0EBj4bXmFz1eOOnWujXGxdpUTolaaSoiCXEWsnZIrX2eX3mq_gEGt0tDd1ATyh_68ZGKkObKU3PHw5ldGqbL5ukRaRVl47qmOoYHprJ97xsdH2FAnL-ZBvU_RWWRgbSnVAzlM13fytANr2ez8EJKiie4umNWKp0A7eiq_8V_uWkEVm4klo-DFWMLcAJN050-VyVPu_2jd5u3AoGvUEqUuSlfCywbkSapUE4NpA5DvlltlYER4-Zsj4wLszDlsrmsm7o6O2OuPibpm5wfrj658W9uC6RJEnZEnjH3jzezWClb1DAMMiSM3g_VpaUBRzp3CUOv4lEdrmxdq6ZrDMfIdByEylcVjTwedLucT1_7RaWs_vPSo4CfYI7mYdMeTxpvuutR7hTcrJDoyDYlT1OlNTZFYB-S5KDm6r4NzF4HRMp3otgDDx3ArQnJ-367vdAyKXnPgUBvZ9zXhv7_0bNGrFXhzgbUhYXuYfK9ajed2PoJQjd2tDeY70znnu3XAft6O3iJte-vP741eZMycYmdmK2KTjFv_ibFkIStu6v7y7uLpo5s9nVmEqr-UGAufN5CMqmjoPF7qJ7aZwDdHXpBIYXEJpq5-N3pWxIX_xlKII0cNZA7gqfRd2NubZuY0iiuudwUtHspyFmC0cvI0fne5kOSa4p7BYbeT9SAAXfZXOUhvbzYCRj1nRspC8tOx1Qc73KK-2XCsnja8zuAB5iM-l4Onp9fnS2u-4al6QLwkQ9bzGYfO8pAISGitIdvRW9spGXvBiI025PyRrn5O61nJHHVxrDqbb63y88reDpF0BmcvgrQeh14AiLt5LiR5zCzt6rl9yxv88gfl7rGGEla_ZswK5tgfLjF-jyS4YE0SruieaV7vShyMPR8hfWbKb6rOj_L0wiI03A8n-VQGCRcwcifjyAD69vLkLdoRtVJe2cAq62ELP5ax9wVM1HFC4M6rYoPQTC-BSO0q6a6IkO_UUMaAG4FATFEjvz98jTRMvXFc-3sBuUnFaoY8XRLCVhY6GneFptzIkv7cH71Y8dkxjaSNlKeM4sYQpbL6_4bsgNLw00KpsKhrTMbpY3YkuaSQ7nZ3cNnq-Fv8Nx8TB7dVsJOye0fUTktjm8ZTLlwLZecy1H45QhM3mNPPk7EGem9U3avxL2pyxRqwR-kT4P51J89inj_Xw-nNimerx0XE9AXKxGbhKXX2cT8crdSupbNhxsRjqxDcYSCdBSp6oinxz7XalH3OuY-0DOmsbuhYsKQEq16Li2TFBQuUfeTCIZU5UOT3fs81s7nJDt9CeZ5ZNG9NDHybKLzCrZDtqzX7zsKtMKUc-QZj-AjzooxXp9bxzfzZ3utOMmrDS5Bo922WJSRuRN8kFO9-kywXQ3WLskhg0wpG-7xe96IuQuQi63Jlpc-2He52rAePlAcHNs1tYaHBjT2G_VYSs=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC01LW1pbmktMjAyNS0wOC0wN3xvcGVuYWkifQ",
+       "data": "gAAAAABqugnuWPomuWTmOS12fKJMmsPw5vYJuZNH6F6Fp_ej4FqnMPDiJ75xburCQD1lUj9h94YA9J4-KPoZcN_18jsZ-Njjw0GPo--U4m8or_jAkgr6TJotPtlx7oxelPQcG8QVAolz3kqbpZaBzHnv27BYwLktS7lFPim53Nz8ieS86ixqt6ydd_yLHwsz89Mcw6pGQ1xtfUIkxAZ9IVF9iBYWFmRsc9BKSQV3muHWnX8zbaVMJBtquf7c5MyS9SZmGOkQe24IehmDpggR97ZGykfkdZ82qy9CSy99uqgv1vsjyiPRf8wZCRxINzobCuAva1XQ0SaWdW4wCk1d37_2j6KJ35SFV_uTiHRnf2IeNW8TY8nz402PxsQasYUUiMQqxGGfiCrj5MIu0K-H6yTER7bUuXVAc19QPx92vJQMEJAY-dbWU-yRaBSkO8qa669uKsQ2EVyoCnATwlW3qUqjP47v3o8tpGg5uqIpGoRmdeGQdTvrljcsIzRXSTv5OpFvvm-NIMRdFVgd4kalloRiClK2jSwJ-TBBWpdFyyD_1StWYg5ZgUwsMc6wFrZULHHOLVw4o6HXpFOr7coj3cL9ab4xdZLxPYLrzIFXXQRAhSlpQPDs9J69Ok9hDKGkleT0i9OEF811VJrzBzQxDIAkOlDEUPL_SI836oNreSFi4d_YfThzKeo-rFyGtJQ84Y1YI_BYjpjAK_GOHp6SZlUXBFjXrUIqUZ-P9-bg8sfzbaLAQRtdDwRTE8GNJNbCrs7FwzLwh3xNtdsAh1KDdIbmLvbJSeSZXALLoiYhzqwYY3ru4-_mkTsAq4ZlZl022SWKKkgsyzsjflVCYIJW7n8opIquZkLzt6IqFB9bdxvPpJj8mIdDB1m41K6WSljptt3to4XN8hx64Dp6BGMIurL4YKT-RCE3f-8u52NxQyQX9-DmKQQZsRR7UWUgKo6ule7NpeH00lPLlgSuOCXTjXU-DFNDTmInuMEuG_K9HdaTrz2gWe13ix0p_MQn1lMA9KzQETG7CWPj6Bgza2Toph62nh6Zx0rbdWKeVu6FciZaCLklpCEmcYckTseqMJf29MtK2SxxNMhGQaTh2Y9ricNLBrUEoQnSIAois6UdeKXteAjCvIkCYYqTYIs7RDK7l0iapU6IwKnsDspMS9I5hXRQ1zGIUkR9FKB7JLzZbkM_F-M5Q0zbW9iJAGMf3Ws2qXRRDaGyOT9LfQCKG_2Ay_xQGRCAFpJQc3vRksw9rO-vtVqJalS8MHbV1xEuexXB6xCWtthbW088x-QY65sxznhUcvB3ya9lL_YIWJY-8mW8NAo_XtWsxFviLW_0L87an-H-9Ohn82qI7zT4i9M5T7289Ct2bLDLrKDcQ4XpolOal_3d48p1Hp1ZKUByQ84UEhCfRrR6fyIN9g1T25_ONhGq4LDTbZ_t4DZtP0z_sMn4tx9LkuNJp9OAw5TgwWqH5SsZklEm2jAiuIF-iXvJgq3YY7UJ1Fw545QKgkROvMAeBkgh41eeA3TJCeaIdLG6mqH5tuyg7Kcjx4Psl9xc9Gp3Z-zv_91G4bIpmmIlfVy_r5Frv-waU72MICnjB74ucDZLubwm-KH4nxPritYgkMSE_1dc_XfP25VrGqlR5XjwjPOl0KvyxN1u7j-F1v4fV-oMOF4v1wc6nvC4N9tyATfkO7Uk-VZxypx9Y9H8sc4U8YDwcU7T_IgKtp5dtX7lNQhxUdjR6lsB7jUcyqqiuFQkuBcRqhVJQfCI_IFgGTfVB5UMur6bsG4HraZSbfPi0neDSxFeT13k4xgYbgg7CG-QgL27pkdgu1HDRKKrJ4WAX8RDCtZa0KHszsa7qqHNpJSIi-R3oSwBL-AR3105FC0pQio_cHyXwlrE31eDiEEfp1COtu_Nt3-SWqGTNgqiOf5SaOrGNkQKsfH52emGgdiLcJ5Lp3SfM2TfgteDUtTepbto_8Ru3ZgHYj8j9wrSiTaCYL2byqV6VmO1ZL9PvCeZhJ0r9wFD9-m4QXHtpwyhRGfGbsMwv7KdmQoT4seZ0LIFi_2JNowlLor2Ut8TCkczp3bC4JAxj_5n-CkWRtkZlXIgZWtRDVWVEha0t6CccuYMi5kItUbmaI4312eeA1es69vTDkBV-_e__NUomz0n1XBsUY4W2uE=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC01LW1pbmktMjAyNS0wOC0wN3xvcGVuYWkifQ",
        "format": "openai-responses-v1",
-       "id": "rs_0c14026df745c536016aba0415fd7887d1a5d7e1192f75137b",
+       "id": "rs_0f513b4d4b46a0b9016aba09ec472087d1a7c5f031f3c9f7f9",
        "index": 1
       }
      ]
@@ -214,24 +317,24 @@
    }
   ],
   "usage": {
-   "prompt_tokens": 3496,
-   "completion_tokens": 282,
-   "total_tokens": 3778,
-   "cost": 0.000862,
+   "prompt_tokens": 4097,
+   "completion_tokens": 206,
+   "total_tokens": 4303,
+   "cost": 0.00054345,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 2560,
+    "cached_tokens": 3968,
     "cache_write_tokens": 0,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.000862,
-    "upstream_inference_prompt_cost": 0.000298,
-    "upstream_inference_completions_cost": 0.000564
+    "upstream_inference_cost": 0.00054345,
+    "upstream_inference_prompt_cost": 0.00013145,
+    "upstream_inference_completions_cost": 0.000412
    },
    "completion_tokens_details": {
-    "reasoning_tokens": 128,
+    "reasoning_tokens": 64,
     "image_tokens": 0,
     "audio_tokens": 0
    }

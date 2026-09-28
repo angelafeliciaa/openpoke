@@ -143,3 +143,79 @@ def test_agent_reports_carry_the_agent_id(env) -> None:
     )
 
     assert payload == "[SUCCESS] Email to Alice (a1): Sent."
+
+
+@pytest.fixture
+def two_hotels(env):
+    roster, recorder = env
+    roster.create("Hotel in Paris", "Hotel booking in Paris.")
+    roster.create("Hotel in Paris for Mom", "Hotel booking in Paris for Mom.")
+    return roster, recorder
+
+
+def _send(agent_id: str, turn: tools.TurnContext):
+    return tools.handle_tool_call("send_message_to_agent", {"agent_id": agent_id, "instructions": "check"}, turn)
+
+
+async def test_a_pick_another_agent_fits_as_well_is_refused_with_both(two_hotels) -> None:
+    roster, recorder = two_hotels
+    turn = tools.TurnContext("does the paris hotel have late checkout?", transcript="")
+
+    result = _send("a2", turn)
+    await _settle()
+
+    assert not result.success
+    assert [c["name"] for c in result.payload["candidates"]] == ["Hotel in Paris", "Hotel in Paris for Mom"]
+    assert recorder.calls == []
+    assert roster.get("a2").last_used_at == roster.get("a3").last_used_at  # not touched either
+
+
+async def test_after_a_refusal_the_model_may_send_to_any_candidate(two_hotels) -> None:
+    _, recorder = two_hotels
+    turn = tools.TurnContext("does the paris hotel have late checkout?", transcript="")
+    _send("a2", turn)
+
+    first, second = _send("a2", turn), _send("a3", turn)
+    await _settle()
+
+    assert first.success and second.success
+    assert [name for name, _ in recorder.calls] == ["Hotel in Paris", "Hotel in Paris for Mom"]
+
+
+async def test_a_word_only_one_agent_has_makes_the_pick_clear(two_hotels) -> None:
+    _, recorder = two_hotels
+    turn = tools.TurnContext("does mom's paris hotel have late checkout?", transcript="")
+
+    result = _send("a3", turn)
+    await _settle()
+
+    assert result.success and recorder.calls == [("Hotel in Paris for Mom", "check")]
+
+
+async def test_an_agent_the_conversation_named_is_not_ambiguous(two_hotels) -> None:
+    _, recorder = two_hotels
+    turn = tools.TurnContext("does it have late checkout?", transcript="Hotel in Paris (a2): Booked the Lutetia.")
+
+    result = _send("a2", turn)
+    await _settle()
+
+    assert result.success and recorder.calls == [("Hotel in Paris", "check")]
+
+
+async def test_sending_to_both_in_one_response_is_a_question_across_them_not_a_guess(two_hotels) -> None:
+    _, recorder = two_hotels
+    turn = tools.TurnContext("do the paris hotels have late checkout?", transcript="", batch_ids={"a2", "a3"})
+
+    results = [_send("a2", turn), _send("a3", turn)]
+    await _settle()
+
+    assert all(r.success for r in results) and len(recorder.calls) == 2
+
+
+async def test_agent_report_turns_skip_the_check(two_hotels) -> None:
+    _, recorder = two_hotels
+
+    result = tools.handle_tool_call("send_message_to_agent", {"agent_id": "a2", "instructions": "check"})
+    await _settle()
+
+    assert result.success and len(recorder.calls) == 1

@@ -25,8 +25,8 @@ Live mode reuses any recording it already has, so it only pays for the gaps.
 - `test_harness.py`: a replayed case never reaches the real execution manager or the real roster,
   and a missing recording is reported as one.
 - `test_graders.py`: every grader outcome and the summary's denominators, on hand-built runs.
-- `server/tests/`: the roster, `send_message_to_agent` / `create_agent` / `search_agents`, BM25
-  search, and the visible agent list, with no LLM.
+- `server/tests/`: the roster, `send_message_to_agent` / `create_agent` / `search_agents`, the
+  ambiguity check in the send tool, BM25 search, and the visible agent list, with no LLM.
 
 The pass/fail line is the baseline, not "every case passes". gpt-5-mini asks the user instead of
 routing on about half its turns, and that is a measurement, not a broken build.

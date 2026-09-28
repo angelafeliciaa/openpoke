@@ -2,17 +2,34 @@
 
 import asyncio
 import json
-from dataclasses import dataclass
-from typing import Any, Optional
+from dataclasses import dataclass, field
+from typing import Any, Optional, Set
 
 from ...logging_config import logger
 from ...services.conversation import get_conversation_log
 from ...services.execution import get_agent_roster, get_execution_agent_logs, search
 from ...services.execution.roster import AgentRecord
 from ..execution_agent.batch_manager import ExecutionBatchManager
+from .ambiguity import close_alternatives
 
 SIMILAR_SHOWN = 3
 SEARCH_RESULTS = 5
+
+
+@dataclass
+class TurnContext:
+    """What the user just said and what came before it, for the send tool's ambiguity check.
+
+    Only user turns carry one; an agent report names the agent it came from. `batch_ids` are
+    the agents the model's current response dispatches to together, so a question that spans
+    two agents is not mistaken for a guess. `shown_ids` are the candidates a refusal already
+    handed back this turn: sending to any of them after that is the model's decision, not a guess.
+    """
+
+    latest_text: str
+    transcript: str
+    batch_ids: Set[str] = field(default_factory=set)
+    shown_ids: Set[str] = field(default_factory=set)
 
 
 @dataclass
@@ -154,8 +171,12 @@ TOOL_SCHEMAS = [
 _EXECUTION_BATCH_MANAGER = ExecutionBatchManager()
 
 
-def send_message_to_agent(agent_id: str, instructions: str) -> ToolResult:
-    """Dispatch to an existing agent; an unknown id is an error, never a new agent."""
+def send_message_to_agent(agent_id: str, instructions: str, turn: Optional[TurnContext] = None) -> ToolResult:
+    """Dispatch to an existing agent; an unknown id is an error, never a new agent.
+
+    On a user turn, a pick that another listed agent fits just as well is refused with both
+    handed back, so the model asks the user (or, for a question, checks each) instead of guessing.
+    """
     roster = get_agent_roster()
     roster.load()
     record = roster.get(agent_id)
@@ -164,6 +185,22 @@ def send_message_to_agent(agent_id: str, instructions: str) -> ToolResult:
             success=False,
             payload={"error": f"No agent has id {agent_id!r}. Use an id from <active_agents>, or create_agent for new work."},
         )
+    if turn is not None and record.id not in turn.shown_ids:
+        others = close_alternatives(
+            roster.records(), record, turn.latest_text, turn.transcript, also_sent_to=turn.batch_ids - {record.id}
+        )
+        if others:
+            candidates = [record, *others]
+            turn.shown_ids.update(c.id for c in candidates)
+            return ToolResult(
+                success=False,
+                payload={
+                    "error": "Not sent: more than one agent fits this request equally and nothing in the "
+                    "conversation says which. If the user is asking a question, send it to each of them. "
+                    "If they want something done, ask them which one they mean, in their terms, never naming agents.",
+                    "candidates": [_summary(c) for c in candidates],
+                },
+            )
     roster.touch(record.id)
     return _dispatch(record, instructions, created=False)
 
@@ -306,7 +343,7 @@ def get_tool_schemas():
 
 
 # Route tool calls to appropriate handlers with argument validation and error handling
-def handle_tool_call(name: str, arguments: Any) -> ToolResult:
+def handle_tool_call(name: str, arguments: Any, turn: Optional[TurnContext] = None) -> ToolResult:
     """Handle tool calls from interaction agent."""
     try:
         if isinstance(arguments, str):
@@ -317,7 +354,7 @@ def handle_tool_call(name: str, arguments: Any) -> ToolResult:
             return ToolResult(success=False, payload={"error": "Invalid arguments format"})
 
         if name == "send_message_to_agent":
-            return send_message_to_agent(**args)
+            return send_message_to_agent(**args, turn=turn)
         if name == "create_agent":
             return create_agent(**args)
         if name == "search_agents":

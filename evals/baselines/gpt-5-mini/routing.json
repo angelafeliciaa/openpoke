@@ -28,7 +28,7 @@
    "runs": 30,
    "unscored": 0,
    "delegation_rate": 0.9667,
-   "ask_rate": 0.4667,
+   "ask_rate": 0.5,
    "by_kind": {
     "create": 0.2143,
     "reuse": 0.7333
@@ -37,31 +37,30 @@
    "dup_rate": 0.0,
    "pass_all_trials": 0.4667,
    "mean_prompt_tokens": 3154.7333,
-   "cost_usd": 0.0324,
+   "cost_usd": 0.0334,
    "failures": {
-    "asked_user": 14,
-    "no_delegation": 1,
-    "reused_unrelated_agent": 1
+    "asked_user": 15,
+    "no_delegation": 1
    }
   },
   {
    "roster_size": 500,
    "runs": 30,
    "unscored": 0,
-   "delegation_rate": 1.0,
+   "delegation_rate": 0.9667,
    "ask_rate": 0.5,
    "by_kind": {
-    "create": 0.2,
+    "create": 0.2143,
     "reuse": 0.7333
    },
    "names_per_request": 1.0,
    "dup_rate": 0.0,
    "pass_all_trials": 0.4667,
    "mean_prompt_tokens": 3178.3667,
-   "cost_usd": 0.0357,
+   "cost_usd": 0.0369,
    "failures": {
     "asked_user": 15,
-    "reused_unrelated_agent": 1
+    "no_delegation": 1
    }
   }
  ],
@@ -74,7 +73,7 @@
   "create-02@500#1": "created_new",
   "create-03@5#1": "created_new",
   "create-03@50#1": "asked_user",
-  "create-03@500#1": "reused_unrelated_agent",
+  "create-03@500#1": "no_delegation",
   "create-04@5#1": "asked_user",
   "create-04@50#1": "no_delegation",
   "create-04@500#1": "asked_user",
@@ -97,7 +96,7 @@
   "create-10@50#1": "asked_user",
   "create-10@500#1": "asked_user",
   "create-11@5#1": "created_new",
-  "create-11@50#1": "reused_unrelated_agent",
+  "create-11@50#1": "asked_user",
   "create-11@500#1": "asked_user",
   "create-12@5#1": "created_new",
   "create-12@50#1": "asked_user",

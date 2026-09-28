@@ -22,8 +22,8 @@ evals that measure whether it does.
   - Prompt size at 500 agents fell from 9.2k tokens to 4.2k, the same as at 5 agents.
   - Routing stayed at 100% on every clear-cut family, and the one duplicate the old code created
     is gone.
-  - Ambiguous requests improved but are not solved: 7 of 14 pass, against 8 of 42 runs before.
-    The 7 that still fail are listed one by one in [To do](#to-do).
+  - Ambiguous requests: 12 of 14 pass, against 8 of 42 runs before, once the send tool refuses
+    a pick that another listed agent fits as well. The 2 left are listed in [To do](#to-do).
 - **How we know:** 204 routing cases across 7 case families and roster sizes 5, 50 and 500, run
   against the real interaction agent with recorded LLM responses. Grading is plain code, each
   stage is diffed against a tagged "before", and `python -m evals.show <case>` prints any run as a
@@ -239,12 +239,10 @@ full diff.
   with the existing agent's name. With the new code, the similarity check caught it.
 - **At 5 agents the prompt is about 0.8k tokens bigger** because of descriptions and the new tools.
   That's the fixed price of routing on meaning rather than names.
-- **Ambiguity is better but not solved.** Sonnet now asks about the two Alices, and checks both
-  insurance renewals and both birthday plans instead of picking one. It still picks one agent
-  without asking in 6 of 14 cases, and one question named "agents" to the user. With an earlier,
-  blunter ask rule it asked on 5 of 5 but leaked "agents"; the current wording fixed the leak and
-  lost some asking. The prompt alone doesn't reliably make Sonnet ask. The exact failing cases and
-  the planned code-level fix are in [To do](#to-do).
+- **Ambiguity is mostly solved, in code rather than the prompt.** With the prompt's ask rule
+  alone Sonnet still picked one agent without asking in 6 of 14 cases. The send tool now refuses
+  a pick that another listed agent fits as well, and 12 of 14 pass. The two left, and why, are in
+  [To do](#to-do).
 
 ## Other problems found along the way
 
@@ -319,51 +317,40 @@ full diff.
 
 ## To do
 
-### Stop guessing on an action; check every match on a question
+### Stop guessing on an action; check every match on a question (built)
 
-The ask rule in the prompt is not enough. On Sonnet 4, 7 of 14 ambiguous cases still fail.
-`python -m evals.show --family ambiguous` prints each one. The 7:
+The ask rule in the prompt was not enough: Sonnet 4 still guessed on 7 of 14 ambiguous cases.
+The fix is in `send_message_to_agent`, not the prompt (`server/agents/interaction_agent/ambiguity.py`).
+On a user turn, before dispatching, the tool scores the user's own words against the listed
+agents. If another agent scores within 80% of the chosen one, the conversation never named the
+chosen one, and the message uses only the words the two share, the tool refuses and hands both
+back. Then for a question the model sends to each; for an action it has to ask.
 
-**Actions (must ask; doing the wrong one, or both, changes something real)**
+Two things keep the check from firing on what is not a guess:
 
-| case | user said | the two agents | what Sonnet did |
-|---|---|---|---|
-| `amb-02@5` | "move the dentist appointment to friday" | Dentist Appointment / Dentist Appointment for Kids | asked, but said "two dentist appointment **agents**" (`asked_about_agents`) |
-| `amb-02@500` | same | same | "I'll move **your** dentist appointment to Friday" → yours only |
-| `amb-07@500` | "follow up with the professor about the letter" | Email to Professor Chen (*about a recommendation letter*) / Email to Professor Cheng (*no letter in the description*) | "I'll follow up with Professor Chen" → Chen only. At 5 agents it asked, which is the pass. Chen's description mentions a letter and Cheng's does not, so a keyword check also thinks Chen is the clear winner. Still must ask: the user said "the professor", not "Chen". |
+- **Words that tell the agents apart.** "move the kids dentist appointment" carries a word only
+  one agent has, so it is a clear pick. "the tokyo flight and the lisbon hotel" names both, one
+  question across two agents. Only a message made of shared words ("the paris hotel") is a guess.
+- **What the same response already sends.** Sonnet dispatches to both insurance renewals in one
+  response; agents the batch covers are not alternatives.
 
-`amb-01` ("tell alice im running 10 min late", Alice Wong / Alice Park) already asks at both sizes.
+Checked offline against Sonnet's 160 recorded first dispatches before wiring it in, it fires on
+six, all ambiguous, and on nothing in reuse, paraphrase, trap, drift, sounds_new or relay. The
+tool schemas and prompt did not change, so only the seven runs it fired on were re-recorded.
 
-**Questions (ask, or check every match; picking one is a fail)**
+**Sonnet 4, ambiguous cases: 12 of 14 pass, from 7.** Every case the guard fires on now asks
+(`asked_user`) or checks both and relays both answers. The two left:
 
-| case | user said | the two agents | what Sonnet did |
-|---|---|---|---|
-| `amb-03@5`, `amb-03@500` | "does the paris hotel have late checkout?" | Hotel in Paris / Hotel in Paris for Mom | checked yours only |
-| `amb-06@5` | "is the tokyo flight confirmed?" | Flight to Tokyo / Flight to Tokyo for Sam | checked **Sam's** |
-| `amb-06@500` | same | same | checked yours only |
+| case | what happens | why the guard can't help |
+|---|---|---|
+| `amb-02@5` | asks, but says "two dentist appointment **agents**" | a wording leak the `asked_about_agents` grader already fails; the guard never fires because Sonnet asked on its own |
+| `amb-07@500` | "follow up with the professor about the letter" goes to Chen | only Chen's description mentions a letter, so "letter" reads as a word that tells them apart |
 
-`amb-04` (car vs home insurance) and `amb-05` (mom's gift vs dinner) already check both at both sizes.
+gpt-5-mini moved from 8 to 10 of 14, and on `amb-05` the refusal made it check both and relay
+both instead of guessing one.
 
-**The planned fix is in `send_message_to_agent`, not the prompt.** Before dispatching, score
-the user's message (not the model's rewritten instructions) against the other listed agents'
-names and descriptions. If another agent's score is close to the chosen one (about 80% of it)
-and the conversation does not already name the chosen agent, refuse and return both. Then:
-
-- for a question, the model can call both (already a pass);
-- for an action, it has to ask, the same way `create_agent` returns `similar_agents` instead of
-  creating.
-
-No new tool argument, so recordings that never fire still replay. Offline against Sonnet's
-recorded sends (no API cost):
-
-- **Would catch:** `amb-02@500`, both `amb-03`, both `amb-06`.
-- **Would miss:** `amb-07@500`, because "letter" is only in Chen's description.
-- **Would not fire** on trap, paraphrase, drift or sounds_new.
-- **Would not fire** on `reuse-13@500` any more: the "Notion Recruiter Follow-up" filler that
-  sat next to "Email to Recruiter at Notion" was a generator bug, fixed below.
-
-`amb-02@5` is a wording leak, not a missed dispatch. The existing `asked_about_agents` grader
-already fails it.
+The remaining one-line prompt fix for `amb-02@5` is not done: any prompt change re-records
+every case, and the ask wording is already graded.
 
 ### Filler that was the target's job under another name (fixed)
 

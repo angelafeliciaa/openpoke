@@ -1,8 +1,8 @@
 {
- "case": "amb-05@500",
+ "case": "amb-02@500",
  "trial": 1,
  "request": {
-  "model": "gpt-5-mini",
+  "model": "anthropic/claude-sonnet-4",
   "messages": [
    {
     "role": "system",
@@ -10,7 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a263\" name=\"Birthday Gift for Mom\">Choosing and ordering a birthday gift for Mom.</agent>\n<agent id=\"a381\" name=\"Birthday Dinner for Mom\">Planning Mom's birthday dinner.</agent>\n<agent id=\"a496\" name=\"Wine Club Cancel\">Wine Club Cancel.</agent>\n<agent id=\"a497\" name=\"Call Emma Back\">Returning Emma's call.</agent>\n<agent id=\"a498\" name=\"Flight to Rome\">Finding and booking a flight to Rome.</agent>\n<agent id=\"a499\" name=\"Plaid Recruiter Follow-up\">Following up with the Plaid recruiter.</agent>\n<agent id=\"a500\" name=\"Email to Tara\">Email thread with Tara.</agent>\n(493 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\nwhats the status on mom's birthday thing\n</new_user_message>"
+    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a89\" name=\"Dentist Appointment for Kids\">Booking and rescheduling the kids' dentist appointment.</agent>\n<agent id=\"a370\" name=\"Dentist Appointment\">Booking and rescheduling a dentist appointment.</agent>\n<agent id=\"a488\" name=\"Car Service Appointment\">Car Service Appointment.</agent>\n<agent id=\"a496\" name=\"Trip Planning Boston\">Itinerary for a trip to Boston.</agent>\n<agent id=\"a497\" name=\"Cloudflare Job Offer\">The Cloudflare job offer.</agent>\n<agent id=\"a498\" name=\"Lunch with Yusuf\">Scheduling lunch with Yusuf.</agent>\n<agent id=\"a499\" name=\"Canva Job Offer\">The Canva job offer.</agent>\n<agent id=\"a500\" name=\"Call Oscar Back\">Returning Oscar's call.</agent>\n(492 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\nmove the dentist appointment to friday\n</new_user_message>"
    },
    {
     "role": "assistant",
@@ -19,18 +19,18 @@
      {
       "type": "function",
       "index": 0,
-      "id": "call_MSpkPI1E7mJ2Nzl7HKtOb5P2",
+      "id": "toolu_bdrk_01XWGSh8eos6wu2xvR8LUFah",
       "function": {
        "name": "send_message_to_user",
-       "arguments": "{\"message\":\"I'll check both the gift and dinner plans for Mom and get status updates now.\"}"
+       "arguments": "{\"message\": \"I'll move your dentist appointment to Friday.\"}"
       }
      }
     ]
    },
    {
     "role": "tool",
-    "tool_call_id": "call_MSpkPI1E7mJ2Nzl7HKtOb5P2",
-    "content": "{\"tool\": \"send_message_to_user\", \"status\": \"success\", \"arguments\": {\"message\": \"I'll check both the gift and dinner plans for Mom and get status updates now.\"}, \"result\": {\"status\": \"delivered\"}}"
+    "tool_call_id": "toolu_bdrk_01XWGSh8eos6wu2xvR8LUFah",
+    "content": "{\"tool\": \"send_message_to_user\", \"status\": \"success\", \"arguments\": {\"message\": \"I'll move your dentist appointment to Friday.\"}, \"result\": {\"status\": \"delivered\"}}"
    },
    {
     "role": "assistant",
@@ -39,18 +39,18 @@
      {
       "type": "function",
       "index": 0,
-      "id": "call_VIN6hwBApqlrrdEJ6JP1x7l4",
+      "id": "toolu_bdrk_013qfoaQgbiJwmk1GFnTPPap",
       "function": {
        "name": "send_message_to_agent",
-       "arguments": "{\"agent_id\":\"a263\",\"instructions\":\"Provide a concise status update on choosing and ordering a birthday gift for Mom: what options were shortlisted, what's been ordered (if anything), delivery ETA, any decisions pending, and next steps we should take.\"}"
+       "arguments": "{\"agent_id\": \"a370\", \"instructions\": \"Please reschedule the dentist appointment to Friday. Find the next available Friday slot and confirm the new appointment time.\"}"
       }
      }
     ]
    },
    {
     "role": "tool",
-    "tool_call_id": "call_VIN6hwBApqlrrdEJ6JP1x7l4",
-    "content": "{\"tool\": \"send_message_to_agent\", \"status\": \"success\", \"arguments\": {\"agent_id\": \"a263\", \"instructions\": \"Provide a concise status update on choosing and ordering a birthday gift for Mom: what options were shortlisted, what's been ordered (if anything), delivery ETA, any decisions pending, and next steps we should take.\"}, \"result\": {\"status\": \"submitted\", \"agent_id\": \"a263\", \"agent_name\": \"Birthday Gift for Mom\", \"new_agent_created\": false}}"
+    "tool_call_id": "toolu_bdrk_013qfoaQgbiJwmk1GFnTPPap",
+    "content": "{\"tool\": \"send_message_to_agent\", \"status\": \"error\", \"arguments\": {\"agent_id\": \"a370\", \"instructions\": \"Please reschedule the dentist appointment to Friday. Find the next available Friday slot and confirm the new appointment time.\"}, \"error\": {\"error\": \"Not sent: more than one agent fits this request equally and nothing in the conversation says which. If the user is asking a question, send it to each of them. If they want something done, ask them which one they mean, in their terms, never naming agents.\", \"candidates\": [{\"id\": \"a370\", \"name\": \"Dentist Appointment\", \"description\": \"Booking and rescheduling a dentist appointment.\"}, {\"id\": \"a89\", \"name\": \"Dentist Appointment for Kids\", \"description\": \"Booking and rescheduling the kids' dentist appointment.\"}]}}"
    },
    {
     "role": "assistant",
@@ -59,58 +59,18 @@
      {
       "type": "function",
       "index": 0,
-      "id": "call_PT6xXF16R8XGGz3VmVIeSLWZ",
-      "function": {
-       "name": "send_message_to_agent",
-       "arguments": "{\"agent_id\":\"a381\",\"instructions\":\"Provide a concise status update on planning Mom's birthday dinner: venue options considered, any reservations made (time/date/guest count), menu decisions, and next steps.\"}"
-      }
-     }
-    ]
-   },
-   {
-    "role": "tool",
-    "tool_call_id": "call_PT6xXF16R8XGGz3VmVIeSLWZ",
-    "content": "{\"tool\": \"send_message_to_agent\", \"status\": \"success\", \"arguments\": {\"agent_id\": \"a381\", \"instructions\": \"Provide a concise status update on planning Mom's birthday dinner: venue options considered, any reservations made (time/date/guest count), menu decisions, and next steps.\"}, \"result\": {\"status\": \"submitted\", \"agent_id\": \"a381\", \"agent_name\": \"Birthday Dinner for Mom\", \"new_agent_created\": false}}"
-   },
-   {
-    "role": "assistant",
-    "content": "",
-    "tool_calls": [
-     {
-      "type": "function",
-      "index": 0,
-      "id": "call_MvRWs2mCLOtueNHKYwT2CYlC",
-      "function": {
-       "name": "wait",
-       "arguments": "{\"reason\":\"Awaiting agent updates; avoid duplicating status messages.\"}"
-      }
-     }
-    ]
-   },
-   {
-    "role": "tool",
-    "tool_call_id": "call_MvRWs2mCLOtueNHKYwT2CYlC",
-    "content": "{\"tool\": \"wait\", \"status\": \"success\", \"arguments\": {\"reason\": \"Awaiting agent updates; avoid duplicating status messages.\"}, \"result\": {\"status\": \"waiting\", \"reason\": \"Awaiting agent updates; avoid duplicating status messages.\"}}"
-   },
-   {
-    "role": "assistant",
-    "content": "",
-    "tool_calls": [
-     {
-      "type": "function",
-      "index": 0,
-      "id": "call_PRSea7YaKJ8jFmgszQmRlZ6F",
+      "id": "toolu_bdrk_01F5keHjaCstvCCNavxrv9sH",
       "function": {
        "name": "send_message_to_user",
-       "arguments": "{\"message\":\"Quick update: I\u2019ve asked the teams handling Mom\u2019s gift and the dinner for status. I\u2019m waiting on their replies now and will summarize what\u2019s been shortlisted, what (if anything) is ordered, delivery ETAs, venue/reservation details, and next steps as soon as they report back. Want me to prioritize speeding up the gift order or lock the dinner reservation first?\"}"
+       "arguments": "{\"message\": \"Which dentist appointment - yours or the kids'?\"}"
       }
      }
     ]
    },
    {
     "role": "tool",
-    "tool_call_id": "call_PRSea7YaKJ8jFmgszQmRlZ6F",
-    "content": "{\"tool\": \"send_message_to_user\", \"status\": \"success\", \"arguments\": {\"message\": \"Quick update: I\\u2019ve asked the teams handling Mom\\u2019s gift and the dinner for status. I\\u2019m waiting on their replies now and will summarize what\\u2019s been shortlisted, what (if anything) is ordered, delivery ETAs, venue/reservation details, and next steps as soon as they report back. Want me to prioritize speeding up the gift order or lock the dinner reservation first?\"}, \"result\": {\"status\": \"delivered\"}}"
+    "tool_call_id": "toolu_bdrk_01F5keHjaCstvCCNavxrv9sH",
+    "content": "{\"tool\": \"send_message_to_user\", \"status\": \"success\", \"arguments\": {\"message\": \"Which dentist appointment - yours or the kids'?\"}, \"result\": {\"status\": \"delivered\"}}"
    }
   ],
   "tools": [
@@ -266,43 +226,43 @@
   ]
  },
  "response": {
-  "id": "gen-1790575635-CC6OD7nzaQtcnZk8x0xO",
+  "id": "gen-1790577077-UFPnUDlux08d4dsNuowZ",
   "object": "chat.completion",
-  "created": 1790575635,
-  "model": "openai/gpt-5-mini",
-  "provider": "OpenAI",
+  "created": 1790577077,
+  "model": "anthropic/claude-sonnet-4",
+  "provider": "Amazon Bedrock",
   "system_fingerprint": null,
-  "service_tier": "default",
+  "service_tier": null,
   "choices": [
    {
     "index": 0,
     "logprobs": null,
     "finish_reason": "stop",
-    "native_finish_reason": "completed",
+    "native_finish_reason": "end_turn",
     "message": {
      "role": "assistant",
-     "content": "Got it \u2014 I asked both teams for status and I'm waiting on their replies. Do you want me to prioritize getting the gift ordered faster or locking the dinner reservation first?",
+     "content": null,
      "refusal": null,
      "reasoning": null
     }
    }
   ],
   "usage": {
-   "prompt_tokens": 3931,
-   "completion_tokens": 38,
-   "total_tokens": 3969,
-   "cost": 0.00025235,
+   "prompt_tokens": 4784,
+   "completion_tokens": 2,
+   "total_tokens": 4786,
+   "cost": 0.0029772,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 3584,
+    "cached_tokens": 4224,
     "cache_write_tokens": 0,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.00025235,
-    "upstream_inference_prompt_cost": 0.00017635,
-    "upstream_inference_completions_cost": 7.6e-05
+    "upstream_inference_cost": 0.0029772,
+    "upstream_inference_prompt_cost": 0.0029472,
+    "upstream_inference_completions_cost": 3e-05
    },
    "completion_tokens_details": {
     "reasoning_tokens": 0,
