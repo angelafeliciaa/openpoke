@@ -22,6 +22,7 @@ from unittest.mock import patch
 import httpx
 
 from evals.cases import Case
+from server.agents.execution_agent.batch_manager import ExecutionBatchManager
 from server.agents.execution_agent.runtime import ExecutionResult
 from server.agents.interaction_agent import runtime as ia_runtime
 from server.agents.interaction_agent import tools as ia_tools
@@ -48,9 +49,26 @@ _PRICES = {
 # Returned instead of the post-dispatch LLM call: routing is decided by then, and the
 # closing reply would cost a full roster-sized prompt per turn. Empty, so whatever the model
 # already said this turn stays its reply, in the result and in the conversation log.
+# Cases that script reports need every dispatch, and some models dispatch one agent per
+# response, so those turns run to the model's own end instead.
 _WRAPUP = {"choices": [{"message": {"role": "assistant", "content": ""}}], "usage": {}}
 _DISPATCH_TOOLS = ("send_message_to_agent", "create_agent")
 _SEEDED_AT = "2026-09-01T09:00:00"
+
+
+class _Clock:
+    """The roster's clock inside the sandbox: one second per turn, so `last_used_at` and the
+    recency order it drives are the same on every run. Two dispatches in one turn tie, as they
+    do live within a second; the wall clock made the relay-turn prompt flip when they straddled one."""
+
+    def __init__(self) -> None:
+        self.turn = 0
+
+    def tick(self) -> None:
+        self.turn += 1
+
+    def now(self) -> str:
+        return f"2026-09-01T09:00:{self.turn:02d}"
 
 
 def default_model() -> str:
@@ -81,6 +99,9 @@ class CaseRun:
     trial: int
     model: str
     turns: List[TurnResult] = field(default_factory=list)
+    relay: Optional[TurnResult] = None
+    """The turn after every candidate reported back, when the case scripts reports. Its `response`
+    is everything the user was told in that turn, not only the last message."""
     missing_recording: Optional[str] = None
     recordings: List[Path] = field(default_factory=list)
 
@@ -91,7 +112,7 @@ class CaseRun:
 
     @property
     def cost(self) -> float:
-        return sum(c.cost for t in self.turns for c in t.calls)
+        return sum(c.cost for t in self.turns + ([self.relay] if self.relay else []) for c in t.calls)
 
 
 class _RecordingMissing(RuntimeError):
@@ -193,6 +214,8 @@ class Sandbox:
         self.missing: Optional[str] = None
         self.used: List[Path] = []
         self._manager = _RecordingBatchManager()
+        self._clock = _Clock()
+        self._wrapup_after_dispatch = not case.reports
         self._calls: List[LLMCall] = []
         self._stack = AsyncExitStack()
         self._tasks_before: set = set()
@@ -223,6 +246,7 @@ class Sandbox:
             patch.object(exec_logs, "_execution_agent_logs", exec_logs.ExecutionAgentLogStore(tmp / "execution_agents")),
             patch.object(ia_runtime, "request_chat_completion", self._llm),
             patch.object(ia_tools, "_EXECUTION_BATCH_MANAGER", self._manager),
+            patch.object(roster_mod, "_now", self._clock.now),
             patch.object(settings, "conversation_summary_threshold", 0),
         ]
         if not settings.openrouter_api_key:
@@ -247,13 +271,16 @@ class Sandbox:
         while pending := asyncio.all_tasks() - self._tasks_before - {current}:
             await asyncio.gather(*pending, return_exceptions=True)
 
+    def tick(self) -> None:
+        self._clock.tick()
+
     def take_turn(self) -> tuple[List[str], List[LLMCall]]:
         dispatched, calls = self._manager.dispatched, self._calls
         self._manager.dispatched, self._calls = [], []
         return dispatched, calls
 
     async def _llm(self, *, model: str, messages, system=None, api_key=None, tools=None, base_url=None):
-        if _dispatched_this_turn(messages):
+        if self._wrapup_after_dispatch and _dispatched_this_turn(messages):
             return _WRAPUP
         payload: Dict[str, Any] = {"model": self.model, "messages": _build_messages(messages, system)}
         if tools:
@@ -294,12 +321,30 @@ def _seed_history(case: Case) -> None:
         record[entry.role](entry.text)
 
 
+def _replies_so_far() -> int:
+    return sum(1 for tag, _, _ in conv_log.get_conversation_log().iter_entries() if tag == "poke_reply")
+
+
+def _told_the_user(since: int) -> str:
+    """Every reply recorded after `since`, joined. The runtime's own `response` keeps only the last."""
+    replies = [text for tag, _, text in conv_log.get_conversation_log().iter_entries() if tag == "poke_reply"]
+    return "\n".join(replies[since:])
+
+
+def scripted_reports(case: Case, dispatched: List[str]) -> str:
+    """The batch payload production would build once the dispatched agents finished, in dispatch order."""
+    says = {r.agent: r.says for r in case.reports}
+    results = [ExecutionResult(agent_name=name, success=True, response=says[name]) for name in dispatched if name in says]
+    return ExecutionBatchManager()._format_batch_payload(results)
+
+
 async def run_case(case: Case, trial: int, mode: Mode, model: str) -> CaseRun:
     """Run every turn of `case` in one sandbox; stops at the first error or missing recording."""
     run = CaseRun(case=case, trial=trial, model=model)
     async with Sandbox(case, trial, mode, model) as sb:
         _seed_history(case)
         for message in case.turns:
+            sb.tick()
             before = set(_roster_names())
             outcome = await ia_runtime.InteractionAgentRuntime().execute(message)
             await sb.settle()
@@ -318,5 +363,30 @@ async def run_case(case: Case, trial: int, mode: Mode, model: str) -> CaseRun:
             )
             if outcome.error:
                 break
+        if run.turns and _every_candidate_checked(case, run.turns[-1]):
+            run.relay = await _relay_reports(case, run.turns[-1].dispatched, sb)
+            if sb.missing:
+                run.missing_recording = sb.missing
         run.recordings = sb.used
     return run
+
+
+def _every_candidate_checked(case: Case, last: TurnResult) -> bool:
+    return bool(case.reports) and not last.error and set(case.candidates) <= set(last.dispatched)
+
+
+async def _relay_reports(case: Case, dispatched: List[str], sb: Sandbox) -> TurnResult:
+    """Feed the agents' scripted answers through the real agent-message path and keep what the user heard."""
+    sb.tick()
+    replies_before = _replies_so_far()
+    before = set(_roster_names())
+    outcome = await ia_runtime.InteractionAgentRuntime().handle_agent_message(scripted_reports(case, dispatched))
+    await sb.settle()
+    dispatched_again, calls = sb.take_turn()
+    return TurnResult(
+        dispatched=dispatched_again,
+        new_agents=[a for a in _roster_names() if a not in before],
+        calls=calls,
+        response=_told_the_user(replies_before),
+        error=outcome.error,
+    )

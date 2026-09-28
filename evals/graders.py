@@ -29,14 +29,40 @@ def _any_of(names: Iterable[str], wanted: Iterable[str]) -> bool:
 
 
 def grade(run: CaseRun) -> Verdict:
-    """Grade the last turn; drift also reads turn 1 to learn which agent it created.
+    """Grade the last user turn, then the relay turn when the case scripted agent reports.
 
     A turn that routes nothing and replies with a question is `asked_user`: the right call
     only when the case is ambiguous, and friction for the user everywhere else.
     """
     if run.missing_recording:
         return Verdict(False, "missing_recording")
+    verdict = _grade_last_turn(run)
+    if run.relay is None or not verdict.passed:
+        return verdict
+    return _grade_relay(run)
+
+
+def _grade_relay(run: CaseRun) -> Verdict:
+    """Every dispatched agent answered; the user must hear each answer's marker."""
+    relay = run.relay
+    if relay.error:
+        return Verdict(False, "error")
+    told = relay.response.lower()
+    dispatched = set(run.turns[-1].dispatched)
+    dropped = [r.agent for r in run.case.reports if r.agent in dispatched and r.must_relay.lower() not in told]
+    if dropped:
+        return Verdict(False, "dropped_a_report")
+    return Verdict(True, "relayed_every_report")
+
+
+_ITERATION_CAP = "tool iteration limit"
+
+
+def _grade_last_turn(run: CaseRun) -> Verdict:
     last = run.turns[-1]
+    if last.error and _ITERATION_CAP in last.error:
+        # the model kept calling tools one per response until the runtime's cap and never ended its turn
+        return Verdict(False, "hit_tool_iteration_limit")
     if last.error:
         return Verdict(False, "error")
     case = run.case
@@ -46,6 +72,15 @@ def grade(run: CaseRun) -> Verdict:
         if "?" in last.response:
             return Verdict(case.kind == "ambiguous", "asked_user")
         return Verdict(False, "no_delegation")
+
+    if case.kind == "relay":
+        if last.new_agents:
+            return Verdict(False, "spawned_duplicate")
+        if all(_any_of(last.dispatched, [c]) for c in case.candidates):
+            return Verdict(True, "checked_every_candidate")
+        if _any_of(last.dispatched, case.candidates):
+            return Verdict(False, "checked_one_candidate")
+        return Verdict(False, "wrong_existing_agent")
 
     if case.kind == "ambiguous":
         if last.new_agents:

@@ -5,48 +5,51 @@
  "summary": [
   {
    "roster_size": 5,
-   "runs": 57,
+   "runs": 62,
    "unscored": 0,
-   "delegation_rate": 0.9649,
-   "ask_rate": 0.5088,
+   "delegation_rate": 0.9677,
+   "ask_rate": 0.4677,
    "by_kind": {
-    "ambiguous": 0.5714,
+    "ambiguous": 0.7143,
     "drift": 0.2,
+    "relay": 0.8,
     "reuse": 0.5789
    },
    "names_per_request": 1.0,
    "dup_rate": 0.0,
-   "pass_all_trials": 0.4912,
-   "mean_prompt_tokens": 3162.6842,
-   "cost_usd": 0.0766,
+   "pass_all_trials": 0.5323,
+   "mean_prompt_tokens": 3158.7742,
+   "cost_usd": 0.0973,
    "failures": {
     "asked_user": 23,
     "asked_about_agents": 2,
     "no_delegation": 2,
-    "guessed_candidate": 2
+    "guessed_candidate": 1,
+    "hit_tool_iteration_limit": 1
    }
   },
   {
    "roster_size": 500,
-   "runs": 57,
+   "runs": 62,
    "unscored": 0,
-   "delegation_rate": 0.9825,
-   "ask_rate": 0.5088,
+   "delegation_rate": 0.9839,
+   "ask_rate": 0.4677,
    "by_kind": {
-    "ambiguous": 0.7143,
+    "ambiguous": 0.8571,
     "drift": 0.2,
+    "relay": 0.8,
     "reuse": 0.6154
    },
    "names_per_request": 1.0,
    "dup_rate": 0.0,
-   "pass_all_trials": 0.5439,
-   "mean_prompt_tokens": 3239.8421,
-   "cost_usd": 0.0765,
+   "pass_all_trials": 0.5806,
+   "mean_prompt_tokens": 3237.5161,
+   "cost_usd": 0.0949,
    "failures": {
     "asked_user": 22,
     "asked_about_agents": 2,
     "no_delegation": 1,
-    "guessed_candidate": 1
+    "hit_tool_iteration_limit": 1
    }
   }
  ],
@@ -59,8 +62,8 @@
   "amb-03@500#1": "asked_user",
   "amb-04@5#1": "asked_user",
   "amb-04@500#1": "asked_user",
-  "amb-05@5#1": "guessed_candidate",
-  "amb-05@500#1": "guessed_candidate",
+  "amb-05@5#1": "relayed_every_report",
+  "amb-05@500#1": "relayed_every_report",
   "amb-06@5#1": "asked_user",
   "amb-06@500#1": "asked_about_agents",
   "amb-07@5#1": "guessed_candidate",
@@ -135,6 +138,16 @@
   "para-14@500#1": "reused_target",
   "para-15@5#1": "asked_user",
   "para-15@500#1": "asked_user",
+  "relay-01@5#1": "relayed_every_report",
+  "relay-01@500#1": "relayed_every_report",
+  "relay-02@5#1": "relayed_every_report",
+  "relay-02@500#1": "relayed_every_report",
+  "relay-03@5#1": "hit_tool_iteration_limit",
+  "relay-03@500#1": "hit_tool_iteration_limit",
+  "relay-04@5#1": "relayed_every_report",
+  "relay-04@500#1": "relayed_every_report",
+  "relay-05@5#1": "relayed_every_report",
+  "relay-05@500#1": "relayed_every_report",
   "trap-01@5#1": "asked_about_agents",
   "trap-01@500#1": "asked_user",
   "trap-02@5#1": "reused_target",

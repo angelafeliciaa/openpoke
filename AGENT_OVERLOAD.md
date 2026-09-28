@@ -278,6 +278,11 @@ full diff.
   the conversation log. The second turn of every drift case saw that fake reply.
   - *Fix:* the stand-in reply is now empty, so the model's own words stay. The 11 affected drift
     recordings were re-recorded.
+- **The wall clock leaked into recorded prompts.** `last_used_at` is stamped with real time, and
+  the visible list sorts by it. Two dispatches in one turn that straddled a second boundary came
+  out in a different order on replay, so the relay-turn prompt changed and its recording went
+  stale. The sandbox now patches the roster's clock to advance one second per turn: dispatches in
+  a turn tie, as they do live within a second, and every run builds the same prompt.
 - **Reading runs as conversations found bad test cases.** Grading had passed over them; reading
   the transcripts (`evals.show`) exposed them:
   - A "Stripe Job Offer" / "Stripe Offer Negotiation" pair was graded as ambiguous, but it's one
@@ -380,10 +385,27 @@ Also gone with this: the "Vercel Job Offer next to Vercel Recruiter Follow-up" r
 graded only one of two reasonable owners. Look-alikes of that kind now appear only in the trap
 family, where they are the point of the case.
 
-### Relay after checking several agents
+### Relay after checking several agents (built)
 
-When Sonnet checks both insurance renewals it says "I'll check on both" and dispatches both, but
-the evals stub the agents, so we never see whether it then tells the user about both answers
-(car renewed, home payment failed) or collapses them into one. Drive the real
-`handle_agent_message` path with scripted facts per agent and fail `dropped_a_report` if the
-reply is missing a fact from either.
+When the model checks two agents it has to tell the user both answers. The evals stubbed the
+agents, so this was never seen. Now a case can script each agent's report, and the harness feeds
+the dispatched agents' reports through the real `handle_agent_message` path in the same format
+`batch_manager` writes (`[SUCCESS] Name (a12): ...`), then grades what the user was told: every
+dispatched agent's marker (a hotel name, a seat number, a price) must appear, or the run is
+`dropped_a_report`. Ten new `relay` cases put one question across two unrelated agents ("are the
+tokyo flight and the lisbon hotel both confirmed?"); the four read-only ambiguous pairs carry
+reports too.
+
+- **Sonnet 4 relays everything.** 10 of 10 relay cases and all 5 read-only ambiguous runs where it
+  checked both candidates pass `relayed_every_report`. It also checks both on every relay case
+  at both sizes, with parallel tool calls in one response.
+- **The first run showed two eval bugs, not model bugs.** A marker of "DS-82" failed a reply that
+  said "6 weeks"; markers have to be the answer, not a form number. And the harness's post-dispatch
+  shortcut cut off models that dispatch one agent per response, so gpt-5-mini looked like it
+  checked one agent on 9 of 10 relay cases. Report cases now run the turn to the model's own end
+  and gpt-5-mini checks both on 8 of 10.
+- **gpt-5-mini hits the runtime's tool-iteration cap.** On `relay-03` at both sizes it spent its 8
+  iterations on a message, two searches, two dispatches, two `wait`s and another message, and the
+  runtime raised. It routed correctly and then could not end its turn. That is now a scored verdict,
+  `hit_tool_iteration_limit`, and a product limit worth its own fix: `MAX_TOOL_ITERATIONS = 8` is
+  sized for a model that batches tool calls, and `wait` does not end a turn.

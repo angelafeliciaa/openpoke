@@ -56,7 +56,7 @@ print both tables side by side:
 |---|---|
 | `cases/__init__.py` | typed `Case` and the one loader for `cases/<suite>.jsonl` |
 | `cases/generate.py` | 15 reuse + 15 create scenarios at roster sizes 5, 50, 500 -> `routing.jsonl` |
-| `cases/generate_hard.py` | paraphrase, trap, drift, ambiguous, sounds_new families at sizes 5 and 500 -> `hard.jsonl` |
+| `cases/generate_hard.py` | paraphrase, trap, drift, ambiguous, sounds_new, relay families at sizes 5 and 500 -> `hard.jsonl` |
 | `harness.py` | sandbox (temp roster and logs, dispatch recorder), LLM record/replay, multi-turn |
 | `graders.py` | code-only verdict per run |
 | `run.py`, `report.py` | run a suite, write `results/*.jsonl` and baselines, print the table |
@@ -79,6 +79,15 @@ print both tables side by side:
 - **sounds_new** (a reuse family): an agent owns the work, but the request reads as brand new and
   there is no history ("look into a place to stay in lisbon" with "Hotel in Lisbon" listed).
   Creating another agent here is how rosters bloat.
+- **relay**: one question spans two agents ("are the tokyo flight and the lisbon hotel both
+  confirmed?"). Both must be checked (`checked_every_candidate`; one is `checked_one_candidate`).
+  Then each agent answers with a scripted report, the harness feeds them through the real
+  `handle_agent_message` path, and the reply to the user must carry every report's marker
+  (`relayed_every_report`) or it is `dropped_a_report`. Read-only ambiguous cases carry reports
+  too, so checking both candidates is graded through to what the user hears.
+
+A turn that keeps calling tools until the runtime's iteration cap and never ends is
+`hit_tool_iteration_limit`; it is scored, not an error, because the user is left waiting.
 
 A turn that routes nothing and replies with a question is `asked_user`. It passes only on
 ambiguous cases; everywhere else a question is friction for the user and fails. A question that
@@ -107,6 +116,7 @@ the current code; the original code's baselines and recordings live under `stage
 - After the first successful dispatch in a turn, the harness answers the next LLM call with an
   empty stand-in instead of paying for it, so the model's own words from earlier in the turn stay
   as its reply. A model that dispatches a second agent only after seeing the first tool result is
-  not measured.
+  not measured there. Cases that script agent reports (relay, read-only ambiguous) are the
+  exception: they need every dispatch, so those turns run to the model's own end.
 - Each generator draws every roster from one seeded RNG, so inserting a scenario reshuffles the
   rosters after it and forces a re-record of those cases.

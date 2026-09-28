@@ -6,6 +6,7 @@
   ambiguous   two agents fit and nothing breaks the tie; the right move is to ask the user which one
   sounds_new  an agent already owns the work but the request reads as brand new, with no history;
               creating another agent here is how rosters bloat
+  relay       one question spans two agents; both must be checked and both answers told to the user
 
 Run:  python -m evals.cases.generate_hard   -> evals/cases/hard.jsonl
 """
@@ -106,6 +107,41 @@ AMBIGUOUS = [
     (["Email to Professor Chen", "Email to Professor Cheng"], "follow up with the professor about the letter", ["chen", "professor"], False),
 ]
 
+# What each agent answers when a question is put to it. The marker is a proper noun, code or price that
+# survives paraphrase; a reply that lacks it dropped that agent's answer.
+REPORTS = {
+    "Hotel in Paris": ("Yes, the Hotel Lutetia allows late checkout until 2pm.", "Lutetia"),
+    "Hotel in Paris for Mom": ("The Hotel Regina doesn't, but they hold luggage after checkout.", "Regina"),
+    "Car Insurance Renewal": ("Renewed with Progressive at $88/mo.", "Progressive"),
+    "Home Insurance Renewal": ("The renewal failed, the card on file was declined.", "declined"),
+    "Birthday Gift for Mom": ("The Le Creuset set ships Tuesday.", "Le Creuset"),
+    "Birthday Dinner for Mom": ("Table for 6 at Osteria Mozza booked for 7:30pm.", "Osteria"),
+    "Flight to Tokyo": ("Confirmed, ANA 11:40am, seat 14A.", "14A"),
+    "Flight to Tokyo for Sam": ("Not yet, ANA is holding the fare until Friday.", "Friday"),
+    "Hotel in Lisbon": ("Confirmed at Hotel Avenida, confirmation code A1B2.", "A1B2"),
+    "Vercel Job Offer": ("The recruiter agreed to a November 3 start.", "November"),
+    "Stripe Interview Prep": ("The onsite is set for Thursday at 10am.", "Thursday"),
+    "Email to Alice": ("She replied: the invoice is approved.", "approved"),
+    "Email to Jai": ("He says the deck is due Monday.", "Monday"),
+    "Dentist Appointment": ("Booked Thursday 3pm at Bright Smile Dental.", "Bright Smile"),
+    "Gym Membership Cancel": ("Cancelled; a $45 refund lands within 5 days.", "$45"),
+    "Passport Renewal": ("The renewal form is submitted, expected back in 6 weeks.", "6 weeks"),
+}
+
+# (two agents one question spans, the question, keywords kept out of distractors). Both must be checked,
+# and the reply must carry both answers.
+RELAY = [
+    (["Flight to Tokyo", "Hotel in Lisbon"], "are the tokyo flight and the lisbon hotel both confirmed?", ["tokyo", "lisbon"]),
+    (["Vercel Job Offer", "Stripe Interview Prep"], "any news from vercel or stripe?", ["vercel", "stripe"]),
+    (["Email to Alice", "Email to Jai"], "did alice and jai get back to me?", ["alice", "jai"]),
+    (["Dentist Appointment", "Gym Membership Cancel"], "is the dentist booked and the gym cancelled?", ["dentist", "gym"]),
+    (["Car Insurance Renewal", "Passport Renewal"], "where are we on the car insurance and the passport?", ["insurance", "passport"]),
+]
+
+
+def _reports(candidates: list[str]) -> list[dict[str, str]]:
+    return [{"agent": c, "says": REPORTS[c][0], "must_relay": REPORTS[c][1]} for c in candidates]
+
 
 # (agent that already owns the work, request phrased as brand new with no history, keywords kept out of distractors)
 SOUNDS_NEW = [
@@ -178,6 +214,7 @@ def main() -> None:
             lines.append({
                 "id": f"amb-{i:02d}@{size}", "kind": "ambiguous", "family": "ambiguous",
                 "target": None, "candidates": candidates, "read_only": read_only, "history": [], "message": message,
+                "reports": _reports(candidates) if read_only else [],
                 "roster_size": size, "roster": roster_entries(_with_candidates(amb_rng, size, pool, candidates, exclude)),
             })
     new_rng = random.Random(20260928)
@@ -187,6 +224,15 @@ def main() -> None:
                 "id": f"new-{i:02d}@{size}", "kind": "reuse", "family": "sounds_new",
                 "target": target, "history": [], "message": message,
                 "roster_size": size, "roster": roster_entries(build_roster(new_rng, size, pool, target, exclude=exclude)),
+            })
+    relay_rng = random.Random(20260929)
+    for i, (candidates, message, exclude) in enumerate(RELAY, 1):
+        for size in SIZES:
+            lines.append({
+                "id": f"relay-{i:02d}@{size}", "kind": "relay", "family": "relay",
+                "target": None, "candidates": candidates, "history": [], "message": message,
+                "reports": _reports(candidates),
+                "roster_size": size, "roster": roster_entries(_with_candidates(relay_rng, size, pool, candidates, exclude)),
             })
     OUT.write_text("\n".join(json.dumps(l) for l in lines) + "\n")
     print(f"wrote {len(lines)} cases to {OUT}")

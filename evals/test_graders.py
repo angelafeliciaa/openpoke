@@ -6,7 +6,7 @@ from typing import List, Optional
 
 import pytest
 
-from evals.cases import Case, RosterEntry
+from evals.cases import Case, Report, RosterEntry
 from evals.graders import Verdict, grade
 from evals.harness import CaseRun, TurnResult
 from evals.report import summarize, to_row
@@ -16,9 +16,10 @@ ROSTER = tuple(
 )
 
 
-def _case(kind: str, target: Optional[str] = None, turns=("do the thing",), candidates=(), read_only=False) -> Case:
+def _case(kind: str, target: Optional[str] = None, turns=("do the thing",), candidates=(), read_only=False,
+          reports=()) -> Case:
     return Case(id=f"{kind}-x", suite="t", kind=kind, family=kind, target=target, roster=ROSTER, turns=turns,
-                candidates=candidates, read_only=read_only)
+                candidates=candidates, read_only=read_only, reports=reports)
 
 
 def _turn(dispatched: List[str], new: List[str] = (), error: Optional[str] = None, response: str = "") -> TurnResult:
@@ -26,6 +27,17 @@ def _turn(dispatched: List[str], new: List[str] = (), error: Optional[str] = Non
 
 
 QUESTION = "alice or alicia?"
+REPORTS = (Report("Email to Alice", "She approved the invoice.", "approved"),
+           Report("Flight to Tokyo", "Confirmed, seat 14A.", "14A"))
+RELAY = _case("relay", candidates=("Email to Alice", "Flight to Tokyo"), reports=REPORTS)
+AMBIGUOUS_WITH_REPORTS = _case("ambiguous", candidates=("Email to Alice", "Email to Alicia"), read_only=True,
+                               reports=(REPORTS[0], Report("Email to Alicia", "No reply yet.", "No reply")))
+
+
+def _relayed(case: Case, dispatched: List[str], told: str) -> CaseRun:
+    run = _run(case, _turn(dispatched))
+    run.relay = _turn([], response=told)
+    return run
 
 
 def _run(case: Case, *turns: TurnResult, missing: Optional[str] = None) -> CaseRun:
@@ -58,6 +70,8 @@ AMBIGUOUS_QUESTION = _case("ambiguous", candidates=("Email to Alice", "Email to 
         (_run(DRIFT, _turn(["Thai Dinner"], new=["Thai Dinner"]), _turn(["Flight to Tokyo"])),
          Verdict(False, "wrong_existing_agent")),
         (_run(REUSE, _turn(["Email to Alice"], error="boom")), Verdict(False, "error")),
+        (_run(REUSE, _turn(["Email to Alice"], error="Reached tool iteration limit without final response")),
+         Verdict(False, "hit_tool_iteration_limit")),
         (_run(REUSE, missing="abc.json"), Verdict(False, "missing_recording")),
         (_run(REUSE, _turn([], response=QUESTION)), Verdict(False, "asked_user")),
         (_run(AMBIGUOUS, _turn([], response=QUESTION)), Verdict(True, "asked_user")),
@@ -71,10 +85,27 @@ AMBIGUOUS_QUESTION = _case("ambiguous", candidates=("Email to Alice", "Email to 
         (_run(AMBIGUOUS_QUESTION, _turn([], response=QUESTION)), Verdict(True, "asked_user")),
         (_run(AMBIGUOUS, _turn(["Alice Late"], new=["Alice Late"])), Verdict(False, "spawned_duplicate")),
         (_run(AMBIGUOUS, _turn(["Flight to Tokyo"])), Verdict(False, "wrong_existing_agent")),
+        (_run(RELAY, _turn(["Email to Alice"])), Verdict(False, "checked_one_candidate")),
+        (_run(RELAY, _turn(["Email to Alicia"])), Verdict(False, "wrong_existing_agent")),
+        (_run(RELAY, _turn(["Email to Alice", "Flight to Tokyo"])), Verdict(True, "checked_every_candidate")),
+        (_relayed(RELAY, ["Email to Alice", "Flight to Tokyo"], "Alice approved it and the flight is confirmed, seat 14A."),
+         Verdict(True, "relayed_every_report")),
+        (_relayed(RELAY, ["Email to Alice", "Flight to Tokyo"], "Alice approved the invoice. Flight's confirmed too."),
+         Verdict(False, "dropped_a_report")),
+        (_relayed(AMBIGUOUS_WITH_REPORTS, ["Email to Alice", "Email to Alicia"], "Alice approved; no reply from Alicia yet."),
+         Verdict(True, "relayed_every_report")),
+        (_relayed(AMBIGUOUS_WITH_REPORTS, ["Email to Alice", "Email to Alicia"], "Alice approved it."),
+         Verdict(False, "dropped_a_report")),
     ],
 )
 def test_grade(run: CaseRun, expected: Verdict) -> None:
     assert grade(run) == expected
+
+
+def test_relay_is_not_graded_when_the_routing_turn_failed() -> None:
+    run = _relayed(RELAY, ["Email to Alice"], "Alice approved it.")
+
+    assert grade(run) == Verdict(False, "checked_one_candidate")
 
 
 def test_unscored_runs_do_not_count_as_delegations() -> None:

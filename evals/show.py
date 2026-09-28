@@ -33,17 +33,20 @@ def _say(who: str, text: str) -> None:
 
 
 def _expected(case: Case) -> str:
+    fits = ", ".join(case.candidates)
+    if case.kind == "relay":
+        return f"check every one of: {fits}, then tell the user each answer"
     if case.kind != "ambiguous":
         return _EXPECTED[case.kind].format(target=case.target)
-    fits = ", ".join(case.candidates)
     if case.read_only:
-        return f"ask, or check every one of: {fits}"
+        answers = " and after checking, relay each answer" if case.reports else ""
+        return f"ask, or check every one of: {fits}{answers}"
     return f"ask the user which one: {fits}"
 
 
-def _turn_calls(recordings: List[Dict[str, Any]], message: str) -> List[Dict[str, Any]]:
+def _turn_calls(recordings: List[Dict[str, Any]], message: str, tag: str = "new_user_message") -> List[Dict[str, Any]]:
     """The calls of one turn, in order: each one's request carries every earlier step."""
-    marker = f"<new_user_message>\n{message}\n</new_user_message>"
+    marker = f"<{tag}>\n{message}"
     calls = [r for r in recordings if marker in r["request"]["messages"][1]["content"]]
     return sorted(calls, key=lambda r: len(r["request"]["messages"]))
 
@@ -122,6 +125,16 @@ def show(case: Case, model: str, trial: int, verdicts: Dict[str, str]) -> None:
             for name in _created(call, following):
                 names[f"a{next_id}"] = name
                 next_id += 1
+    if case.reports:
+        # the relay turn's request quotes the batch payload, which starts with the first report's status line
+        first_line = f"[SUCCESS] {case.reports[0].agent}"
+        calls = _turn_calls(recordings, first_line, tag="new_agent_message")
+        if calls:
+            print()
+            for r in case.reports:
+                _say("Agent report:", f"{r.agent}: {r.says}")
+            for n, call in enumerate(calls, 1):
+                _print_call(n, call, names)
     print(f"\n    RESULT: {verdicts.get(f'{case.id}#{trial}', '(not in baseline)')}")
 
 

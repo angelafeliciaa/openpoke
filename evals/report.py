@@ -43,6 +43,7 @@ def to_row(run: CaseRun, verdict: Verdict) -> Row:
             }
             for t in run.turns
         ],
+        "relay": {"dispatched": run.relay.dispatched, "told": run.relay.response} if run.relay else None,
         "first_prompt_tokens": run.first_prompt_tokens,
         "cost": round(run.cost, 5),
         "response": last.response if last else "",

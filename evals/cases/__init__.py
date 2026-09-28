@@ -10,9 +10,9 @@ from typing import List, Literal, Optional, Tuple
 CASES_DIR = Path(__file__).parent
 SUITES = ("routing", "hard")
 
-Kind = Literal["reuse", "create", "drift", "ambiguous"]
+Kind = Literal["reuse", "create", "drift", "ambiguous", "relay"]
 HistoryRole = Literal["user", "assistant", "agent"]
-_KINDS = ("reuse", "create", "drift", "ambiguous")
+_KINDS = ("reuse", "create", "drift", "ambiguous", "relay")
 _ROLES = ("user", "assistant", "agent")
 
 
@@ -32,6 +32,19 @@ class RosterEntry:
 
 
 @dataclass(frozen=True)
+class Report:
+    """What an execution agent answers when the case dispatches to it, scripted so the relay is gradable.
+
+    `must_relay` is one distinctive token from `says` (a name, a code, a price) that the user's reply
+    has to carry; dropping it means the agent's answer never reached the user.
+    """
+
+    agent: str
+    says: str
+    must_relay: str
+
+
+@dataclass(frozen=True)
 class Case:
     """One routing scenario.
 
@@ -40,6 +53,11 @@ class Case:
     drift: turn 1 creates an agent and the last turn must come back to it.
     ambiguous: two or more `candidates` fit equally well. For an action the agent must ask the user;
     for a `read_only` question, checking every candidate answers it too.
+    relay: one question spans every `candidates` agent (the tokyo flight and the lisbon hotel), so
+    all of them must be checked and each one's `reports` answer told back to the user.
+
+    Cases with `reports` continue after the last user turn: every candidate that was dispatched
+    answers with its scripted report, and the reply to the user is graded for each `must_relay`.
     """
 
     id: str
@@ -52,6 +70,7 @@ class Case:
     history: Tuple[HistoryEntry, ...] = ()
     candidates: Tuple[str, ...] = ()
     read_only: bool = False
+    reports: Tuple[Report, ...] = ()
 
     @property
     def roster_size(self) -> int:
@@ -76,11 +95,19 @@ class Case:
         if kind == "drift" and len(turns) < 2:
             raise ValueError(f"{raw['id']}: drift cases need at least two turns")
         candidates = tuple(raw.get("candidates") or ())
-        if (kind == "ambiguous") != (len(candidates) >= 2):
-            raise ValueError(f"{raw['id']}: ambiguous cases need two or more candidates and only they have them")
+        if (kind in ("ambiguous", "relay")) != (len(candidates) >= 2):
+            raise ValueError(f"{raw['id']}: ambiguous and relay cases need two or more candidates and only they have them")
         read_only = bool(raw.get("read_only"))
         if read_only and kind != "ambiguous":
             raise ValueError(f"{raw['id']}: only ambiguous cases are marked read_only")
+        reports = tuple(Report(r["agent"], r["says"], r["must_relay"]) for r in raw.get("reports") or ())
+        if reports and not (kind == "relay" or (kind == "ambiguous" and read_only)):
+            raise ValueError(f"{raw['id']}: only relay cases and read-only ambiguous cases carry reports")
+        if (kind == "relay" or reports) and {r.agent for r in reports} != set(candidates):
+            raise ValueError(f"{raw['id']}: every candidate needs exactly one report")
+        for r in reports:
+            if r.must_relay.lower() not in r.says.lower():
+                raise ValueError(f"{raw['id']}: must_relay {r.must_relay!r} is not in what the agent says")
         case = cls(
             id=raw["id"],
             suite=suite,
@@ -92,6 +119,7 @@ class Case:
             history=history,
             candidates=candidates,
             read_only=read_only,
+            reports=reports,
         )
         if case.roster_size != raw["roster_size"]:
             raise ValueError(f"{case.id}: roster has {case.roster_size} names, roster_size says {raw['roster_size']}")
