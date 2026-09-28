@@ -1,8 +1,8 @@
 {
- "case": "reuse-13@500",
+ "case": "reuse-06@500",
  "trial": 1,
  "request": {
-  "model": "gpt-5-mini",
+  "model": "anthropic/claude-sonnet-4",
   "messages": [
    {
     "role": "system",
@@ -10,7 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a10\" name=\"Snowflake Recruiter Follow-up\">Following up with the Snowflake recruiter.</agent>\n<agent id=\"a16\" name=\"Reddit Recruiter Follow-up\">Following up with the Reddit recruiter.</agent>\n<agent id=\"a26\" name=\"Cloudflare Recruiter Follow-up\">Following up with the Cloudflare recruiter.</agent>\n<agent id=\"a45\" name=\"Scale Recruiter Follow-up\">Following up with the Scale recruiter.</agent>\n<agent id=\"a213\" name=\"Notion Interview Prep\">Preparing for Notion interviews.</agent>\n<agent id=\"a248\" name=\"Notion Job Offer\">The Notion job offer.</agent>\n<agent id=\"a312\" name=\"Email to Recruiter at Notion\">Email thread with the Notion recruiter.</agent>\n<agent id=\"a450\" name=\"Notion Recruiter Follow-up\">Following up with the Notion recruiter.</agent>\n<agent id=\"a496\" name=\"Reminder 22\">Reminder #22 the user set.</agent>\n<agent id=\"a497\" name=\"Email to Farah\">Email thread with Farah.</agent>\n<agent id=\"a498\" name=\"Hotel in Athens\">Hotel booking in Athens.</agent>\n<agent id=\"a499\" name=\"Email to Jay\">Email thread with Jay.</agent>\n<agent id=\"a500\" name=\"Hotel in Melbourne\">Hotel booking in Melbourne.</agent>\n(487 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\ntell the notion recruiter im still interested\n</new_user_message>"
+    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a224\" name=\"Stripe Interview Prep\">Preparing for the Stripe onsite interview.</agent>\n<agent id=\"a496\" name=\"Call Eli Back\">Returning Eli's call.</agent>\n<agent id=\"a497\" name=\"Tax Filing 2025\">Tax Filing 2025.</agent>\n<agent id=\"a498\" name=\"Spotify Family Plan\">Spotify Family Plan.</agent>\n<agent id=\"a499\" name=\"Parking Permit\">Parking Permit.</agent>\n<agent id=\"a500\" name=\"Hotel in Seattle\">Hotel booking in Seattle.</agent>\n(494 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\nany update from stripe on the onsite?\n</new_user_message>"
    }
   ],
   "tools": [
@@ -166,61 +166,57 @@
   ]
  },
  "response": {
-  "id": "gen-1790499080-59H2hCwpcdm6VwetZZhv",
+  "id": "gen-1790574970-2LbFMc2PE1oONRhrdg8U",
   "object": "chat.completion",
-  "created": 1790499080,
-  "model": "openai/gpt-5-mini",
-  "provider": "OpenAI",
+  "created": 1790574970,
+  "model": "anthropic/claude-sonnet-4",
+  "provider": "Amazon Bedrock",
   "system_fingerprint": null,
-  "service_tier": "default",
+  "service_tier": null,
   "choices": [
    {
     "index": 0,
     "logprobs": null,
-    "finish_reason": "stop",
-    "native_finish_reason": "completed",
+    "finish_reason": "tool_calls",
+    "native_finish_reason": "tool_use",
     "message": {
      "role": "assistant",
-     "content": "Got it \u2014 I can tell the Notion recruiter you're still interested. Quick Qs before I send:\n\n- Which role/team is this about (or should I leave it generic)?\n- Any timing/availability updates to include?\n- Want a short, casual note or a slightly more formal one?\n\nHere\u2019s a short draft I\u2019ll send once you approve or edit:\n\nHi [Recruiter Name],\n\nI hope you\u2019re well. I wanted to let you know I\u2019m still very interested in the [Role] at Notion and would love to continue the process. I\u2019m available to chat this week \u2014 let me know what works for you.\n\nThanks,\n[Your Name]\n\nApprove as-is, tell me edits, or give the answers to the questions above.",
+     "content": null,
      "refusal": null,
-     "reasoning": "**Preparing message for recruiter**\n\nI need to follow the tool rules and ensure the user knows before I call the agent. There\u2019s an existing agent thread for the Notion recruiter, and the user wants to express continued interest. First, I should confirm the wording and any specifics, like role and availability. I'll draft a concise message and ask if it\u2019s okay or if there are edits needed. I\u2019ll keep a warm, witty tone while proposing this draft for their approval.",
-     "reasoning_details": [
+     "reasoning": null,
+     "tool_calls": [
       {
-       "type": "reasoning.summary",
-       "summary": "**Preparing message for recruiter**\n\nI need to follow the tool rules and ensure the user knows before I call the agent. There\u2019s an existing agent thread for the Notion recruiter, and the user wants to express continued interest. First, I should confirm the wording and any specifics, like role and availability. I'll draft a concise message and ask if it\u2019s okay or if there are edits needed. I\u2019ll keep a warm, witty tone while proposing this draft for their approval.",
-       "format": "openai-responses-v1",
-       "index": 0
-      },
-      {
-       "type": "reasoning.encrypted",
-       "data": "gAAAAABquNkLHBFj0pBZyuv_NSVgxvh-PAyFpJffLhUw-8MkF91dkr8BMLcAS1Q4Dhim-I5FunaKk0v7BrI-pK2Ox5w96ga_XeyYSIso0AFOlm5Q_65faX1sInz6KrPOQ05ejNlluVToM3QlptVToeB_0fJ6l27l8uPJumVh9-8qapPTj4ACvL37yTPqLSx-lzja2xa9UG_wPqpgd0tJ5mSc3i3iVBdZULOHgHC8TOl4UFgDyvMXc9bYhbCzqoWlIMSW8zapB-HQiwxBl5jBM1NhdjmukYxvZWIK8Hq8uJFbBjWoupb7f9HwwIfF9PX0CvL6BtEWnMwJn5IAOpTRhW8DPZ2ESjxy5NO_aZ6asyE0rdXd4AqOkp_LXtygp161IIysP7QwMdXnHoI3X90ibOPR4rqQRQVtIhCZvH7zkZB3wCM2P2i533E9W7aFGEAhT6o22Wga4YAFUNBSotwpkXwTynwM7qnYekuG7BGEAy2e2I5Ir4DIR-sucx_BgEsmO-sN9angc8l3dOvfpY1dU9-GOc0gfRdR_3FvPP_aNICH7AULl1z_oBWSoBmFZ89K3IIJn02maOB-FLvBqGBesLlfX92g8fbTBvvZJtzuGOoOi7ESFIv1w8F3V9UnnSU1om_o4DGqH4tlVz_SpZPqx8D9-i_mwZf8E70wlzb3WhSiKInERQA75BxjQHCpXuA2lAfA3kzmf6vJqrR2kzPrFRLGQcCCbFTefncKePES4hPCF3A8HDKyYUqynnf8zRyqEacnJYr1EqEBxmFyXomtY7hfGbFZpjXKbcYsRhVbRXTgMpBwMTczaX9Qrwcl9tpbXfq0QpVGL7AF-1O7X-XE9hE7Y7YqO6DlUhE5h7yvIajOmmwUD-d4EaRlJ1iay9cxP3h9DDQAKBY4hRiMrurqXX4CwbaX7IMIMhkRqjIY9DFOuxpE_84HEbX5JroIGItn-DFUpzfo4nLTA9nk3mYW1qp6gNEcvakUaTYMZiItFIsugWdsR_4MRxPM6sjRcDEsoJX9708gDIOC1FDn05s1II_MZrXdus0lGeOOSwx5K9YG3KP9Fyn9G9v_lKAS1BLc9167f04qmjzuRcmhMEicHwCxyY3qgMTXSxKJPjcvSo713vhYQh2bJAIUCzcKIkC5_a0bNJo2JA2Z_Ut8Bn1p-jBL6yUg1EYALkN9T0znXFPbpcfh44J8aVUFZHH6kxKK80jDBixVDKRYCqQ_VZoic_WqBZvAD5SUos_usdwwNID3088ZRqkWMYnFYh8q1JjuZbepiqIVWFb0K5eYDZWSdIwLf47DhTdUOIle2wTTEmx57wyvCH691Q7LQp-JIewJGFh62rAFLWf2SomayyH3dWhD7CrqTp9BXD8NgLgV2Sb4mkMsGSCPnpdimAB_bNTPEqZoK8dovvVEX6Nl4NG17e3td_b7UWdhuSE4b8BaOvWqGKryWFvugsnRWROW7fnhPqsVgmCMxHNdEHRjwHe-7BDd5jYWX_17ki93Q4QByj0ToWCG9vxCGLOCne1vt2TCAFtmjGPvoK0lIMTM1Vj3PT1mGE2j8ZpWIDG_nq12z4_wTjuwfeGzTD5ms71u93z3XZKH7igOfhZc9s6O-nlvZvsvID3PRr4J5ifuYs9Qeb26HlqIUpjFHCNbxrfFhQCVHyjKU6pPKVWxdpXYU8Nq1iSi2JqFuUhc-HLpSlHXQ701m1752N_0ToQl2VInL3UJyaXa40EZ7gv_9eRV1o80VbdtO8USZ034OvHg18Yfg2Ue6IhVkUib2QBJqLhZi7o_ErvCq5k66zrK4b62EQMR3HfRdxozg7mdfsxHMBI4Pa8mdFm1X2QLvN-VUsvzliwsMmZEz1ntJXkEjHvZoYmNgiveXVoKoFCyQpG-53y6U4Ac7JZ2xJHOYGpeJtHTILpgVkmK-vXDQwS94L50P6VOtsVKGwCAmHuY3ouA85YZycCS2B6yBPDZ5B4yq9gHtFS7RqgLLd4kodWkOIh6ND1evKpXyu1-4s2bYFfDmCDoRKA9v4ofSOao3d90llNRPtQqy99oxq1Iqar6Oo0O0glr3YZvrpTYhJ3nIoVJlefddCdcp5bCby3vXjKY81uw_1LPFF4iwrB5uuGsuAyr4-r_9ZO27dPXCLs8188JW6qe5opZyPw6vDWzdWsAplunlpRtOEGNu3iqdhstQMnDNnZLvqKwajLxHITmFd2Epg39We2atmcNrjh-GWyyE2qsbV_hPdrWC64rIDBAIGHZuXMCaaot_qcG9yRPbx-sVaFoFHf7lHypv_8xqFSMLw3-e272doGmI4jUD0Zk_viQQIxZJ5Uiec2MtxJES5jj-3YKqEzhqgOXIQTok8DtIfIUG96STkMc0sTjm__gNrqlyjWFYv9Gk-C5bX_hrz2p2VlxQh-_Edq_CyRc1QNoQWOaaydendbjTR6ErRkeAuGo4qVqmjunhpLlYe7Q7-LhrRzNdwfEe1hYvvs_D4Z2pxyBXzCdjYDSj7Swn1un5qIcuUDDOSuapJ6Lso_AOWEIOHalxX7V6l1YOuZHI8k=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC01LW1pbmktMjAyNS0wOC0wN3xvcGVuYWkifQ",
-       "format": "openai-responses-v1",
-       "id": "rs_0981263b9b8b6809016ab8d9094b4c87d1a228b2a363f40668",
-       "index": 1
+       "type": "function",
+       "index": 0,
+       "id": "toolu_bdrk_01QZH4g5nC5FA1UmGUAChBMk",
+       "function": {
+        "name": "send_message_to_user",
+        "arguments": "{\"message\": \"Let me check on your Stripe interview status.\"}"
+       }
       }
      ]
     }
    }
   ],
   "usage": {
-   "prompt_tokens": 3318,
-   "completion_tokens": 344,
-   "total_tokens": 3662,
-   "cost": 0.0009415,
+   "prompt_tokens": 4153,
+   "completion_tokens": 65,
+   "total_tokens": 4218,
+   "cost": 0.0034227,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 2560,
-    "cache_write_tokens": 0,
+    "cached_tokens": 3804,
+    "cache_write_tokens": 346,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.0009415,
-    "upstream_inference_prompt_cost": 0.0002535,
-    "upstream_inference_completions_cost": 0.000688
+    "upstream_inference_cost": 0.0034227,
+    "upstream_inference_prompt_cost": 0.0024477,
+    "upstream_inference_completions_cost": 0.000975
    },
    "completion_tokens_details": {
-    "reasoning_tokens": 128,
+    "reasoning_tokens": 0,
     "image_tokens": 0,
     "audio_tokens": 0
    }

@@ -311,10 +311,6 @@ full diff.
 - **The harness skips the model's closing turn after a dispatch.** That turn would only produce a
   reply, so it's skipped to save a full prompt per case. A model that dispatches a second agent
   only after seeing the first tool result is not measured.
-- **Some reuse tests at 500 agents have same-company filler next to the target.** The filler
-  pool has three agents per company (Job Offer, Interview Prep, Recruiter Follow-up). A 500-agent
-  roster takes 499 of 545 names, so they almost always land together. Left as-is; see
-  [To do](#to-do).
 
 ## To do
 
@@ -358,25 +354,31 @@ recorded sends (no API cost):
 - **Would catch:** `amb-02@500`, both `amb-03`, both `amb-06`.
 - **Would miss:** `amb-07@500`, because "letter" is only in Chen's description.
 - **Would not fire** on trap, paraphrase, drift or sounds_new.
-- **Would fire once** on `reuse-13@500` ("tell the notion recruiter im still interested"), which
-  is a test bug, not a product bug: the filler pool added "Notion Recruiter Follow-up" next to
-  "Email to Recruiter at Notion". Same job, two agents. Documented below; don't teach the tool to
-  treat that as ambiguity.
+- **Would not fire** on `reuse-13@500` any more: the "Notion Recruiter Follow-up" filler that
+  sat next to "Email to Recruiter at Notion" was a generator bug, fixed below.
 
 `amb-02@5` is a wording leak, not a missed dispatch. The existing `asked_about_agents` grader
 already fails it.
 
-### Test bugs to leave or fix later
+### Filler that was the target's job under another name (fixed)
 
-- **`reuse-13@500` / `para-15@500`:** filler "Notion Recruiter Follow-up" duplicates "Email to
-  Recruiter at Notion". The generator should refuse filler that is the same job as the target
-  (same person or company *and* the same kind of work).
-- **`reuse-02@500` / `reuse-06@500`:** Vercel Job Offer sits next to Vercel Recruiter Follow-up;
-  Stripe Interview Prep sits next to Stripe Recruiter Follow-up. These are separate stages of one
-  job hunt, so they are closer to real overload than the Notion clone, but the tests grade only
-  one answer as correct ("any update from stripe on the onsite?" could reasonably go to the
-  recruiter). Left as-is rather than deleted; a later change could accept either reasonable
-  owner.
+The filler pool used to be sampled blind, so a reuse case could draw a second plausible owner
+at random: "Notion Recruiter Follow-up" beside "Email to Recruiter at Notion" (`reuse-13@500`,
+`para-15@500`), "Vercel Interview Prep" beside "Vercel Job Offer" (`reuse-02@500`), "Email to
+Chen" beside "Email to Professor Chen" (`reuse-08@500`). A case grades one answer, so a second
+reasonable one has to be placed on purpose, as the trap and ambiguous families do.
+
+`build_roster` now swaps out any random pick that shares a content word with the target or the
+candidates (`same_job` in `evals/cases/generate.py`; template words like "email", "renewal" or
+"appointment" don't count). Swaps come from a per-case seeded draw, so the 182 rosters that had
+no such filler are byte-identical and their recordings still replay. 22 rosters changed, all but
+one at 500 agents. `evals/test_cases.py` holds the invariant. Re-recording the 10 prompts per
+model that actually changed moved no Sonnet verdict; on gpt-5-mini three of the decoy-driven
+misses became `reused_target` and one case moved to `asked_user`.
+
+Also gone with this: the "Vercel Job Offer next to Vercel Recruiter Follow-up" reuse cases that
+graded only one of two reasonable owners. Look-alikes of that kind now appear only in the trap
+family, where they are the point of the case.
 
 ### Relay after checking several agents
 

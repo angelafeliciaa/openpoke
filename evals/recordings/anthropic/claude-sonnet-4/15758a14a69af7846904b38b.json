@@ -1,5 +1,5 @@
 {
- "case": "reuse-02@500",
+ "case": "reuse-13@500",
  "trial": 1,
  "request": {
   "model": "anthropic/claude-sonnet-4",
@@ -10,7 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a118\" name=\"Vercel Job Offer\">Offer and start-date negotiation with the Vercel recruiter.</agent>\n<agent id=\"a362\" name=\"Vercel Interview Prep\">Preparing for Vercel interviews.</agent>\n<agent id=\"a485\" name=\"Vercel Recruiter Follow-up\">Following up with the Vercel recruiter.</agent>\n<agent id=\"a496\" name=\"Hotel in Berlin\">Hotel booking in Berlin.</agent>\n<agent id=\"a497\" name=\"Lunch with Finn\">Scheduling lunch with Finn.</agent>\n<agent id=\"a498\" name=\"Concert Tickets Radiohead\">Concert Tickets Radiohead.</agent>\n<agent id=\"a499\" name=\"Email to Zane\">Email thread with Zane.</agent>\n<agent id=\"a500\" name=\"Stripe Recruiter Follow-up\">Following up with the Stripe recruiter.</agent>\n(492 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\nask vercel if they can bump the start date to november\n</new_user_message>"
+    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a10\" name=\"Snowflake Recruiter Follow-up\">Following up with the Snowflake recruiter.</agent>\n<agent id=\"a16\" name=\"Reddit Recruiter Follow-up\">Following up with the Reddit recruiter.</agent>\n<agent id=\"a26\" name=\"Cloudflare Recruiter Follow-up\">Following up with the Cloudflare recruiter.</agent>\n<agent id=\"a45\" name=\"Scale Recruiter Follow-up\">Following up with the Scale recruiter.</agent>\n<agent id=\"a61\" name=\"Canva Recruiter Follow-up\">Following up with the Canva recruiter.</agent>\n<agent id=\"a68\" name=\"Brex Recruiter Follow-up\">Following up with the Brex recruiter.</agent>\n<agent id=\"a76\" name=\"Ramp Recruiter Follow-up\">Following up with the Ramp recruiter.</agent>\n<agent id=\"a312\" name=\"Email to Recruiter at Notion\">Email thread with the Notion recruiter.</agent>\n<agent id=\"a496\" name=\"Reminder 22\">Reminder #22 the user set.</agent>\n<agent id=\"a497\" name=\"Email to Farah\">Email thread with Farah.</agent>\n<agent id=\"a498\" name=\"Hotel in Athens\">Hotel booking in Athens.</agent>\n<agent id=\"a499\" name=\"Email to Jay\">Email thread with Jay.</agent>\n<agent id=\"a500\" name=\"Hotel in Melbourne\">Hotel booking in Melbourne.</agent>\n(487 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\ntell the notion recruiter im still interested\n</new_user_message>"
    }
   ],
   "tools": [
@@ -166,9 +166,9 @@
   ]
  },
  "response": {
-  "id": "gen-1790504208-1g8yuYCWpy1Sy2Uym2Zd",
+  "id": "gen-1790574985-pgrl6MGQToYTnDBtLs5e",
   "object": "chat.completion",
-  "created": 1790504208,
+  "created": 1790574985,
   "model": "anthropic/claude-sonnet-4",
   "provider": "Amazon Bedrock",
   "system_fingerprint": null,
@@ -181,17 +181,17 @@
     "native_finish_reason": "tool_use",
     "message": {
      "role": "assistant",
-     "content": "I'll reach out to the Vercel recruiter about pushing your start date to November.",
+     "content": "I'll let the Notion recruiter know you're still interested.",
      "refusal": null,
      "reasoning": null,
      "tool_calls": [
       {
        "type": "function",
        "index": 0,
-       "id": "toolu_bdrk_01C8G85KiG2HuAamWJfP5X5Q",
+       "id": "toolu_bdrk_01FqApacvzLJf6qCqBN3vPSG",
        "function": {
         "name": "send_message_to_agent",
-        "arguments": "{\"agent_id\": \"a118\", \"instructions\": \"Ask the Vercel recruiter if they can move the start date to November. Be professional and explain that this would work better for the candidate's schedule.\"}"
+        "arguments": "{\"agent_id\": \"a312\", \"instructions\": \"Send a follow-up email to the Notion recruiter expressing that the user is still interested in the opportunity. Keep it professional but brief.\"}"
        }
       }
      ]
@@ -199,21 +199,21 @@
    }
   ],
   "usage": {
-   "prompt_tokens": 4236,
-   "completion_tokens": 127,
-   "total_tokens": 4363,
-   "cost": 0.00466395,
+   "prompt_tokens": 4375,
+   "completion_tokens": 119,
+   "total_tokens": 4494,
+   "cost": 0.0050652,
    "is_byok": false,
    "prompt_tokens_details": {
     "cached_tokens": 3804,
-    "cache_write_tokens": 429,
+    "cache_write_tokens": 568,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.00466395,
-    "upstream_inference_prompt_cost": 0.00275895,
-    "upstream_inference_completions_cost": 0.001905
+    "upstream_inference_cost": 0.0050652,
+    "upstream_inference_prompt_cost": 0.0032802,
+    "upstream_inference_completions_cost": 0.001785
    },
    "completion_tokens_details": {
     "reasoning_tokens": 0,

@@ -1,8 +1,8 @@
 {
- "case": "reuse-07@500",
+ "case": "reuse-02@500",
  "trial": 1,
  "request": {
-  "model": "anthropic/claude-sonnet-4",
+  "model": "gpt-5-mini",
   "messages": [
    {
     "role": "system",
@@ -10,7 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a15\" name=\"Hotel in Portland\">Hotel booking in Portland.</agent>\n<agent id=\"a17\" name=\"Trip Planning Lisbon\">Itinerary for a trip to Lisbon.</agent>\n<agent id=\"a20\" name=\"Netflix Cancel\">Netflix Cancel.</agent>\n<agent id=\"a29\" name=\"Hotel in Toronto\">Hotel booking in Toronto.</agent>\n<agent id=\"a62\" name=\"Wine Club Cancel\">Wine Club Cancel.</agent>\n<agent id=\"a432\" name=\"Spotify Family Plan\">Spotify Family Plan.</agent>\n<agent id=\"a475\" name=\"Hotel in Lisbon\">Hotel booking in Lisbon.</agent>\n<agent id=\"a488\" name=\"Flight to Lisbon\">Finding and booking a flight to Lisbon.</agent>\n<agent id=\"a496\" name=\"Cohere Interview Prep\">Preparing for Cohere interviews.</agent>\n<agent id=\"a497\" name=\"Hotel in Osaka\">Hotel booking in Osaka.</agent>\n<agent id=\"a498\" name=\"Email to Emma\">Email thread with Emma.</agent>\n<agent id=\"a499\" name=\"Datadog Job Offer\">The Datadog job offer.</agent>\n<agent id=\"a500\" name=\"Email to Zane\">Email thread with Zane.</agent>\n(487 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\ncancel the lisbon hotel, plans changed\n</new_user_message>"
+    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a118\" name=\"Vercel Job Offer\">Offer and start-date negotiation with the Vercel recruiter.</agent>\n<agent id=\"a496\" name=\"Hotel in Berlin\">Hotel booking in Berlin.</agent>\n<agent id=\"a497\" name=\"Lunch with Finn\">Scheduling lunch with Finn.</agent>\n<agent id=\"a498\" name=\"Concert Tickets Radiohead\">Concert Tickets Radiohead.</agent>\n<agent id=\"a499\" name=\"Email to Zane\">Email thread with Zane.</agent>\n<agent id=\"a500\" name=\"Stripe Recruiter Follow-up\">Following up with the Stripe recruiter.</agent>\n(494 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\nask vercel if they can bump the start date to november\n</new_user_message>"
    }
   ],
   "tools": [
@@ -166,57 +166,66 @@
   ]
  },
  "response": {
-  "id": "gen-1790504248-MO74mh3gJoWUREka1PrL",
+  "id": "gen-1790574988-54imvnKscuzFY3nO3db8",
   "object": "chat.completion",
-  "created": 1790504248,
-  "model": "anthropic/claude-sonnet-4",
-  "provider": "Amazon Bedrock",
+  "created": 1790574988,
+  "model": "openai/gpt-5-mini",
+  "provider": "OpenAI",
   "system_fingerprint": null,
-  "service_tier": null,
+  "service_tier": "default",
   "choices": [
    {
     "index": 0,
     "logprobs": null,
     "finish_reason": "tool_calls",
-    "native_finish_reason": "tool_use",
+    "native_finish_reason": "completed",
     "message": {
      "role": "assistant",
-     "content": "I'll cancel your Lisbon hotel booking right away.",
+     "content": null,
      "refusal": null,
      "reasoning": null,
      "tool_calls": [
       {
        "type": "function",
        "index": 0,
-       "id": "toolu_bdrk_01QVY8pChN38J34yYQYosBsp",
+       "id": "call_SjcEDLoZQHHa9mpdbhTSxbMx",
        "function": {
-        "name": "send_message_to_agent",
-        "arguments": "{\"agent_id\": \"a475\", \"instructions\": \"Cancel the hotel booking in Lisbon. The user's plans have changed.\"}"
+        "name": "send_message_to_user",
+        "arguments": "{\"message\":\"Got it \u2014 I can ask Vercel to move your start date to November. Quick Qs before I reach out: which day in November (or flexible whole month)? Any constraints I should mention (e.g., need to finish current project, visa timing)? And do you want a relaxed/neutral tone or firm/urgent?\"}"
        }
+      }
+     ],
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqugGOONkJmQEtwv_gi99x_wOLdxZaDhMYv9MzpmmO051Iz0Stl7M76X9rKWRFNxx1s7jTeZ6USTtTAPy6Hdaj2JK92em7hFNgo6YPQjyOOkUjbjIgehKjLCYlDYA60Syhi81O0R-VQzgl8Wt1FmBpGUWyj2wtFHgEPkccqtW9HIgiSP2_jIyhUW3m2XVSQKK79go6UQ3XiJB4hY8TE_1K3uP5GAHyacGs56PtwqdqV9mFOzyz5FVfNX_pQq-2K2dWsPWCja5poew70p7CVKfVPkH1imbuXkJIi1v1bdwEuMnB_liBLm_lNSuhJLfh1hxZOaz9bjWvMoln_HRPxcGYnQbdpLe70Vel-lNIScTjbymqB4qqeCqkICLFdm6Bclwuofb5DE--sz31G17ZcaBbBNvpNoOwlMwFWibkjLhc43d7C-ehJFfSZF9RlOAuQ2POsSi-I-BO5w_aSQsYtQ5Fj-hMI-D3Jc8iG5xudWqTYzZTcNuzctS_eo-vlL2L3EEnuZG4mdRqOeDKRkDKKoi7lI2ol7ArRceAmdbmDvnB2NLtszEad2gozTdED4XSeX6KgHVAIKJGEzD-bhhC1Maf36zQAenMGnQ-_L5-Giny_3RjFqO1cP3WAmkbonEKsHo8w5mA7jkJsh_4EojxW13F2uKe32vLRvJdPJz8MhTMFG_VWK-ZAQENjxNUa-zVzoze6WjdHUNIhImv05SX6j_EISS43bJg664X-jTsqAd9MBfhgtfkt6_hfdXvnXIvBiLeYqKGZXDXwEX-BlqzEn0PQSNr-4EMnEiMqn-UC4zO_nuywuGMHQzEfWziFhRLWqX8PbSUMKgs7ImF-PkjwIh2ZVzS_SOZIYZoRFuCYMhxkkCxFMhp9ZLMNYUeYuiiAAwfKsxxvdYBEcP1W--2NukhXCPWbLpdT03aP5LO3bdzF4dbzIStl4EjkX6j2kxyj965XdHREwtk52rEaSiLP83GbSrq-dQBqSoBeStJNYOeA9GeaiwaSKcutQA5epMmp2tLTlPMw_fPLX1UA6TGeD5yyGCPlAnyzIV5ZG6r9293Ikx8DnW54ZgpkL3qeG8qQhAHnt0d066DS0xQwKsPt5F76qzrLaQ-oJ9hwX-OuelmYyJxlDkH56g0Ig0KQBQjnuojN56I7TVQQ8XWZzzkSHkB1swn1RgbpSKNjH-FvPFCdle1aEYeZSWIk0SWV5Xcq_Vqh6Es4BJoKDJIJ3dIkPEDMWmAha2MhDPn8sdCWzR8kH2ElusrFpxJqmJUVjrOQk2OW-zURWzIUmSlFRsaj9NE2zPLT-yZ6mK1ykWObXhmPu0BWrZmamUOrXRd5YclGHt7D1nzLeU5prBPdPffzVPrZxHEoLm3dOyyN-27qA1vkSJHiRVSVj5Un48BMgCm5c_HsuLST4Hm7z4LpIXwDnnYdDtoFbCf6sA_Kt4HDq6H_yderasDULF8F9rSU50-jTeewBMqegu544mABU4RI-7rQM_MXm63800dyd47MgC38xsMHDnV3ilkBNx7epzKdn8JwN5VIT6WPmnkygY11WYND4RihNnAZCcKvBh1Zo0nfaifgOWXni07zpfgMBg4xlJqwGz6JB9LtHUCg5JHaZCcmdYSMKUI-i0sQPbsT7w5AoPGm-9HoddDVkzxFcBxoT8oPEA9AQ36yI3BAEiS5n7R_JBzPEDvSfQ3OwZbuKEKadOs2Z6549B0nIPBVoXmHijrrb4qVFnJ9e96TpJN5Qw2h2sqedGJ7v1v1Crjf1t5P1O48RQMsTkQu-XIxG3EWufZXIxs9GNJ3tFMC9-nEFVgkfZVfybWAaPjkNKu1eI336vFGhlRy1Zxhtajy0XkiDZhT1K0aL7eM0L0RBM9fsTzL2LL8kz2mkj38k6sa4tjydpB0wZaSA9L3lw0-0OKYGYNPAK0AFyEMXyOaZkrT54wNiL0iKXOPS4ytJMHQ50qUqs2QKmatwLku37KfBud5inxvW5Npalg5ajvM-E-msfANZWWIVlwIp9zkbCk2DUhLR1hTBR950IIDbd5F9xTcV7GHqQLgbvU9TjqR-LCaHGnXO-YCwfegsS36fnWCHrnOFi6KVUlTHG7kEwhhKxp5nUNPD7UAOC-7ilRuqk10YqcC1fJWWdievg1Khtzo_VLwIROnMF1CKi4dPCqUcUaDHPcrLxX.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC01LW1pbmktMjAyNS0wOC0wN3xvcGVuYWkifQ",
+       "format": "openai-responses-v1",
+       "id": "rs_0981e18a2105c1e4016aba018da88887d188d2b8d5d3bdfafc",
+       "index": 0
       }
      ]
     }
    }
   ],
   "usage": {
-   "prompt_tokens": 4318,
-   "completion_tokens": 104,
-   "total_tokens": 4422,
-   "cost": 0.00462645,
+   "prompt_tokens": 3157,
+   "completion_tokens": 215,
+   "total_tokens": 3372,
+   "cost": 0.00064325,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 3804,
-    "cache_write_tokens": 511,
+    "cached_tokens": 2560,
+    "cache_write_tokens": 0,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.00462645,
-    "upstream_inference_prompt_cost": 0.00306645,
-    "upstream_inference_completions_cost": 0.00156
+    "upstream_inference_cost": 0.00064325,
+    "upstream_inference_prompt_cost": 0.00021325,
+    "upstream_inference_completions_cost": 0.00043
    },
    "completion_tokens_details": {
-    "reasoning_tokens": 0,
+    "reasoning_tokens": 64,
     "image_tokens": 0,
     "audio_tokens": 0
    }

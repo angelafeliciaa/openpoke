@@ -1,5 +1,5 @@
 {
- "case": "reuse-13@50",
+ "case": "reuse-02@500",
  "trial": 1,
  "request": {
   "model": "anthropic/claude-sonnet-4",
@@ -10,7 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a9\" name=\"Email to Recruiter at Notion\">Email thread with the Notion recruiter.</agent>\n<agent id=\"a27\" name=\"Webflow Recruiter Follow-up\">Following up with the Webflow recruiter.</agent>\n<agent id=\"a38\" name=\"Notion Job Offer\">The Notion job offer.</agent>\n<agent id=\"a46\" name=\"Asana Recruiter Follow-up\">Following up with the Asana recruiter.</agent>\n<agent id=\"a47\" name=\"Flight to Seattle\">Finding and booking a flight to Seattle.</agent>\n<agent id=\"a48\" name=\"Trip Planning Boston\">Itinerary for a trip to Boston.</agent>\n<agent id=\"a49\" name=\"Stripe Interview Prep\">Preparing for the Stripe onsite interview.</agent>\n<agent id=\"a50\" name=\"Hotel in Melbourne\">Hotel booking in Melbourne.</agent>\n(42 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\ntell the notion recruiter im still interested\n</new_user_message>"
+    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a118\" name=\"Vercel Job Offer\">Offer and start-date negotiation with the Vercel recruiter.</agent>\n<agent id=\"a496\" name=\"Hotel in Berlin\">Hotel booking in Berlin.</agent>\n<agent id=\"a497\" name=\"Lunch with Finn\">Scheduling lunch with Finn.</agent>\n<agent id=\"a498\" name=\"Concert Tickets Radiohead\">Concert Tickets Radiohead.</agent>\n<agent id=\"a499\" name=\"Email to Zane\">Email thread with Zane.</agent>\n<agent id=\"a500\" name=\"Stripe Recruiter Follow-up\">Following up with the Stripe recruiter.</agent>\n(494 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\nask vercel if they can bump the start date to november\n</new_user_message>"
    }
   ],
   "tools": [
@@ -166,9 +166,9 @@
   ]
  },
  "response": {
-  "id": "gen-1790504290-EoSGUvUYUqvRAleB7a8C",
+  "id": "gen-1790574968-UEcLlcWbyNKtEYJwYggY",
   "object": "chat.completion",
-  "created": 1790504290,
+  "created": 1790574968,
   "model": "anthropic/claude-sonnet-4",
   "provider": "Amazon Bedrock",
   "system_fingerprint": null,
@@ -181,17 +181,17 @@
     "native_finish_reason": "tool_use",
     "message": {
      "role": "assistant",
-     "content": null,
+     "content": "I'll reach out to the Vercel recruiter about moving your start date to November.",
      "refusal": null,
      "reasoning": null,
      "tool_calls": [
       {
        "type": "function",
        "index": 0,
-       "id": "toolu_bdrk_012oWwRQpjgPA7nd5WK2jZ6z",
+       "id": "toolu_bdrk_01F9iFaNv2tej9gFC8Q9gCcv",
        "function": {
-        "name": "send_message_to_user",
-        "arguments": "{\"message\": \"I'll reach out to the Notion recruiter to let them know you're still interested.\"}"
+        "name": "send_message_to_agent",
+        "arguments": "{\"agent_id\": \"a118\", \"instructions\": \"Ask the Vercel recruiter if they can bump the start date to November. Be polite and professional in the request.\"}"
        }
       }
      ]
@@ -199,21 +199,21 @@
    }
   ],
   "usage": {
-   "prompt_tokens": 4228,
-   "completion_tokens": 74,
-   "total_tokens": 4302,
-   "cost": 0.00383895,
+   "prompt_tokens": 4177,
+   "completion_tokens": 121,
+   "total_tokens": 4298,
+   "cost": 0.0174765,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 3804,
-    "cache_write_tokens": 421,
+    "cached_tokens": 0,
+    "cache_write_tokens": 4174,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.00383895,
-    "upstream_inference_prompt_cost": 0.00272895,
-    "upstream_inference_completions_cost": 0.00111
+    "upstream_inference_cost": 0.0174765,
+    "upstream_inference_prompt_cost": 0.0156615,
+    "upstream_inference_completions_cost": 0.001815
    },
    "completion_tokens_details": {
     "reasoning_tokens": 0,

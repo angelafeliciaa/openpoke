@@ -153,10 +153,36 @@ def _ok_distractor(name: str, exclude: list[str]) -> bool:
     return not any(k in low for k in exclude)
 
 
-def build_roster(rng: random.Random, size: int, pool: list[str], must_have: str | None, exclude: list[str]) -> list[str]:
+# Words many names share; sharing one of these with the target says nothing about whose job it is.
+_TEMPLATE_WORDS = {"email", "to", "lunch", "with", "call", "back", "flight", "hotel", "in", "trip", "planning",
+                   "job", "offer", "interview", "prep", "recruiter", "follow-up", "reminder", "for", "at", "the", "a",
+                   "renewal", "cancel", "appointment", "booking", "membership"}
+
+
+def content_words(name: str) -> set[str]:
+    return {w for w in name.lower().split() if w not in _TEMPLATE_WORDS and not w.isdigit()}
+
+
+def same_job(filler: str, protected: list[str]) -> bool:
+    """Filler that shares a content word with a protected agent (Vercel, Notion, dentist, gift) is the
+    same job under another name. A test that grades one answer must not draw a second one at random;
+    families that want a look-alike add it explicitly, as trap does."""
+    words = content_words(filler)
+    return any(words & content_words(p) for p in protected)
+
+
+def build_roster(rng: random.Random, size: int, pool: list[str], must_have: str | None, exclude: list[str],
+                 protect: list[str] | None = None) -> list[str]:
+    protected = list(protect or ([must_have] if must_have else []))
     candidates = [p for p in pool if p != must_have and _ok_distractor(p, exclude)]
     need = size - (1 if must_have else 0)
     picked = rng.sample(candidates, need)
+    # Swap out same-job picks in place with a per-case draw, so rosters that had none stay byte-identical.
+    bad = [p for p in picked if same_job(p, protected)]
+    if bad:
+        spare = [c for c in candidates if c not in picked and not same_job(c, protected)]
+        swaps = random.Random(f"{must_have}|{size}|{','.join(protected)}").sample(spare, len(bad))
+        picked = [swaps[bad.index(p)] if p in bad else p for p in picked]
     if must_have:
         picked.append(must_have)
     rng.shuffle(picked)

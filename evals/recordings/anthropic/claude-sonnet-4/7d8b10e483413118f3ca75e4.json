@@ -1,8 +1,8 @@
 {
- "case": "reuse-10@500",
+ "case": "reuse-07@500",
  "trial": 1,
  "request": {
-  "model": "gpt-5-mini",
+  "model": "anthropic/claude-sonnet-4",
   "messages": [
    {
     "role": "system",
@@ -10,27 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a359\" name=\"Gift for Dad\">Gift for Dad.</agent>\n<agent id=\"a458\" name=\"Birthday Gift for Mom\">Choosing and ordering a birthday gift for Mom.</agent>\n<agent id=\"a496\" name=\"Email to Finn\">Email thread with Finn.</agent>\n<agent id=\"a497\" name=\"Email to Nikhil\">Email thread with Nikhil.</agent>\n<agent id=\"a498\" name=\"Email to Nia\">Email thread with Nia.</agent>\n<agent id=\"a499\" name=\"Email to Aditi\">Email thread with Aditi.</agent>\n<agent id=\"a500\" name=\"DoorDash Job Offer\">The DoorDash job offer.</agent>\n(493 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\norder the gift for mom we talked about\n</new_user_message>"
-   },
-   {
-    "role": "assistant",
-    "content": "",
-    "tool_calls": [
-     {
-      "type": "function",
-      "index": 0,
-      "id": "call_5HLvh8ALz4GRHQCrayW64cmH",
-      "function": {
-       "name": "send_message_to_user",
-       "arguments": "{\"message\":\"Got it \u2014 I\u2019ll order Mom\u2019s gift. Quick confirmations before I place anything: 1) Ship to your default address? 2) Charge your default card ending in 1234? 3) Any personalization or gift note to include? Reply with any changes or just \u201cgo\u201d to proceed.\"}"
-      }
-     }
-    ]
-   },
-   {
-    "role": "tool",
-    "tool_call_id": "call_5HLvh8ALz4GRHQCrayW64cmH",
-    "content": "{\"tool\": \"send_message_to_user\", \"status\": \"success\", \"arguments\": {\"message\": \"Got it \\u2014 I\\u2019ll order Mom\\u2019s gift. Quick confirmations before I place anything: 1) Ship to your default address? 2) Charge your default card ending in 1234? 3) Any personalization or gift note to include? Reply with any changes or just \\u201cgo\\u201d to proceed.\"}, \"result\": {\"status\": \"delivered\"}}"
+    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a15\" name=\"Hotel in Portland\">Hotel booking in Portland.</agent>\n<agent id=\"a20\" name=\"Netflix Cancel\">Netflix Cancel.</agent>\n<agent id=\"a29\" name=\"Hotel in Toronto\">Hotel booking in Toronto.</agent>\n<agent id=\"a31\" name=\"Hotel in Auckland\">Hotel booking in Auckland.</agent>\n<agent id=\"a36\" name=\"Hotel in Reykjavik\">Hotel booking in Reykjavik.</agent>\n<agent id=\"a62\" name=\"Wine Club Cancel\">Wine Club Cancel.</agent>\n<agent id=\"a432\" name=\"Spotify Family Plan\">Spotify Family Plan.</agent>\n<agent id=\"a475\" name=\"Hotel in Lisbon\">Hotel booking in Lisbon.</agent>\n<agent id=\"a496\" name=\"Cohere Interview Prep\">Preparing for Cohere interviews.</agent>\n<agent id=\"a497\" name=\"Hotel in Osaka\">Hotel booking in Osaka.</agent>\n<agent id=\"a498\" name=\"Email to Emma\">Email thread with Emma.</agent>\n<agent id=\"a499\" name=\"Datadog Job Offer\">The Datadog job offer.</agent>\n<agent id=\"a500\" name=\"Email to Zane\">Email thread with Zane.</agent>\n(487 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\ncancel the lisbon hotel, plans changed\n</new_user_message>"
    }
   ],
   "tools": [
@@ -186,72 +166,57 @@
   ]
  },
  "response": {
-  "id": "gen-1790499044-GQLsvxzzSp7BGKN0WBkC",
+  "id": "gen-1790574974-YJSjHduEccAbZsmC9CYV",
   "object": "chat.completion",
-  "created": 1790499044,
-  "model": "openai/gpt-5-mini",
-  "provider": "OpenAI",
+  "created": 1790574974,
+  "model": "anthropic/claude-sonnet-4",
+  "provider": "Amazon Bedrock",
   "system_fingerprint": null,
-  "service_tier": "default",
+  "service_tier": null,
   "choices": [
    {
     "index": 0,
     "logprobs": null,
     "finish_reason": "tool_calls",
-    "native_finish_reason": "completed",
+    "native_finish_reason": "tool_use",
     "message": {
      "role": "assistant",
-     "content": null,
+     "content": "I'll cancel your Lisbon hotel booking right away.",
      "refusal": null,
-     "reasoning": "**Waiting for user response**\n\nI\u2019ve already asked the user for confirmation, so now I think it\u2019s best to pause and wait for their reply. It seems like I shouldn\u2019t send anything else right now. I remember the instruction about checking conversation history and using a wait tool if there's a chance of duplicating messages. So, I\u2019ll make sure to use the functions.wait now to avoid any confusion or redundancy.",
+     "reasoning": null,
      "tool_calls": [
       {
        "type": "function",
        "index": 0,
-       "id": "call_h2ts6jtvnKHCjohB4dpVzBIm",
+       "id": "toolu_bdrk_015R48uG5CuThsCfiPmcMtzQ",
        "function": {
-        "name": "wait",
-        "arguments": "{\"reason\":\"Already asked user confirmations about shipping address, card, and gift note; avoiding duplicate prompt\"}"
+        "name": "send_message_to_agent",
+        "arguments": "{\"agent_id\": \"a475\", \"instructions\": \"Cancel the hotel booking in Lisbon - the user's plans have changed.\"}"
        }
-      }
-     ],
-     "reasoning_details": [
-      {
-       "type": "reasoning.summary",
-       "summary": "**Waiting for user response**\n\nI\u2019ve already asked the user for confirmation, so now I think it\u2019s best to pause and wait for their reply. It seems like I shouldn\u2019t send anything else right now. I remember the instruction about checking conversation history and using a wait tool if there's a chance of duplicating messages. So, I\u2019ll make sure to use the functions.wait now to avoid any confusion or redundancy.",
-       "format": "openai-responses-v1",
-       "index": 0
-      },
-      {
-       "type": "reasoning.encrypted",
-       "data": "gAAAAABquNjlUSE7Wie27N4qplFd2ou3e-cXTTiFOmdOe3ueGWU4qmTPRbTrs6QTvnYVaDvcIoENP_z5ipicYr0N8Xgmh_BoqVlVx-VXv3fiLk1jTfTL8pCbKTed6Z_PEQeHquUW-5qf5Y9aE9_ws1ASPMW3M-IpMoYWRvHlVz-2wNJXBYJsGsAP_MgZT4DEyPz_KRO8RLRd3wwFPBnjjF-ArE8CQxa6vq0tGrSUQcLqR8Wehclqb-tO1ZlmBnABr7ipkjXBf2LyiU9S78FtVCZeB-s88OjMWJSBpSu8WUPvJFLYXYGqfhVhOMBpK3sVl6RU12Tlg2P8vaEq9cGNLukHTd6T7O5en-JSo5pNxyWNHQEdPVxOekygVaCJHxEhFtGJwr531ryPi5Vd4iC4IIVZWlOIuabvRnRbR6sP_bhuLifxZaAnGQ7bAR-GwVlhN_dtYK2zZ9eHIxBGZigBAtvjqlRCv13qd8MLemQl-oJTxBacmrnbg5no3gl7ixNWGVYPxXBrSZAUNWgaTMgu5dSjq0YqAZ49Gfmv8X2dGLsG79ODmR9T2ePza_pUgJ2PQPnILLKYyjqroPemiZnscDIXBK-8-oDKc2oe3udfyDmsOjqmh63O4u4afInp-ipx6X_da_3J9SILJSA0mZqTrgvJW7ozCBG4kZhi0wm-UGv7EOSxHHXMoifVzTtubOw3uRtrNX5aG3RmXuBD1adsrRpLebTM6e8-PPRbxxPbhoEbNcscCS7Z2FF5W42Qrk_pivQpXOrekryMDX8TCSotArgj4ubRmVVbSM1sdEyhrAgAN16z_xAeF87vUNLkVuZTrRmpPkqKtKXHU_Mvv129p4fAxzA8UeA-8w-I7ZCh5P-uBNjprZUFxwHKC783PWKk--Dj3ivFqJW-BUrw7CI1Pv8UARcWNTSDzm8V8w9-FnS29E2kVyaGrpNeJ2TqnqtmiJm0qUx1Q5RZ_TmAdOKyfnWfY5AvLEJu1FfpLfp-x6Js1bIADTPLpOZFlsiN60NzH8xHyZZl8Yq0p5VBLl_Diz8RPFfjIh76AA1wuH_yRy-ZgaxUBoMxZp6RhZr7PQHVstlBsD2LetuIVtnnSL6ux9fOqv2H6eXHPbGf836rJT5eiY7FFOfBemclvyf0HA_R-QzrTCJtxApniPvtTQ8F6lUShPHLL3XKldwcebHMgNCNyf59lnrU5iIBnth9tgXlgp-BHHWXd4gErXO_48fGRxyYaz67s6l2DPaSq4fcvRyRmQ06bGzT9GrtFwT6CWfJcHDeq3Mf3SUkQzj5BsQ78VQ2Uu9wwHJEtCSd4TtD3Aya0k0a8pfe_7QIi9Q30MCG0Mkv-DwL6YrwtvW9dcARRHKbiQGfJs1EUnJuOsBD41i3mqezPVXWvBy7ya3VdqZJE9cHkhsk-E5nehJaQQGPGHHlcaf99NYGVrI9XG38PQFw5e2TLUH012kye8Xp1At69UIw0euJrknzQvRNKx5K8yxOBROWI8DUfCZudynRamxmzebXupFbrBAy7MuLnaZwNmp1lazMhRytef16fChf7bkp_nP-963Oer2glhVDsGk0b-UvKDeMlhdRtA6a8AT2hEMj-f2nXFK0_Fukk2_1O-U8w0t_yWdXxVUCCRvSM_0UPrPYx0EyMqt7Hh7ExBBAPbb7QpfyvnxPJxxrO-wyAP03JCY7GjHkXsuj4nQLJF5Ukjw4OAgmpVvUewBbPvLHv-cWaqUSmaBctMhY8oRa6coYSEp5-fHgP_7x4m0RQbZT3stOZiGRDU8=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC01LW1pbmktMjAyNS0wOC0wN3xvcGVuYWkifQ",
-       "format": "openai-responses-v1",
-       "id": "rs_0d97b57df9d188be016ab8d8e48cb087d19a44ea5c24fd2421",
-       "index": 1
       }
      ]
     }
    }
   ],
   "usage": {
-   "prompt_tokens": 3371,
-   "completion_tokens": 97,
-   "total_tokens": 3468,
-   "cost": 0.00034555,
+   "prompt_tokens": 4310,
+   "completion_tokens": 104,
+   "total_tokens": 4414,
+   "cost": 0.00459645,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 3072,
-    "cache_write_tokens": 0,
+    "cached_tokens": 3804,
+    "cache_write_tokens": 503,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.00034555,
-    "upstream_inference_prompt_cost": 0.00015155,
-    "upstream_inference_completions_cost": 0.000194
+    "upstream_inference_cost": 0.00459645,
+    "upstream_inference_prompt_cost": 0.00303645,
+    "upstream_inference_completions_cost": 0.00156
    },
    "completion_tokens_details": {
-    "reasoning_tokens": 106,
+    "reasoning_tokens": 0,
     "image_tokens": 0,
     "audio_tokens": 0
    }

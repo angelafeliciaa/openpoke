@@ -10,7 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a36\" name=\"Stripe Job Offer\">The Stripe job offer.</agent>\n<agent id=\"a224\" name=\"Stripe Interview Prep\">Preparing for the Stripe onsite interview.</agent>\n<agent id=\"a410\" name=\"Stripe Recruiter Follow-up\">Following up with the Stripe recruiter.</agent>\n<agent id=\"a496\" name=\"Call Eli Back\">Returning Eli's call.</agent>\n<agent id=\"a497\" name=\"Tax Filing 2025\">Tax Filing 2025.</agent>\n<agent id=\"a498\" name=\"Spotify Family Plan\">Spotify Family Plan.</agent>\n<agent id=\"a499\" name=\"Parking Permit\">Parking Permit.</agent>\n<agent id=\"a500\" name=\"Hotel in Seattle\">Hotel booking in Seattle.</agent>\n(492 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\nany update from stripe on the onsite?\n</new_user_message>"
+    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a224\" name=\"Stripe Interview Prep\">Preparing for the Stripe onsite interview.</agent>\n<agent id=\"a496\" name=\"Call Eli Back\">Returning Eli's call.</agent>\n<agent id=\"a497\" name=\"Tax Filing 2025\">Tax Filing 2025.</agent>\n<agent id=\"a498\" name=\"Spotify Family Plan\">Spotify Family Plan.</agent>\n<agent id=\"a499\" name=\"Parking Permit\">Parking Permit.</agent>\n<agent id=\"a500\" name=\"Hotel in Seattle\">Hotel booking in Seattle.</agent>\n(494 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\nany update from stripe on the onsite?\n</new_user_message>"
    },
    {
     "role": "assistant",
@@ -19,18 +19,18 @@
      {
       "type": "function",
       "index": 0,
-      "id": "toolu_bdrk_01SEqVHqT9FF6HETJoSMWzMF",
+      "id": "toolu_bdrk_01QZH4g5nC5FA1UmGUAChBMk",
       "function": {
        "name": "send_message_to_user",
-       "arguments": "{\"message\": \"Let me check on the Stripe onsite status for you.\"}"
+       "arguments": "{\"message\": \"Let me check on your Stripe interview status.\"}"
       }
      }
     ]
    },
    {
     "role": "tool",
-    "tool_call_id": "toolu_bdrk_01SEqVHqT9FF6HETJoSMWzMF",
-    "content": "{\"tool\": \"send_message_to_user\", \"status\": \"success\", \"arguments\": {\"message\": \"Let me check on the Stripe onsite status for you.\"}, \"result\": {\"status\": \"delivered\"}}"
+    "tool_call_id": "toolu_bdrk_01QZH4g5nC5FA1UmGUAChBMk",
+    "content": "{\"tool\": \"send_message_to_user\", \"status\": \"success\", \"arguments\": {\"message\": \"Let me check on your Stripe interview status.\"}, \"result\": {\"status\": \"delivered\"}}"
    }
   ],
   "tools": [
@@ -186,9 +186,9 @@
   ]
  },
  "response": {
-  "id": "gen-1790504242-rMKGnFsFkJ114wMrMzTg",
+  "id": "gen-1790574972-X9K0OxV1iHGGMsKLh5Kv",
   "object": "chat.completion",
-  "created": 1790504242,
+  "created": 1790574972,
   "model": "anthropic/claude-sonnet-4",
   "provider": "Amazon Bedrock",
   "system_fingerprint": null,
@@ -208,10 +208,10 @@
       {
        "type": "function",
        "index": 0,
-       "id": "toolu_bdrk_015q2GSxqLCBqqibC1zbDJwT",
+       "id": "toolu_bdrk_01KiuJrJoJZejtfZvi7vLf1X",
        "function": {
         "name": "send_message_to_agent",
-        "arguments": "{\"agent_id\": \"a224\", \"instructions\": \"Check for any updates from Stripe about the onsite interview. Look for recent emails, messages, or communications from Stripe recruiters or hiring managers regarding the onsite interview status, scheduling, or next steps.\"}"
+        "arguments": "{\"agent_id\": \"a224\", \"instructions\": \"Check for any updates from Stripe regarding the onsite interview. Look for new emails, messages, or any communication from them about scheduling or next steps.\"}"
        }
       }
      ]
@@ -219,21 +219,21 @@
    }
   ],
   "usage": {
-   "prompt_tokens": 4336,
-   "completion_tokens": 118,
-   "total_tokens": 4454,
-   "cost": 0.0034272,
+   "prompt_tokens": 4276,
+   "completion_tokens": 106,
+   "total_tokens": 4382,
+   "cost": 0.003213,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 4204,
+    "cached_tokens": 4150,
     "cache_write_tokens": 0,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.0034272,
-    "upstream_inference_prompt_cost": 0.0016572,
-    "upstream_inference_completions_cost": 0.00177
+    "upstream_inference_cost": 0.003213,
+    "upstream_inference_prompt_cost": 0.001623,
+    "upstream_inference_completions_cost": 0.00159
    },
    "completion_tokens_details": {
     "reasoning_tokens": 0,

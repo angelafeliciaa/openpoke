@@ -1,5 +1,5 @@
 {
- "case": "reuse-13@50",
+ "case": "reuse-06@500",
  "trial": 1,
  "request": {
   "model": "gpt-5-mini",
@@ -10,7 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a9\" name=\"Email to Recruiter at Notion\">Email thread with the Notion recruiter.</agent>\n<agent id=\"a27\" name=\"Webflow Recruiter Follow-up\">Following up with the Webflow recruiter.</agent>\n<agent id=\"a38\" name=\"Notion Job Offer\">The Notion job offer.</agent>\n<agent id=\"a46\" name=\"Asana Recruiter Follow-up\">Following up with the Asana recruiter.</agent>\n<agent id=\"a47\" name=\"Flight to Seattle\">Finding and booking a flight to Seattle.</agent>\n<agent id=\"a48\" name=\"Trip Planning Boston\">Itinerary for a trip to Boston.</agent>\n<agent id=\"a49\" name=\"Stripe Interview Prep\">Preparing for the Stripe onsite interview.</agent>\n<agent id=\"a50\" name=\"Hotel in Melbourne\">Hotel booking in Melbourne.</agent>\n(42 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\ntell the notion recruiter im still interested\n</new_user_message>"
+    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a224\" name=\"Stripe Interview Prep\">Preparing for the Stripe onsite interview.</agent>\n<agent id=\"a496\" name=\"Call Eli Back\">Returning Eli's call.</agent>\n<agent id=\"a497\" name=\"Tax Filing 2025\">Tax Filing 2025.</agent>\n<agent id=\"a498\" name=\"Spotify Family Plan\">Spotify Family Plan.</agent>\n<agent id=\"a499\" name=\"Parking Permit\">Parking Permit.</agent>\n<agent id=\"a500\" name=\"Hotel in Seattle\">Hotel booking in Seattle.</agent>\n(494 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\nany update from stripe on the onsite?\n</new_user_message>"
    }
   ],
   "tools": [
@@ -166,9 +166,9 @@
   ]
  },
  "response": {
-  "id": "gen-1790499075-3UXRd9kSPXZEzkskEynQ",
+  "id": "gen-1790574993-nZwNXzk5NI3z4U0fkayA",
   "object": "chat.completion",
-  "created": 1790499075,
+  "created": 1790574993,
   "model": "openai/gpt-5-mini",
   "provider": "OpenAI",
   "system_fingerprint": null,
@@ -188,19 +188,19 @@
       {
        "type": "function",
        "index": 0,
-       "id": "call_ZvDZNz49N18ovIChWrctEFNQ",
+       "id": "call_EuRnSa833VgpXRUNANxFIoEs",
        "function": {
         "name": "send_message_to_agent",
-        "arguments": "{\"agent_id\":\"a9\",\"instructions\":\"Please draft a short, professional email to the Notion recruiter on behalf of the user. The email should: - Reaffirm the user's continued interest in the role. - Ask politely for any updates on timeline/next steps. - Offer availability for a quick call or next interview (general phrasing, e.g., 'I'm available most weekdays this week; happy to coordinate a time that works for you'). - Keep it concise (2\u20134 short paragraphs / ~6\u20138 sentences). - End with a friendly sign-off and the user's name (use placeholder [Your Name]). IMPORTANT: Do NOT send the email; return the draft here so the user can review and confirm any edits before sending.\"}"
+        "arguments": "{\"agent_id\":\"a224\",\"instructions\":\"User asked: 'any update from stripe on the onsite?'\\nPlease check for any updates regarding the Stripe onsite interview. Look through the user's email, any interview scheduling system, calendar invites, messages from the recruiter, and the agent's own notes. If there's a confirmed date/time, location (or virtual link), or any prep materials or instructions, summarize them. If nothing new, say there are no updates and suggest next steps (e.g., follow up with recruiter and propose a draft follow-up message). Return a concise summary and, if drafting is needed, prepare a short follow-up email/DM the user can send to the recruiter. Reply back here with your findings.\"}"
        }
       }
      ],
      "reasoning_details": [
       {
        "type": "reasoning.encrypted",
-       "data": "gAAAAABquNkG6OPZg0rpsEH2OxLDGEU9J6eIPYHXao6Zotsu20SrbQcGAbbGOEjHV_9gLNUeAz4hRBWwalbYEDE66rgqkOh_Upzmc21BPcP6wuP_KueQsrD_aZFDuOvVu7h4CmyqSIcbXiAEixiBDd20xHeqFEXxolgP-OgAdMTxXVzTZPJmcDL2GE1gl71Bbz270qbL1e_JxC2_rRMotNbSGcgXIGYpKr-J2EWQil-M8YnGxlpz8HGrq9ntiEJMozdvI6siuSKF3wRzbfi4PXqkntqLAeUC9y_CZKZBpXu-7PCOAxYZ-Pm-Cniq3AAEwYCugJ4GjwbkeYiy48_5hcMB1liJpLV-jv9ES1BcbicyJN7-tMX1EZAM5v1yQbuPJazNrex4WKhXU0qweeoL6u0nZ7fG-WRUgxftasgRHxwlk2gjWQ0fsIjQy3uVpwV8tizsvmNpBhApLkL-Ix81ukR-Y-_2O1Qu6YHrpwwZmwdP16_eQrRo2DUBKB-T1XZnF_GsiU6nGeNXpg7SLQiWfUfPdm0ChSxzVCSe1PI69uZxd-or8t5JCxoaG6a484MfFNuHALu06z2AoQprR-0NaLwVqSB-WhFFMqt_22SyiyKydlHVFN1Qlw_lOwqZmuwG-bmUCMlj3wLP49aHNl5fnckm3bos0wfERauhwux1CUK-vuLUDJUnrbPiug-obOzE5FG8_jp5HpMkK8G4k3Wx4CvjkkmflFcahN9pTUhjQgX1d9XbiDGwbTL95CwIXIp5UWmrucZXICJmcGKE8l6zTfxkdNED7_FrcM8-ppe7zeYOKA8YNn9SQZuRwCr9S269qbwmOWy0F-kxLsvNVtc1-uip-GbMMCg9irrkfSVyeNb-uw6qfbmPvmwQlsDZXeF6siJAs7ovSS50nn47XgxbzrVjOQQRE7Kcb5x0bRIQuV86VC73yziNxTVyU0DFGX0ZHqd2naUSzvkM653L7JE-ixlx0256SKZbjxvQ2HTw6fLDPGhedH-oBxEOMtaOnDjLvrZ60Y09fydYOjFNGKac_rdE9T_CjRLi68uFW_Q1lUT9sW-7rtEUXDTwUBJwe6HRQt_hr-rfZJtzoN142lFDt3CQaTCXvbeOSg8qu9VM6AbBXJMYg93zPL6dhYp9oYmvAQPxPYrUPhwIbFXkPIqDVkecxXMQ8IpuBStBz4g0fO2LjcK_zCUhKLbp4GsPFEy06wqnvX4iTknk1dqorFApWJqe7sOuNAM2Xm_xsvTDjB6-1ZzB_OnWr7hwcB8HfcDsJ1Zgt7ncrZ0r3TPAA8_aQW3yYzMAOS2O6HGSmFEgsUlPzLDZCnDdMpH5u_SBoxxBQGRFK0JZwxk24i_q0Cp03AIpwKW4Cs9OY_epjFDE2XHvS1LhbUIyKqDgfI6nhGcKeJM8dkVxFtH1Am-e9VQcEBJZl1ZQ-ehMe8kI8LdZ3x20p2pX4ucABir37dywyQXJ4V2mqRJUZOgrb5GpS8WUgFfd4gb_9zEDtjCn5BfC1mJ-RqOyMsXxyPBEIUGJMMRMBs7TEQWJVx7EBHSRQ8NJ5vcrava-LOKojgZ6pLP_enIXyPAsVJ33uJyNbbk_A67u0PgELEJY5t6ZS3e_lMoY98ZGV8rt8gEZ1UN3JqzWW1XIx1JdkfuFietKKn3hTJoly_MfgDMoucALidcxtEYFK5_CmaW5PUt51Ek-qWmY11A19HviErq59c-SojkiWDUTNJKVWQR0wulZRRRNlH6YrKssXx8huKJFcfTL3IyzuQjciStV6z4HVgAB838V2k_e3KDgcKU7DUxlXTFEBy0iu_oEOfUFeCluVZSbH4L98p5z_tYUwoHSgB-32Xs_2fnS6fymmd9wxyZ__crYJ1MiJIdDSWJAn9DEqfvPtBW9XyMVjyWjwa2FgUMXzG-z_V81Gr0v6BezNt30XOcmIqtjesabvgaDV8Sb3cHnzlT1Lpd3atexNEkpRM5L-A4jauOmG64H9xQOvUR4Q-u_sYAs-v5fIsovMB5EwIa8yaDVFdg2Gu0bIPCp8Hkocl38L6JgFMvAhc4QLm3bIcapPvK5GjupZqKWLL3rSR-c2XTOTKcGbV5qTYnij_2IvHEL0HKwfoaVDMxZ_rtHjB7xyvKdUAv_J1MJrng236WRY8rSYegiMTUSEv9RHPN-ydII-bB4PGALTUOObAXyHOWD4FsVM0xzVI0VU0cGJEo43E80VVbBGdSf2DqDniIbB_MZGN0oM_VsgVHnaTl5OtsqXyrlwWibKFOnGBvyEuTk2Hn4M46Lr9LGXiJperc4REYnKoHLkbnwguFswOv6Cusk6RxEMCVeiGeSsUfhFg6YR1fnxVr-dFspsAifSQcXcrAA_ef0fkN7ntrrm1gogTyq1NRLWRnXVLP9j6l9FQEy5IfqXm6BDUAwvOTSXOmq7FHTvuXYWN9xH1vHSodm0jJIAE7VsytS3lmT2H2yy61JIj3HMbDNwyLLnZR3aO9s3gjbkERV5ZCCCcMc79wkVGA9xfUE1vKTP6sc1GD-Q82KBe5HAd5xKAHIK1RAXD0dlvauwrP13HXZgAQWhOVyA53myuYAgr09Ot-yW-d2vYHEFDhNTReKPqB8MEfX6T9_UN8VI2yOgulPgOi1eOKNAL1o7i2gEk5mh8Dv-2kzqMVTb5tA6v1Ohig4Mgc6eqbPm1VB2WtBbXvEbY2xahfwc5YqWJVBWtvwbC1C2UASc-c1n9xQ8oqhq4kg1wBSYFKdUN3zYs_Zcab5Y4ewqJ9B.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC01LW1pbmktMjAyNS0wOC0wN3xvcGVuYWkifQ",
+       "data": "gAAAAABqugGTVmRld63yVVDgABXIIxHKTcA-WZJHkYlF7_QFK10ylKunwUeUU2SGIML4PESsPrb0Cuvat0FdUITx0XxmYCoBau0NKJQP0GzMK6I_bJzSwRju3JmHO-PTQlSegcKB9_fBpkecMZNWOJuJXPtZSntyPRXPJzhRaD7GJlr-3DpS2r15avDdYXlhwUfu2piChrWgXUy8Seo7qp-dhlUV3_00XpTrbgxHUn2s2PF-BZx9ld5-7x2uiFYtc6JG5Fq4Oa1gOn3oJZ4tGcRcSHoYWHMIy8SyfmczRoPmQyjRkyGT2Vg0fU17K4cgb91DGrchifNRTJwPsw6XdoacQ2jv12bcBzh0s51l3iQFEsC-DAiGf8FW-XwGxoxMxfsGwAV_8vjZ46mVIJhn6xNVUgLQJEEMNy5M19mdVsox-NEB3Fyi2PzzT9RVFqP6jpGFOlRmsWAcIf2B3UOj-r4aTYw0s_Mh5-wWwSCxQmc0xbFFjC-7ddm0vUnjuSdBqEgoYWDJ-n18Hdwi2YNOJbOjlRrPPChyil-6vQ5rhSUzoGzdsNzvqpwrMjo2V11UgfMt0Faa-pCaWEfO5bveb0CHJa_GYbNYGHH9RbNnt1yRwfNVKKpYTz6vY81qK3iTwkhdNT1g1Dln0w1POmS-bzmMtQG2WGKtADevpRs6iiVY6N4la0Jt089UzrA5xIXhJF4wvzu-olyAROinprJ-NA70gE2YrxfdGM-p6U_15S1EEB2zHwHWl-pGuSqW328bvYe5A3d79taaDFTNt8uftApK9VnE7wqqK7jdL9PKTKmLAgWxvymR_GZjUYkJzed5OUMoY_7ZzRxY6MymHNM3-6VzSxls7EBIiPovO4ciUw6Yj5uI4q41bbvTcvf5ijiT_Lxz2r3nKDyCEaq6xHi0RWdalGwC4rXrNwiA2dnLG1DwfujUsSDrnhstpa1CaJXnwaegxiG948nqbzANd_ILd2wVaNIyKt4zspoUtTABuCqAw3nOEWqwpgLwVKENafsW7Z14k3bPCnAN5v72X8jzCBY3pNDH3eSA2StLcHPHvV4wXXQ9nVCMUq9yw_LCAwvli2hz68ycTk2Mpt4VWjevGtLQbI31HRELnT9pJINakY-ZcW70Gwj_ey_Iy70JPRJBl0d4oVlz-rUCB5qq44Dik7dPBc0DvBNe_zBek9pb_wM3Bj8XI48mufUP3f90-DwfVNUcajqrF_Xdx5PKSXkt0chVxS_pjtYnqPZTn7Pv880pN1aYVX5_c3mXUWmNN3-aZzl-lhFbMO3RTiIdQvQzQa-p7z4nB8cZqjAOpKcF_0NFaMagfEjQiiMdJA5D01Z8zVcD2ovmBUirXxlfAkm6_2qGod1JcRaDOYvcmm49Omm0IP7iNtXPmp5WnXBr0xOglUy-8f36bkzVAmaivNA-gykfz0Kr6fb3diTC7nHbDNaDESHGJRLEoX9aqEFUMX3dCVivCdIvVlNe6hjQHijUQjE884HXMR5fN6sMBNIDgAirU3tfxC7SxB1TRst1zVJ8vUk2NH_odDbqYtv78IXQLp4mNygy64eqjQwkFqIMmfZ65yGKzX4uYKGdVbFXUKNHJSjBDXM-nx39ntbFL-gzpyOOMcJ1FmPz7T2aRW6mIu97LNuF6-ZoVonuo8cgByPbIITjJ4ZJkm0TRzwmRphYDR3zrBY36t9Dw_xyAhphakEjkBFEQ5qPDYj2pFcRDFSALWje5B3K8smjqvuxwODyatSUtwiw8oPefWwKnOphjNufOXNo_QHVrJzyV21WerFp7ideMPg_Vmpi9bxMkFPKJPKSAeKGJOVObz1-Yivnz_Oz8ueYN22s1dvt5bf6XqindsVbS3nybOScGme78DIOb1mn0zj7LDUoZ9XJTz1Q7obsIf1rOnzj2FSONEqY5559ARYKSLq7G7pOqNdx81mOHkF2StofSCWIE3YmGyRseKo8IMCvDKbuVn9eBfLRycF8kPjJHzou9zjepO-ndVqfp7R48stel-Yr2u2hFsCC-rbfQ4ifeyqsAEgrFS9arAetULVLuQadHwmSaSU7Y0yJvEmxJvAu0AFZSLjU6y2GmPF31rxVyyAl-XHRwsBpghbEoVxGMtd6eDrE6TcwR-S8Xyc-NVn8gxThvaxnH7p3cxSDaZ144kSdkZbE2vTGMms1dxd9FelD2rmTVHVVOrqF6QYEACSPpKvgxr-BbwqdVoqVQf8pAAl4EwZXbFUcHsr_ZRnwPZLePYgcvYjJkiOdCrNG9jm4wbdktShOOzqmjkqUV2khHP9X0T4=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC01LW1pbmktMjAyNS0wOC0wN3xvcGVuYWkifQ",
        "format": "openai-responses-v1",
-       "id": "rs_0e0d322716812b22016ab8d90488a887d1a1e0e512a28f1a0f",
+       "id": "rs_0dcf4af6afe8e08b016aba0192430887d19d3745355d98e418",
        "index": 0
       }
      ]
@@ -208,10 +208,10 @@
    }
   ],
   "usage": {
-   "prompt_tokens": 3205,
-   "completion_tokens": 371,
-   "total_tokens": 3576,
-   "cost": 0.00096725,
+   "prompt_tokens": 3137,
+   "completion_tokens": 309,
+   "total_tokens": 3446,
+   "cost": 0.00082625,
    "is_byok": false,
    "prompt_tokens_details": {
     "cached_tokens": 2560,
@@ -220,12 +220,12 @@
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.00096725,
-    "upstream_inference_prompt_cost": 0.00022525,
-    "upstream_inference_completions_cost": 0.000742
+    "upstream_inference_cost": 0.00082625,
+    "upstream_inference_prompt_cost": 0.00020825,
+    "upstream_inference_completions_cost": 0.000618
    },
    "completion_tokens_details": {
-    "reasoning_tokens": 192,
+    "reasoning_tokens": 128,
     "image_tokens": 0,
     "audio_tokens": 0
    }

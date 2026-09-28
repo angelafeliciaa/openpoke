@@ -134,7 +134,7 @@ def _with_ids(history: list[dict[str, str]], names: list[str]) -> list[dict[str,
 
 
 def _with_candidates(rng: random.Random, size: int, pool: list[str], candidates: list[str], exclude: list[str]) -> list[str]:
-    roster = build_roster(rng, size - len(candidates), pool, None, exclude=exclude) + candidates
+    roster = build_roster(rng, size - len(candidates), pool, None, exclude=exclude, protect=candidates) + candidates
     rng.shuffle(roster)
     return roster
 

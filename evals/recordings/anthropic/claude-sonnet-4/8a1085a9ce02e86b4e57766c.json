@@ -1,8 +1,8 @@
 {
- "case": "reuse-02@500",
+ "case": "reuse-13@50",
  "trial": 1,
  "request": {
-  "model": "gpt-5-mini",
+  "model": "anthropic/claude-sonnet-4",
   "messages": [
    {
     "role": "system",
@@ -10,7 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a118\" name=\"Vercel Job Offer\">Offer and start-date negotiation with the Vercel recruiter.</agent>\n<agent id=\"a362\" name=\"Vercel Interview Prep\">Preparing for Vercel interviews.</agent>\n<agent id=\"a485\" name=\"Vercel Recruiter Follow-up\">Following up with the Vercel recruiter.</agent>\n<agent id=\"a496\" name=\"Hotel in Berlin\">Hotel booking in Berlin.</agent>\n<agent id=\"a497\" name=\"Lunch with Finn\">Scheduling lunch with Finn.</agent>\n<agent id=\"a498\" name=\"Concert Tickets Radiohead\">Concert Tickets Radiohead.</agent>\n<agent id=\"a499\" name=\"Email to Zane\">Email thread with Zane.</agent>\n<agent id=\"a500\" name=\"Stripe Recruiter Follow-up\">Following up with the Stripe recruiter.</agent>\n(492 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\nask vercel if they can bump the start date to november\n</new_user_message>"
+    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a9\" name=\"Email to Recruiter at Notion\">Email thread with the Notion recruiter.</agent>\n<agent id=\"a27\" name=\"Webflow Recruiter Follow-up\">Following up with the Webflow recruiter.</agent>\n<agent id=\"a46\" name=\"Asana Recruiter Follow-up\">Following up with the Asana recruiter.</agent>\n<agent id=\"a47\" name=\"Flight to Seattle\">Finding and booking a flight to Seattle.</agent>\n<agent id=\"a48\" name=\"Trip Planning Boston\">Itinerary for a trip to Boston.</agent>\n<agent id=\"a49\" name=\"Stripe Interview Prep\">Preparing for the Stripe onsite interview.</agent>\n<agent id=\"a50\" name=\"Hotel in Melbourne\">Hotel booking in Melbourne.</agent>\n(43 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\ntell the notion recruiter im still interested\n</new_user_message>"
    }
   ],
   "tools": [
@@ -166,61 +166,57 @@
   ]
  },
  "response": {
-  "id": "gen-1790498931-1YAZJz7G0p0FFTxVeuhl",
+  "id": "gen-1790574983-EWb3NMZjxA9xohOlQkbq",
   "object": "chat.completion",
-  "created": 1790498931,
-  "model": "openai/gpt-5-mini",
-  "provider": "OpenAI",
+  "created": 1790574983,
+  "model": "anthropic/claude-sonnet-4",
+  "provider": "Amazon Bedrock",
   "system_fingerprint": null,
-  "service_tier": "default",
+  "service_tier": null,
   "choices": [
    {
     "index": 0,
     "logprobs": null,
-    "finish_reason": "stop",
-    "native_finish_reason": "completed",
+    "finish_reason": "tool_calls",
+    "native_finish_reason": "tool_use",
     "message": {
      "role": "assistant",
-     "content": "Quick clarifying question before I reach out: do you mean \u201csometime in November\u201d or a specific date (e.g., Nov 1 or Nov 15)? Do you want me to give a reason (personal scheduling, finish current project, travel, etc.), or just ask politely if they can move it?",
+     "content": "I'll send a message to the Notion recruiter letting them know you're still interested.",
      "refusal": null,
-     "reasoning": "**Asking for confirmation**\n\nI need to follow the interaction tool rules, which means telling the user what I'm doing before reaching out to the agent. The user wants me to request a change in their Vercel start date to November. I'll need to confirm which specific November date they're thinking about and if they want any reasons included. I should also remind the user it's important to get their confirmation before sending anything. So, I'll ask for the new start date and any details they'd like.",
-     "reasoning_details": [
+     "reasoning": null,
+     "tool_calls": [
       {
-       "type": "reasoning.summary",
-       "summary": "**Asking for confirmation**\n\nI need to follow the interaction tool rules, which means telling the user what I'm doing before reaching out to the agent. The user wants me to request a change in their Vercel start date to November. I'll need to confirm which specific November date they're thinking about and if they want any reasons included. I should also remind the user it's important to get their confirmation before sending anything. So, I'll ask for the new start date and any details they'd like.",
-       "format": "openai-responses-v1",
-       "index": 0
-      },
-      {
-       "type": "reasoning.encrypted",
-       "data": "gAAAAABquNh1vU8DFPGHvN1-TTqfdLKcDMet7TePavbZ7o1apAhK5MZLfUNdI_lQpSb99VxDAQUKE7q0gkd-52BJQjafaxb4j7r71uRp_VFODxb1pozFxNFtcBdCHXRjZBaY1eBq2Nl_wnYu8J2wXkOPpoVg_yU5Km0dIapwCDJrYKqoAwidRjyF7ipDccoK9WOJxElEcOpOVyn_Hiwot2q64Mpko3tmgrd3YyU3hRt373jkAK7dlCpBrUOdz-LEXNTpDwJ2DosfqkRxsc5GtlIQTM-pBrAoph6POZtDNCgRsSoEbEU_O4_l2AqK8R0h7V_c_0GYsf8p7nJcW5JYpIcsz_KydMaJ1NL3Hrldk5-Mr6ERbAD_h-sXm2iTLOqo2kq29G373QsFKJrg70xA8jfeUQWemCDVt97zkMiU_2cX_Clt2gtliThKc38TEDM2WBBsV2d56TcTb0R9uSDvIYKHQMcW1BhDOguqBGUA1w4UfE6I-Ttba4czBOc8BWYZdPpw1iPCYW9pyO38AaA9t7VmSZXjeujWgRuSFyyl41z3lcwuJflSV3Pe5e8WP8jhbM6K_0AjXNmxp9_SidfTSC1wIkxV8CbLqnCmksSMIqVpKTBAWbnBUBamSusEiCFnue0EkIl725vfk6e_Gy0ws6aKadicu2ecNk9MLwrqU6JrPyofGRT0aOjlpihHETKoZWNEvkuMRGfPiNClsU5DtYXZRukaASJDJTH_6FN4BSxsFWe3AKnxyv92C3eVjt5A83432uxv1crmf9ZLvJ0gO5lq29WFOiRZy0QC2eNM5cnk8tjSQ9l52Ip34X4rQkZ0EeY2SOnZWy6XEkAWB3VxqomDOGdpjzNYble1tUso8g0mmsRTwvBqKdcZXJEs8R9KrVxHvtOVUMey-eGRN8YDrfhkFSGbc758AOfkRrg9ukm_e5yf5wEDxJMiKF9uj-spvsPIiNVpsxHy8jBV1iHiR0PKwfg5MnXkgvoQy3lwT4hMVvipUmL_YomNDdvTpHPJtTa809TUcX6ZJBUHBjY1yjVGCtLsUOx2E_cCce2bJXJIpgmdy2nODWz9NnBNmjXzmpJJS49yaOx9p_Bcm1I4eiVraF3lKPxERIKvE1KLzp9-R8ty68T7HFLH5k8gVcAf7WiX0JD9yZdYu1-ekowlEw-LORD_5aTuR7VADKk1tc7ZHt_M5QqpwjBUt1fnVd4Ow3aQ5ZH9ZKxViKxJg3OSUnQP1fNQFZYO1oTr_m91vip7CT-1GyDjv_qndouMA-Ch8X-AezItefbtxif8UfGA6Fa9Up0rHlbAsNkWh0u43SN6ztZBYpiPz2hsnixFKH20RjFGdJ3Zu1m08qxCu08aWb5x0v9weAnh6CACVa-CjnsABB-KzlNbF85Vekw1LKro8UP5qKR2toc4c8Mui8uhvQuoDajfwj_RqiE9QrxMehKLvm26NorwZvPhB_5kSRhu-UFFy0uePn1rcByXHoVAumC8Goe58bf6gPJPBlUU8IIhyBoaUIoWmAS9j6i4qZCsAK0hgR74ZTT9jXmagd4gcGnKjBgirqplRhIUqoltXRF1fxM_aPXGFWSrnpXBNAWlvAQhgcIxXJ7bpTkJo_RDhhTobiTMXT2HmPNz9l_x4eaS3qzqVWE_8ZFHN1k1K9oZmG7Rb4XvrMPqdi8cFt7vBDSbFMVWf675R5GAEA3lxw4FQpewjIKTPsJVE45ntj2Lw6BHqesiMGLVyh0vOyDUTCF7c7cMAX7T-TEPtGZM7zkdyBcfZluJpjpRFwgu4jimRi4wlxCrWf1lwdyCgySU9gDFJ_o4GElc_QBtXWGZpjqJF8YRFS42mZpUY9dJiuzgs2bM7mMonmnZPcLowB9OFBcs2poQquq3_X0Y6cjyrXElsssq7UycPWRfBuS5Bv6r__QlxLNfYgArhFh5dhU6k9RvB2rmTPQmyNyGOea9yCJeQAkgy4rb4L2nYOdBBpvxNxH_7L4nwgQ0EE_sYw7m-BX34POHbcxI-Z9M3M4OSipjfEnqbAw8CRLU3XKhVoh9q1GYEs0jz0x0zTijf11W89vySLCfOXqFQNc2hIUTB8GVQ9zenrMgjdLl-SgXloF8gab-qeu2zZ2p_Zm15AE60CKG_xrrkf5PYg7MwOVmvPoyvs-lbqQPwk70ueUhpmd-rlrrndpIrhNV-fB_7UQFM-ItES__SQ-AEX4XOjEPi6yMbpuzjLbM7qJ3ZImz92NZ2gC_5WzFZgDF_cIjnoRr81n9GIOIxC9YYrjNSaNxRO979iw8UjSY5fAVpYMFnYnkFqUaHIveo3J81AsoV6Oa_iAgYfpfZtrVnsT_sNow1CCBCtDy3V4T6ZeP6B6zbVi7PkBFU1QWJ68T9YbkyPnbbkz_TCmxdc4nCfgOzymUCr33JuQXK2WlyQbPSS2d8isDsOc6mTvbhsmWxD3kvNHWQ1CGz-BhmTGhOqW7lPkqGPCruVIJZ4f2SfbufoEENrit6MRqXhPf2ceGqa4uL4U0_8F_pIm5wJuHfPSxLPXgzTDWIHuj3glYLbY4iNiTapdK1rIEsnnM-8ceScNHJF-MP52ecoKkmT2Ajovpf23LpPE12ELgwycTseA=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC01LW1pbmktMjAyNS0wOC0wN3xvcGVuYWkifQ",
-       "format": "openai-responses-v1",
-       "id": "rs_052e5b14a0a9c739016ab8d8739fcc87d1a03fb000e6f85510",
-       "index": 1
+       "type": "function",
+       "index": 0,
+       "id": "toolu_bdrk_01UhuRGmR2seoCm48SgYad8d",
+       "function": {
+        "name": "send_message_to_agent",
+        "arguments": "{\"agent_id\": \"a9\", \"instructions\": \"Send a follow-up email to the Notion recruiter expressing that the user is still interested in the position. Keep it professional but concise.\"}"
+       }
       }
      ]
     }
    }
   ],
   "usage": {
-   "prompt_tokens": 3209,
-   "completion_tokens": 261,
-   "total_tokens": 3470,
-   "cost": 0.00074825,
+   "prompt_tokens": 4204,
+   "completion_tokens": 125,
+   "total_tokens": 4329,
+   "cost": 0.00451395,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 2560,
-    "cache_write_tokens": 0,
+    "cached_tokens": 3804,
+    "cache_write_tokens": 397,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.00074825,
-    "upstream_inference_prompt_cost": 0.00022625,
-    "upstream_inference_completions_cost": 0.000522
+    "upstream_inference_cost": 0.00451395,
+    "upstream_inference_prompt_cost": 0.00263895,
+    "upstream_inference_completions_cost": 0.001875
    },
    "completion_tokens_details": {
-    "reasoning_tokens": 128,
+    "reasoning_tokens": 0,
     "image_tokens": 0,
     "audio_tokens": 0
    }

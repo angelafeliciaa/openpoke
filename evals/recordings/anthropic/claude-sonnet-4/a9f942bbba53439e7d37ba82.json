@@ -1,8 +1,8 @@
 {
- "case": "reuse-07@500",
+ "case": "reuse-10@500",
  "trial": 1,
  "request": {
-  "model": "gpt-5-mini",
+  "model": "anthropic/claude-sonnet-4",
   "messages": [
    {
     "role": "system",
@@ -10,7 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a15\" name=\"Hotel in Portland\">Hotel booking in Portland.</agent>\n<agent id=\"a17\" name=\"Trip Planning Lisbon\">Itinerary for a trip to Lisbon.</agent>\n<agent id=\"a20\" name=\"Netflix Cancel\">Netflix Cancel.</agent>\n<agent id=\"a29\" name=\"Hotel in Toronto\">Hotel booking in Toronto.</agent>\n<agent id=\"a62\" name=\"Wine Club Cancel\">Wine Club Cancel.</agent>\n<agent id=\"a432\" name=\"Spotify Family Plan\">Spotify Family Plan.</agent>\n<agent id=\"a475\" name=\"Hotel in Lisbon\">Hotel booking in Lisbon.</agent>\n<agent id=\"a488\" name=\"Flight to Lisbon\">Finding and booking a flight to Lisbon.</agent>\n<agent id=\"a496\" name=\"Cohere Interview Prep\">Preparing for Cohere interviews.</agent>\n<agent id=\"a497\" name=\"Hotel in Osaka\">Hotel booking in Osaka.</agent>\n<agent id=\"a498\" name=\"Email to Emma\">Email thread with Emma.</agent>\n<agent id=\"a499\" name=\"Datadog Job Offer\">The Datadog job offer.</agent>\n<agent id=\"a500\" name=\"Email to Zane\">Email thread with Zane.</agent>\n(487 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\ncancel the lisbon hotel, plans changed\n</new_user_message>"
+    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a458\" name=\"Birthday Gift for Mom\">Choosing and ordering a birthday gift for Mom.</agent>\n<agent id=\"a496\" name=\"Email to Finn\">Email thread with Finn.</agent>\n<agent id=\"a497\" name=\"Email to Nikhil\">Email thread with Nikhil.</agent>\n<agent id=\"a498\" name=\"Email to Nia\">Email thread with Nia.</agent>\n<agent id=\"a499\" name=\"Email to Aditi\">Email thread with Aditi.</agent>\n<agent id=\"a500\" name=\"DoorDash Job Offer\">The DoorDash job offer.</agent>\n(494 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\norder the gift for mom we talked about\n</new_user_message>"
    }
   ],
   "tools": [
@@ -166,19 +166,19 @@
   ]
  },
  "response": {
-  "id": "gen-1790498994-5DjoWsD8TjPHvX8q9wcF",
+  "id": "gen-1790574980-4yDA0SgalyVDUiZ20sUR",
   "object": "chat.completion",
-  "created": 1790498994,
-  "model": "openai/gpt-5-mini",
-  "provider": "OpenAI",
+  "created": 1790574980,
+  "model": "anthropic/claude-sonnet-4",
+  "provider": "Amazon Bedrock",
   "system_fingerprint": null,
-  "service_tier": "default",
+  "service_tier": null,
   "choices": [
    {
     "index": 0,
     "logprobs": null,
     "finish_reason": "tool_calls",
-    "native_finish_reason": "completed",
+    "native_finish_reason": "tool_use",
     "message": {
      "role": "assistant",
      "content": null,
@@ -188,44 +188,35 @@
       {
        "type": "function",
        "index": 0,
-       "id": "call_8qZEBxFsofge9rJf75CBlhi6",
+       "id": "toolu_bdrk_01S7PtbUswUDqSwq9gvbdaYx",
        "function": {
         "name": "send_message_to_user",
-        "arguments": "{\"message\":\"Got it \u2014 I can cancel your Lisbon hotel. Want me to proceed now and use the reservation I already have on file, or do you want to keep it and just change dates? (yes \u2014 cancel now / no \u2014 make changes)\"}"
+        "arguments": "{\"message\": \"I'll go ahead and order that gift for your mom!\"}"
        }
-      }
-     ],
-     "reasoning_details": [
-      {
-       "type": "reasoning.encrypted",
-       "data": "gAAAAABquNi0i5_hj0aiGb8LNpxNDdNqxv2cG8RuaXTEEKUBqp2qHcGir5cZCvvQ4mVAd_RHGFHw9pU79PIQ2n8xuGoMxjid7cpTfT6RWDD3nTmhtDVbulRYKec3MF2DN2QXGeaXp1tF8Vvy6HhL4Qtid_nLdXdcrvwL7bjtnTRvJylay2jX5ynwQzTrH2JtO_MG3MUZAyv9Gswt0TCnN4MvNg1f_XmoANrUhew5z4XSyHZ9fKGHCie5vK0SBgmS0GjZFjxGg-q6XEzIl0NGIissNxTRPAiiw5kdpyjOA5Vlez5QIsCt4fLyRt5da6JGTPfoSHbSsPd9hszsFasO9QSsRsNuigoXk-sohJv2Rlh84zqXGnAPhuBoVs7lq8PRBKYZvDVC-wgy4Xf6v5dZG7ZsFxwQy5P9aom11WxeVGG52W_SGDoEYtUxJOcJTKoXf4lzR8f-bggoPASIBtg61HOw-DpeIG3ZhM1oJD_Kdc_4AlD-mABKo-acOvrnbV9dzKRqrMY-Qij4UX9qSfj6nSTYb_HW3ElHZolPYjdRjymfiS-SlPmtGXAQlVpbyme_zYLioa6TBG4Q_GUp3LOFko6HZdftbv-uKEYRsSnr9b_6B-M3WV24bH7pRA6DpUq83qGiG5klfR_5HS8AYclDFsm-zfAWPiQ47saA9ubgn0OJcj88ORYRwr6GM1ro_KEXsblKllcZmaZ9QbejGL0zh_03prJSiK2y40v8kAH5P8u7WpX2bLk8YvX1J0N9_D2wAUc9ToPrLMCqHYtjjEgjnBZXD-lfMkeYITmeTCskWlgBPQuYQdq5uc-BaaI6fj110Ezu_RY6PFjKJQoRgorgkZExpfzGxrRc1ae1mDV73OB4pXinHvcKDhKGJZLZ369WuocraKHALtkRkBNguJDt-fet8RPKyHvRpFnj7DCU-KIgqgowTcBT3spqwsoOtmxVY388YfGhQ1XMknCBZ3ZvXzyWTsko1aO7ZfL9hJSz1m7lqk7kJ-RaVwNcWgl2TmloN-CQEILd5TQViuSOOlNZ63EzbR4hcyNxHWM1XygCoOelkbXLGvst5ihUtcCyq3IEJ24yYbEZIAZXEvxUzEZezyo61QIntEDmWGChJciknVBw_5c-QwUD8jUnIx52FqPXy_4gHDm5LfNniliY4SXWcwjNmijFza-2NjUVfzI2TBEmpvYRwRdhi4UIjVBONUEVDBh1dzQd5VsetOKFEKuRwFq930LnpHWCz5ayh2lNHIiOOZ8vnXtozeQN4XVVtEP73m0n_mtiEdd6pxMwsaGdPgPix7iWkoG3FUHONEWtd1MRK_k0ALdO1SHXDVPasXTVVv9uo80pMAAVMQIqwKk6TjWWP-qhT6Hjx3N2649eQX4zYdo750h9xNfkc9NWUnlUcpJk_x5gVeAthqwr7_Y2UrnbP80kKwvhOU27s5UDHji_J3AxE0UsEKj0WshkC_VCK9wgs0NTeQ2BAnOx0CwTd2KA_2JczL7sMtYA-Vzh7GYmtYi4ic0mrB1bZKzLMUyCpS2EZjjHf38QseXtX3HVZhN_l-jYRPdijEVaQBDmu3k8MUEj7mDb0rmKCujy-NspQrCQCUDojywLlcnAc7pf8EDvTrFjpcvu9IKGCWDN1tsHwfKc3O29Ud33le575ze_5LwcGQzKKO5rMoNARZdnDssLvc3tRmTr1R3BdwMrHBYl8d_L3g0Oq2n14hqF3PpiiKdDuwuZV0dr1sk-gM7Lmbq0EzhHfXmpwfYTYvX4aZaCPMol8qZYZAXHyGP4WvFlozQCotadHZbvxekHooOgmXZd1zDQ2-7l14i8sC4-qVnmqyuV37jr7WU75GdYOtMWSeRxXPJ9oZ5L7C6BbJ-Bng9-ha96ci2HtOLMjXnkn498I6JYfTG84JeEII0-CGnnI9AbcC_MW0r6K_kFe6Xw8uaPbtM_PLmSSCd7bSlXHGuJeA0QPaZOxPCU1K4A9CpKk-Er2uksAjxUIdXSj95afl1n1CxsRJ9JRpNdwmz3Y-qj2ME6WOm90XZQeGUhXfVBM4nL8ZZ2Qobo_F4tq0rqiPQIdvsSg3dGANN7bGeLekLJJqosECEywoXdsHnAqR1krtSz3zJSC3pWtlekLd58MwFsOnRSmwQrSsFih0EViS6PknfgzbX7SLqy4cgtHMkNjfm2oFQp7JGCYSS4ePtKQ7xxZakpgVmI0OU9meqoKI_20aW24sMzjQ98FiXpQgUsjyLpzofGWG9fgUAUm0dEs_gtqJOzNnQKrKS0INV14yARLck_d0Qj66dfz-_JoaB1lSary8cjgW2yHSxQa0N5YT5bDyw6Lde286O8XOnL2s4MDK7jzhMX_01SC0BBCQGl3oLTlR6EqgSZ9MNPrxSkgO7fzTf98epoSM1NuyxkMWvLcXM0ny696XABSA-CvB_sJOWaF-Yi-hVx6uV83o7FJgDLtGDwjKKFfR9YQrZe9KtsuJPkJHirlc1CjN9Ut35135ow5vFisv_GzArOzahXZDSs_DCvY7h63SCDs4DqzkLapGDKWa83A32kUarUvNLZ_e9Av_Y8Fk0I4KuAz3eStrUbJ9Jox6XGYg==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC01LW1pbmktMjAyNS0wOC0wN3xvcGVuYWkifQ",
-       "format": "openai-responses-v1",
-       "id": "rs_0760e89fbca1ba95016ab8d8b2d73487d183c1f410943ae722",
-       "index": 0
       }
      ]
     }
    }
   ],
   "usage": {
-   "prompt_tokens": 3287,
-   "completion_tokens": 254,
-   "total_tokens": 3541,
-   "cost": 0.00075375,
+   "prompt_tokens": 4166,
+   "completion_tokens": 67,
+   "total_tokens": 4233,
+   "cost": 0.00350145,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 2560,
-    "cache_write_tokens": 0,
+    "cached_tokens": 3804,
+    "cache_write_tokens": 359,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.00075375,
-    "upstream_inference_prompt_cost": 0.00024575,
-    "upstream_inference_completions_cost": 0.000508
+    "upstream_inference_cost": 0.00350145,
+    "upstream_inference_prompt_cost": 0.00249645,
+    "upstream_inference_completions_cost": 0.001005
    },
    "completion_tokens_details": {
-    "reasoning_tokens": 128,
+    "reasoning_tokens": 0,
     "image_tokens": 0,
     "audio_tokens": 0
    }

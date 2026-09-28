@@ -10,47 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a359\" name=\"Gift for Dad\">Gift for Dad.</agent>\n<agent id=\"a458\" name=\"Birthday Gift for Mom\">Choosing and ordering a birthday gift for Mom.</agent>\n<agent id=\"a496\" name=\"Email to Finn\">Email thread with Finn.</agent>\n<agent id=\"a497\" name=\"Email to Nikhil\">Email thread with Nikhil.</agent>\n<agent id=\"a498\" name=\"Email to Nia\">Email thread with Nia.</agent>\n<agent id=\"a499\" name=\"Email to Aditi\">Email thread with Aditi.</agent>\n<agent id=\"a500\" name=\"DoorDash Job Offer\">The DoorDash job offer.</agent>\n(493 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\norder the gift for mom we talked about\n</new_user_message>"
-   },
-   {
-    "role": "assistant",
-    "content": "",
-    "tool_calls": [
-     {
-      "type": "function",
-      "index": 0,
-      "id": "call_5HLvh8ALz4GRHQCrayW64cmH",
-      "function": {
-       "name": "send_message_to_user",
-       "arguments": "{\"message\":\"Got it \u2014 I\u2019ll order Mom\u2019s gift. Quick confirmations before I place anything: 1) Ship to your default address? 2) Charge your default card ending in 1234? 3) Any personalization or gift note to include? Reply with any changes or just \u201cgo\u201d to proceed.\"}"
-      }
-     }
-    ]
-   },
-   {
-    "role": "tool",
-    "tool_call_id": "call_5HLvh8ALz4GRHQCrayW64cmH",
-    "content": "{\"tool\": \"send_message_to_user\", \"status\": \"success\", \"arguments\": {\"message\": \"Got it \\u2014 I\\u2019ll order Mom\\u2019s gift. Quick confirmations before I place anything: 1) Ship to your default address? 2) Charge your default card ending in 1234? 3) Any personalization or gift note to include? Reply with any changes or just \\u201cgo\\u201d to proceed.\"}, \"result\": {\"status\": \"delivered\"}}"
-   },
-   {
-    "role": "assistant",
-    "content": "",
-    "tool_calls": [
-     {
-      "type": "function",
-      "index": 0,
-      "id": "call_h2ts6jtvnKHCjohB4dpVzBIm",
-      "function": {
-       "name": "wait",
-       "arguments": "{\"reason\":\"Already asked user confirmations about shipping address, card, and gift note; avoiding duplicate prompt\"}"
-      }
-     }
-    ]
-   },
-   {
-    "role": "tool",
-    "tool_call_id": "call_h2ts6jtvnKHCjohB4dpVzBIm",
-    "content": "{\"tool\": \"wait\", \"status\": \"success\", \"arguments\": {\"reason\": \"Already asked user confirmations about shipping address, card, and gift note; avoiding duplicate prompt\"}, \"result\": {\"status\": \"waiting\", \"reason\": \"Already asked user confirmations about shipping address, card, and gift note; avoiding duplicate prompt\"}}"
+    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a458\" name=\"Birthday Gift for Mom\">Choosing and ordering a birthday gift for Mom.</agent>\n<agent id=\"a496\" name=\"Email to Finn\">Email thread with Finn.</agent>\n<agent id=\"a497\" name=\"Email to Nikhil\">Email thread with Nikhil.</agent>\n<agent id=\"a498\" name=\"Email to Nia\">Email thread with Nia.</agent>\n<agent id=\"a499\" name=\"Email to Aditi\">Email thread with Aditi.</agent>\n<agent id=\"a500\" name=\"DoorDash Job Offer\">The DoorDash job offer.</agent>\n(494 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\norder the gift for mom we talked about\n</new_user_message>"
    }
   ],
   "tools": [
@@ -206,9 +166,9 @@
   ]
  },
  "response": {
-  "id": "gen-1790499045-6a3rSHZVE9P0YWy3t2Bd",
+  "id": "gen-1790575007-yjoiQHSVf42tWr7bC9Dz",
   "object": "chat.completion",
-  "created": 1790499045,
+  "created": 1790575007,
   "model": "openai/gpt-5-mini",
   "provider": "OpenAI",
   "system_fingerprint": null,
@@ -217,35 +177,55 @@
    {
     "index": 0,
     "logprobs": null,
-    "finish_reason": "stop",
+    "finish_reason": "tool_calls",
     "native_finish_reason": "completed",
     "message": {
      "role": "assistant",
-     "content": "I asked a couple quick confirmations (shipping address, card, any gift note). Say \u201cgo\u201d to proceed or tell me any changes.",
+     "content": null,
      "refusal": null,
-     "reasoning": null
+     "reasoning": null,
+     "tool_calls": [
+      {
+       "type": "function",
+       "index": 0,
+       "id": "call_KTJRDk7ZsMajLecVSW6nUC5S",
+       "function": {
+        "name": "send_message_to_agent",
+        "arguments": "{\"agent_id\":\"a458\",\"instructions\":\"User asked to 'order the gift for mom we talked about.' Do not place the order yet. Please: 1) Locate the specific gift we previously selected in the conversation or ongoing work. If multiple options exist, list the top 2 choices. 2) For the chosen item(s), check current price, availability, shipping options, estimated delivery dates, and total cost with shipping and taxes. 3) Prepare a draft order summary (item, price, delivery date options, shipping cost, total) and hold it for user confirmation. 4) Note any personalization options (gift message, wrapping) and extra costs. Report back with the draft order summary so I can show it to the user for final approval.\"}"
+       }
+      }
+     ],
+     "reasoning_details": [
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqugGk49MG98rzk5OR3Rr-h-FpshiwiQSxOXdn-FE_qGeDEPsBttSGhvr9nG9T3QMCw6w1SXgaP_SAYTSMCg2of2p5aSJ2kmUhohmTo82YQYHvITYtAsnMAsOiTkUN_2jHr97_WdGabveTMHgPeCMefalpMioRzEo5kmWUH9TNaXOHq9Yk_GYmhH9rn0C9u44U3GVMLqGkWVTBaT6DzNL_kDIyJBcyfExu3zcfpO1Gk8MucvCvbUVkP6cAzrsa6QmrVi4BInjvNCLBEfCIKYu0mn03ZzAvrPAU3VYN_kXq4FlumExfmcwzLNKBs-pZtHHUmHxbI51KZvXCUdoipDD4P0-Rhj5A0utsvhbQ3wUP_Q_1ssw8tYF3FCQrSPA4mW4wU6CCiL6ssitzt3E3Fz8g8pDYjqsOZYM-TQapInMYMhm9XBFuS6Fx_XV11_p_kfPJvLzk5YQP3RUL-5xOZM-0s2E_8JL4g_bYNK2t8WsUA4VGewbDOLGnUJhpc0i-3i0DVtylwthlyKY69Dl91B7VX1WzdKkHpvWopJomDJnicTicpyeBdL-v4babRkm-wYgoKLJVE13Hm9p8zFlpPMFSQ0ANFowit8h56A4r5bANlWCz0KCWA3ksQyRu6Cvme5z9B_lvQYjcZwWpbJc4J7xJsjdjzuOvnjBJLTYasEZWM8gEON4wRghZTeYmYpcReCqsBnTGQBEUJfnL3902YYabPX8lnHqJr0rAoZ6VTKohcCqMxO9L_-vdL8iEPXu6BXQBIYhLV0CL-sIGtThSKd6M9Hh2NA70jIaiUtNq5-44tGnnQYERrfzxJqtyjtH_97j8xwWiXL9c4gIb1jFXDn72g1whFoLS87J9xawtRO9EIH8RVhqbLjgBW6RyWRV7H57ddnxGWAvG8lE-a5qSBHN5xp0aSvBS8tRnG5Vi5L1cHQUS-u5d90iY0KsMgGR9yCe1zdRelyFe61mAaiiO-ccSb26fyId8TpOZ47aA7naqD2yCA_BwiA7426gpc11m5GIYF_iHLKlqkypRIHxrt7uttNCN7HxMoIBp4rX7z_yCpOCRQAAwOnjl7HzEDk5783NMDgBk2-VQRUPeGGS7Ijaw66Wcdx_vWgMVi_qwYgoRlX6IK7va8IUJF42tOgZkJ3Nq7qjflPvko21zlGVkv7cR1T9G8mlHpa34xOlP4IIs5S25Mx6NY78DdcPEhgF7jC6r1qGviThRc72Fv31tHNL71QA0VcDTkRNgNycnV32rUHPwJbp-00Bs2bHogHSgQLhgkroz0JtjTSyAhVb490d68RX8fFmjfYh9Yi6FyMLQ4BcF7VYiqtTis1fg1WFsPLWH6nQB8LCp_Is9ED7yCt3lNo5nBUYw4MBlSzF9c3tDQrrb6WabfBMcVQ98wGlnVZJmrSzjHxnDVxwIAyG-_znJZBNnXuXANNrWIxhSF7c45kdiCESm8D_dDOnVlWV5hwGw9dB1bH1oRIyXySeZMBS9NnT4Ukpi_E5LgMG8Z4P5z0-WTFwTPFHwXRzAiE_7KKHK-6EEmUp96uffHXB3L57L4XC1vemmSbzjtA1eHw76qvEFiy9Tlnsya30fEKuCNw8vyuCjEG9Lp4lbR9W7LFQKDZb5bdFbVERms3xtafehqBvOx3vQ7Z9GZqPIxf16z7cAfsJkKLeXo1g_ZpU2sKQ9m4WcbPQCdDrPaWuO-SHYMkD63x90pUATvNPeoL3jaIGtLZM6XMFSPwDfxjNzqT_zSAqCQOv2TvICuvyPg8594lhz-89w7M6SWYSrle39mQ0EK_rVo-OhAzjU6ljziVm2-jyk0kvIaUEPMKq8mAa8xbATKSJ7ldMt0NdH7U6ZQEuL3X7lI029n0_Dyg6820uRH-JudVeZXyfnPvTbnas6sO1ts_2TFTJKe0m-rPT9Jr-qRH0Njck2y36TPUyb62No2Fqvci5az0fD3tg9RHohHx7BPrDKJfRWdU0_GZFJSKrZCeg3aohQmP7YVuQO7yUS6TCY-aMfEE_ugP4dqKDd06lCqnQe1Nltx0GdhQxQnHYrr0tPUMwlo3oNBGotjeYKK3DjFa044M6pgRSkUjEAx2OZ9mP3LQCVABKIqu0kjnZta0UOFd-FqY6K4fUse26RF5-1FZPUBhwAF2ma22FIntw4sRkhT84NcH39uVxbPGZJrhTBF2058ByaCjmi8Gaq4RhkjULhW3Cdd1yKjiyT3WJOqmW69a-xrVjXL_hJmlPSV-M5KXO7sORCUlyrMYMKwd90QZ0GS_uLBMkhDhMRnMBHtbuS_Vc-5ezdE9lQm4YW1lrZhj2cFYNjWH_H2UzVCmLiGXbQsSU9gnxNEZjk2gfUJ1fBB8MkaU_jC593V3lpPK-ha8-r_MK7w0qSmjjmLTnSDQSKUjTh0d-6Bbw3qr1Suw1KZdjLyrGYyvlcy-oZdAcfLXpDesqDak0_QJYNrKGRAsA2YFEZQDugy_aA3twS_RvKPwfIJ9Zw2dqx-d_FcLzC_VBLsldo0T49ksP1BKuVvzlwJCYqctCfp_aD4CRecl31UvqLX3ldjbgrpIrZh4W_HAU8aaGr5QmDEg4K4rD6hHuUUONK46_Ns18_ON7HGclAPd77oxT-Kse22Ok1nzlhC_j2jgAUcRGo1SSoK1zkiXJtlAxibDZj-zuD36hR9qAvUdfNYxj0B_QpEEw0kwCRJimgELdctD2tdYp4OFOJYaOIqzEwQHPhOOamwyvUug0fCRAiPTSOCo2E7Qusw_NulCJIwiSLKzKy-mdZoUzeaRAiAFT-e9Iqrxu85FtN4ptHyVQx8OkXGyfvCoQ3YloTD-ENj5QYEbqO7TgNrDPX1oPEVdWQbECYiuZI_4LSuVMixzcTzAF6j7ExY__TXNxgFQdVxbVfdz398V8gMuJnJrK68j2ofaTK-DumrottbzDa1LXtc-Mxs8u1paaNx8YoUhDUMkk-_Bqs4jsjN-efCxyLWiixkG2hjAzb3ilgLO3T3CR8jjpevNonNWaD0gyQQBCUiAdBHm0HUznrVN5VcTLITbmolr4eRAvApBY5sH4Zdi-oj_hpYKgQwNjrh5svAZvD0YHuHRE9r9bu1nAsQEJdbHClz01liSwNAhsn7GD3A3hN3By6Se7_W3WdqcgYwKgWvkxrAB8JrU8pJWIBqTgyxS_zctipk80mL26EEFYWiSIjpOF26ZHWJ_EGBSYfDjPLcBxIliJg8t4wPGg6cmZ_ETNql9fT_WxgNVCmdf5dmDwqpQIt6h2NDELgAQGmo5RniVJSvLL5eZeKWjwuyPuf7iZLQbSyKrA0KQkaN-KSUybahgAxSlLglxfY1Was0Rwak-GOgxMHJdVTE7Xqzv0vM2rzzjO6QkoZc5T5IBMnruXPb5F_n1gXVg13SpzluAzdosNMDlCwXVLXGer4HA2Jf1KcmeqGJ29fUlV0QKuLya63rLqKXGYC75BeCRrG0q-QgdMfgk-v6qR1W7F2oKz3-2G7NK-784nQkYl7Ix7BjmvyzU-_hhF69jJyEPF-YkLXFY1mqUTJ0fblqe_87VK3nTT-tGvkT9M7b8NaSSk65Fi_sV4tkrVMSy9eom3rt1eMJZNixn9665WmgM1-RIUwKrR9iTG7t1RVWSBLi3ROfZKzMKY6-w0UatuvtiIUDYOUtSaF62uY2KelAbAtwfrDwBvV8h4I6DFGr1rOnRQDt6pQc4QM4modNyWvVymS.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC01LW1pbmktMjAyNS0wOC0wN3xvcGVuYWkifQ",
+       "format": "openai-responses-v1",
+       "id": "rs_0b6828db80ece2b1016aba01a0285c87d1aa96602f6aea291a",
+       "index": 0
+      }
+     ]
     }
    }
   ],
   "usage": {
-   "prompt_tokens": 3479,
-   "completion_tokens": 32,
-   "total_tokens": 3511,
-   "cost": 0.00018495,
+   "prompt_tokens": 3152,
+   "completion_tokens": 525,
+   "total_tokens": 3677,
+   "cost": 0.001262,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 3328,
+    "cached_tokens": 2560,
     "cache_write_tokens": 0,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.00018495,
-    "upstream_inference_prompt_cost": 0.00012095,
-    "upstream_inference_completions_cost": 6.4e-05
+    "upstream_inference_cost": 0.001262,
+    "upstream_inference_prompt_cost": 0.000212,
+    "upstream_inference_completions_cost": 0.00105
    },
    "completion_tokens_details": {
-    "reasoning_tokens": 0,
+    "reasoning_tokens": 320,
     "image_tokens": 0,
     "audio_tokens": 0
    }

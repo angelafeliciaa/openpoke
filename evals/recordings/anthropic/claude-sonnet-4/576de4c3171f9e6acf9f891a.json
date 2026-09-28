@@ -10,7 +10,27 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a359\" name=\"Gift for Dad\">Gift for Dad.</agent>\n<agent id=\"a458\" name=\"Birthday Gift for Mom\">Choosing and ordering a birthday gift for Mom.</agent>\n<agent id=\"a496\" name=\"Email to Finn\">Email thread with Finn.</agent>\n<agent id=\"a497\" name=\"Email to Nikhil\">Email thread with Nikhil.</agent>\n<agent id=\"a498\" name=\"Email to Nia\">Email thread with Nia.</agent>\n<agent id=\"a499\" name=\"Email to Aditi\">Email thread with Aditi.</agent>\n<agent id=\"a500\" name=\"DoorDash Job Offer\">The DoorDash job offer.</agent>\n(493 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\norder the gift for mom we talked about\n</new_user_message>"
+    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a458\" name=\"Birthday Gift for Mom\">Choosing and ordering a birthday gift for Mom.</agent>\n<agent id=\"a496\" name=\"Email to Finn\">Email thread with Finn.</agent>\n<agent id=\"a497\" name=\"Email to Nikhil\">Email thread with Nikhil.</agent>\n<agent id=\"a498\" name=\"Email to Nia\">Email thread with Nia.</agent>\n<agent id=\"a499\" name=\"Email to Aditi\">Email thread with Aditi.</agent>\n<agent id=\"a500\" name=\"DoorDash Job Offer\">The DoorDash job offer.</agent>\n(494 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\norder the gift for mom we talked about\n</new_user_message>"
+   },
+   {
+    "role": "assistant",
+    "content": "",
+    "tool_calls": [
+     {
+      "type": "function",
+      "index": 0,
+      "id": "toolu_bdrk_01S7PtbUswUDqSwq9gvbdaYx",
+      "function": {
+       "name": "send_message_to_user",
+       "arguments": "{\"message\": \"I'll go ahead and order that gift for your mom!\"}"
+      }
+     }
+    ]
+   },
+   {
+    "role": "tool",
+    "tool_call_id": "toolu_bdrk_01S7PtbUswUDqSwq9gvbdaYx",
+    "content": "{\"tool\": \"send_message_to_user\", \"status\": \"success\", \"arguments\": {\"message\": \"I'll go ahead and order that gift for your mom!\"}, \"result\": {\"status\": \"delivered\"}}"
    }
   ],
   "tools": [
@@ -166,9 +186,9 @@
   ]
  },
  "response": {
-  "id": "gen-1790504269-sX66tSWJuAbcztmHFdB4",
+  "id": "gen-1790574981-vebdewKabEBrZOrR00VS",
   "object": "chat.completion",
-  "created": 1790504269,
+  "created": 1790574981,
   "model": "anthropic/claude-sonnet-4",
   "provider": "Amazon Bedrock",
   "system_fingerprint": null,
@@ -181,17 +201,17 @@
     "native_finish_reason": "tool_use",
     "message": {
      "role": "assistant",
-     "content": "I'll get that gift order placed for your mom right away.",
+     "content": null,
      "refusal": null,
      "reasoning": null,
      "tool_calls": [
       {
        "type": "function",
        "index": 0,
-       "id": "toolu_bdrk_01EywRJJDkWTBLwQdJb8p3x1",
+       "id": "toolu_bdrk_017z861AdfHPQQDSUFodC7P7",
        "function": {
         "name": "send_message_to_agent",
-        "arguments": "{\"agent_id\": \"a458\", \"instructions\": \"Please go ahead and order the birthday gift for Mom that we discussed earlier. Use the details we previously agreed on and complete the purchase.\"}"
+        "arguments": "{\"agent_id\": \"a458\", \"instructions\": \"Please go ahead and order the birthday gift for mom that we discussed and finalized.\"}"
        }
       }
      ]
@@ -199,21 +219,21 @@
    }
   ],
   "usage": {
-   "prompt_tokens": 4186,
-   "completion_tokens": 116,
-   "total_tokens": 4302,
-   "cost": 0.00431145,
+   "prompt_tokens": 4293,
+   "completion_tokens": 92,
+   "total_tokens": 4385,
+   "cost": 0.0030189,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 3804,
-    "cache_write_tokens": 379,
+    "cached_tokens": 4163,
+    "cache_write_tokens": 0,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.00431145,
-    "upstream_inference_prompt_cost": 0.00257145,
-    "upstream_inference_completions_cost": 0.00174
+    "upstream_inference_cost": 0.0030189,
+    "upstream_inference_prompt_cost": 0.0016389,
+    "upstream_inference_completions_cost": 0.00138
    },
    "completion_tokens_details": {
     "reasoning_tokens": 0,
