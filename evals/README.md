@@ -9,7 +9,7 @@ agent it created earlier?
 ```bash
 .venv/bin/python -m pytest                                          # offline: replays every baseline
 .venv/bin/python -m evals.run --mode live --model gpt-5 --cases hard  # paid: records what's missing
-.venv/bin/python -m evals.report evals/results/<file>.jsonl
+.venv/bin/python -m evals.show amb-06@5                              # free: one run as a chat
 ```
 
 `--model` defaults to `EVAL_MODEL`, then to the production `interaction_agent_model`. Every live
@@ -61,6 +61,7 @@ print both tables side by side:
 | `graders.py` | code-only verdict per run |
 | `run.py`, `report.py` | run a suite, write `results/*.jsonl` and baselines, print the table |
 | `compare.py` | baseline summaries at a git ref next to the working tree's |
+| `show.py` | print a recorded run as a chat (`python -m evals.show amb-06@5`) |
 | `recordings/<model>/` | one JSON per LLM call: request and response |
 | `baselines/<model>/<suite>.json` | the verdict for every case and trial that pytest holds replays to |
 
@@ -71,9 +72,10 @@ print both tables side by side:
 - **create**: nothing matching exists. Pass = a new agent is spawned.
 - **drift**: turn 1 creates an agent, turn 2 is a paraphrased follow-up. Pass = turn 2 reuses turn 1's agent.
 - **ambiguous**: two agents fit (Email to Alice Park, Email to Alice Wong) and nothing in the
-  message or history breaks the tie. Pass = the agent asks the user which one. Messaging one is
-  `guessed_candidate`; messaging both is `messaged_every_candidate`, kept apart because it is harmless
-  for "did the renewal go through?" and wrong for "tell alice i'm late".
+  message or history breaks the tie. An **action** ("tell alice i'm late") must be asked about.
+  A **question** ("did the renewal go through?") passes if the model asks *or* checks every
+  candidate (`checked_every_candidate`). Messaging one is `guessed_candidate`; messaging every
+  candidate on an action is `messaged_every_candidate`.
 - **sounds_new** (a reuse family): an agent owns the work, but the request reads as brand new and
   there is no history ("look into a place to stay in lisbon" with "Hotel in Lisbon" listed).
   Creating another agent here is how rosters bloat.
@@ -102,8 +104,9 @@ the current code; the original code's baselines and recordings live under `stage
 
 ## Limits
 
-- After the first successful dispatch in a turn, the harness answers the next LLM call with a
-  canned "On it." instead of paying for it. A model that dispatches a second agent only after
-  seeing the first tool result is not measured.
+- After the first successful dispatch in a turn, the harness answers the next LLM call with an
+  empty stand-in instead of paying for it, so the model's own words from earlier in the turn stay
+  as its reply. A model that dispatches a second agent only after seeing the first tool result is
+  not measured.
 - Each generator draws every roster from one seeded RNG, so inserting a scenario reshuffles the
   rosters after it and forces a re-record of those cases.
