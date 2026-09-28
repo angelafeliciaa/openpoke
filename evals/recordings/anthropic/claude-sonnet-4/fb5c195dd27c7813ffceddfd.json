@@ -1,8 +1,8 @@
 {
- "case": "amb-08@500",
+ "case": "drift-07@500",
  "trial": 1,
  "request": {
-  "model": "gpt-5-mini",
+  "model": "anthropic/claude-sonnet-4",
   "messages": [
    {
     "role": "system",
@@ -10,7 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a4\" name=\"Dropbox Job Offer\">The Dropbox job offer.</agent>\n<agent id=\"a22\" name=\"Webflow Job Offer\">The Webflow job offer.</agent>\n<agent id=\"a23\" name=\"Linear Job Offer\">The Linear job offer.</agent>\n<agent id=\"a26\" name=\"Notion Job Offer\">The Notion job offer.</agent>\n<agent id=\"a57\" name=\"DoorDash Job Offer\">The DoorDash job offer.</agent>\n<agent id=\"a60\" name=\"Cohere Job Offer\">The Cohere job offer.</agent>\n<agent id=\"a161\" name=\"Stripe Offer Negotiation\">Negotiating the Stripe offer.</agent>\n<agent id=\"a305\" name=\"Stripe Job Offer\">The Stripe job offer.</agent>\n<agent id=\"a496\" name=\"Email to Chen\">Email thread with Chen.</agent>\n<agent id=\"a497\" name=\"Trip Planning Barcelona\">Itinerary for a trip to Barcelona.</agent>\n<agent id=\"a498\" name=\"Email to Mateo\">Email thread with Mateo.</agent>\n<agent id=\"a499\" name=\"Call Quinn Back\">Returning Quinn's call.</agent>\n<agent id=\"a500\" name=\"Call Priya Back\">Returning Priya's call.</agent>\n(487 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\nask stripe if the offer deadline can move to next week\n</new_user_message>"
+    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 22:05:38\">set up a call with the wedding photographer</user_message>\n<poke_reply timestamp=\"2026-09-27 22:05:38\">I'll help you set up a call with the wedding photographer. Let me get that organized for you.</poke_reply>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a497\" name=\"Grocery Order\">Grocery Order.</agent>\n<agent id=\"a498\" name=\"Call Ursula Back\">Returning Ursula's call.</agent>\n<agent id=\"a499\" name=\"Lunch with Anika\">Scheduling lunch with Anika.</agent>\n<agent id=\"a500\" name=\"Reminder 3\">Reminder #3 the user set.</agent>\n<agent id=\"a501\" name=\"Wedding Photographer Call\">Setting up a call with the wedding photographer</agent>\n(496 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\nask if she does video too\n</new_user_message>"
    }
   ],
   "tools": [
@@ -166,19 +166,19 @@
   ]
  },
  "response": {
-  "id": "gen-1790499955-ZkTZK0zzjPCYZXQwb3I9",
+  "id": "gen-1790571938-QYUneTwaETVACg6v5TWS",
   "object": "chat.completion",
-  "created": 1790499955,
-  "model": "openai/gpt-5-mini",
-  "provider": "OpenAI",
+  "created": 1790571938,
+  "model": "anthropic/claude-sonnet-4",
+  "provider": "Amazon Bedrock",
   "system_fingerprint": null,
-  "service_tier": "default",
+  "service_tier": null,
   "choices": [
    {
     "index": 0,
     "logprobs": null,
     "finish_reason": "tool_calls",
-    "native_finish_reason": "completed",
+    "native_finish_reason": "tool_use",
     "message": {
      "role": "assistant",
      "content": null,
@@ -188,44 +188,35 @@
       {
        "type": "function",
        "index": 0,
-       "id": "call_T5XGUmWwkyp7vdOUTOv4M8aa",
+       "id": "toolu_bdrk_01XWxrASpcvCjFC3Yt5gK68P",
        "function": {
         "name": "send_message_to_agent",
-        "arguments": "{\"agent_id\":\"a161\",\"instructions\":\"Please contact Stripe recruiting/hiring team and ask whether they can extend the current offer deadline to next week. Keep the message short and professional. Mention that the candidate needs a few more days to finalize details and would appreciate an extension to [date one week from today]. Ask whether that new deadline works or what alternate date they can offer. Do not send any attachments. Report back their reply and any suggested next steps.\"}"
+        "arguments": "{\"agent_id\": \"a501\", \"instructions\": \"When setting up the call with the wedding photographer, also ask if she offers video services in addition to photography.\"}"
        }
-      }
-     ],
-     "reasoning_details": [
-      {
-       "type": "reasoning.encrypted",
-       "data": "gAAAAABquNx1eVkikIV7JqTGKxOx9ZAwXAY3mTJ7jfmuE21UkQFaHFd1yLZjgfE4wPzsqt5DfcFSvxnsaZVtRksbVjZMca9Q2qumIzojanGq4Oqk2pf1QB-ZdkeEwzZvH4aD-WBK3p64KrpHivRberISjqpONRosc4C-Pfd2UrKGCmQpYrAuV4vi3E37fjF3yub0ZXm-MC1MmK1HoVTtVKXciAXw5GeAoncWs5EEZ1AMkKogMehUcBtAvcai-fv83kVXZ01g2QvudIuCJH7-a_REiiz66Y3r_VQrZ3Q1f1f2TMArflaEacqh86mkQGVaL_-xmd3Jg21Ho_AVu4bMAU9iQ0xy9ziRxbV1u6wqATg0hOxPgev5rZzmx6niY_6FCFEeBi10hcmk4BFAEKkHAM-9uD-314qQ_Qf1Hvw_bMoARtaOGoRjBLDP_ud2swJ74PxR8TNLjP8dbKQRBNABdBoNwwff1KQmEzfIeA1gZ2PQk7oeiXxHUZenbJet7UONlmbovm_YE6c-Tw8uiOqbqTTFeXivWx5vPCpwYR2OGJtFAtfR42Fxg_gClJSk0942FASZokDidYxdz0D5CJhhlKn4UC4FrPyTEyJtB1F9lCgUCGXsUBxGjeiPAB_5vk0eJfNvgOsILINK5J6MnibcgIuHUkX-_OYgeKkbSL5kMJBx6g9kG189fXavkNaewJnGRdBd4zCF9_t6tahtSxoQXhNtZDaFRTSZ3SrXammt7_tYqGH8f6-xHDD4KqHea08A0TS2DktNuSZEDgfCQbQmrH_QufWPttoVdnX9H6tgRc5jOUOnaRhUZ04EJji2v4pAQzqzl8LwyIE5EfLJbv0QgLED02r8dbFFNOXL9XZ7pXmKyZhXPnBdKqS-Rk3sVi160Oe3JpDOznDDq7xJOGTt1BOZRQjAwRURJLaC-EYyndBqaVCKLSegfcUryfYc4cKd2zbRw-LtE6wUySMgyPx2CKHz2HKA-1QwRa8jdJeEKvdd0IVNjOXVMDiLIDrLl0571BZXSCkqWDvvzvQhaYSN1DZAb0a-96swH0_Q0qjZ8D7NohxRhp3ZFxbXTcwpS9Ch7B6UbPSpmOdhDb35WjC0-i5zkgj5Balh2SEqLd1CC5VKk7A_qEkOSzkqXaMCjeZT2vGuBZtPaBmKJ7RjKU-W3XOX5PG7yOErN06Xu66O_Sy2oLV2mDdFcrCIxRSYzuonpA56tQb5i3dQr_m5pW_DWgZvQZ0cI9c_XekYzGLwDySgeoGGXP-gErSH4b5OS86Qj_hrJy3Gt94_yc9kEKER37d3OiDh77xgs93hv-0lcImnAsoQBZXhpqaIwGIKSiuLoSkvKpQOU2E3Aoi-llWtmRSTpqPGOak0_4Z4uo3ia6ktj_ZxTxWJym-OQTcbLAxk47X4nLB1f-xVTZ2DsF4XptNQXaKAc20onZEpb7LEiQIo7i0LzDGemtSGK9SkD9NndEaruxfo93i-htTgt5R2_VV2QWb3MWi5XE_Y_aDgDtGKvlaxQpxWTR5RF9OxEFA7afLpbTuj5oigqDnwoKmvPjft3lPZ0PRNFTR406fUKuilUNkSVjtxx6sejImObmmWygXQvbJGbN6NdA8lhS0E-fbxUv0KNHElsqmdKfL9JjPXmw1zldGSoIlBCdFg2UV5oAqKAyr73o0axKsqRPm1pSqBZEtyEgyZjfoa5_ZQ4sLxVfwlKRYQSzFyVFOBKH2e4vRfw2qjkViT2DVkOThIJc0h7bDPD4qmkPzZIlN38vYVUqe039KVSFgyOVZBBj-8hXXogqFwNbibe4EJrBX4kh5KoVBtqIybmnHwpEWMJf5MGqK-4zLW_EkhfL1mSB6VdZFHVcb2bGDeLH6aJCZ7qzvVP9jFuL7QkOZebOZGHaQ0fCriyMRDQwxzzmU8Ez2j3tMwrjCZD5kus15Xx51ipaBr7ockPN5liwU0s0CUIv5jMWXnnpAdZ30NW3JdYa9GseulhdeGXz7N-mtBtbS1DU0dPh5gBMF2yuxG5NbXk8o8fCgFkq0E_--CbUCNLj9qzMT59R7lmXZ_TXnIwd-lnILpunFfVCeUP4Cb10LVEK8ZMhsyS2EtWVQ=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC01LW1pbmktMjAyNS0wOC0wN3xvcGVuYWkifQ",
-       "format": "openai-responses-v1",
-       "id": "rs_0e7bb547aca0c13c016ab8dc74101887d1b8221044a538eee4",
-       "index": 0
       }
      ]
     }
    }
   ],
   "usage": {
-   "prompt_tokens": 3296,
-   "completion_tokens": 218,
-   "total_tokens": 3514,
-   "cost": 0.000684,
+   "prompt_tokens": 4212,
+   "completion_tokens": 97,
+   "total_tokens": 4309,
+   "cost": 0.00412395,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 2560,
-    "cache_write_tokens": 0,
+    "cached_tokens": 3804,
+    "cache_write_tokens": 405,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.000684,
-    "upstream_inference_prompt_cost": 0.000248,
-    "upstream_inference_completions_cost": 0.000436
+    "upstream_inference_cost": 0.00412395,
+    "upstream_inference_prompt_cost": 0.00266895,
+    "upstream_inference_completions_cost": 0.001455
    },
    "completion_tokens_details": {
-    "reasoning_tokens": 64,
+    "reasoning_tokens": 0,
     "image_tokens": 0,
     "audio_tokens": 0
    }

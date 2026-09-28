@@ -1,5 +1,5 @@
 {
- "case": "drift-01@500",
+ "case": "drift-07@5",
  "trial": 1,
  "request": {
   "model": "anthropic/claude-sonnet-4",
@@ -10,7 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 03:12:30\">book me a table for 2 at a thai place near soho tomorrow 7pm</user_message>\n<poke_reply timestamp=\"2026-09-27 03:12:35\">On it.</poke_reply>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a497\" name=\"Call Pia Back\">Returning Pia's call.</agent>\n<agent id=\"a498\" name=\"Lunch with Theo\">Scheduling lunch with Theo.</agent>\n<agent id=\"a499\" name=\"Reminder 2\">Reminder #2 the user set.</agent>\n<agent id=\"a500\" name=\"Reminder 10\">Reminder #10 the user set.</agent>\n<agent id=\"a501\" name=\"Thai Restaurant Booking\">Book a table for 2 at a Thai restaurant near Soho for tomorrow 7pm</agent>\n(496 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\nmake it 3 people instead\n</new_user_message>"
+    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 22:05:36\">set up a call with the wedding photographer</user_message>\n<poke_reply timestamp=\"2026-09-27 22:05:36\">I'll help you set up a call with the wedding photographer. Let me get that arranged for you.</poke_reply>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a1\" name=\"Reddit Recruiter Follow-up\">Following up with the Reddit recruiter.</agent>\n<agent id=\"a2\" name=\"Lunch with Jade\">Scheduling lunch with Jade.</agent>\n<agent id=\"a3\" name=\"Email to Aarav\">Email thread with Aarav.</agent>\n<agent id=\"a4\" name=\"Laptop Warranty Claim\">Laptop Warranty Claim.</agent>\n<agent id=\"a5\" name=\"Lunch with Isha\">Scheduling lunch with Isha.</agent>\n<agent id=\"a6\" name=\"Wedding Photographer Call\">Setting up a call with the wedding photographer</agent>\n</active_agents>\n\n<new_user_message>\nask if she does video too\n</new_user_message>"
    }
   ],
   "tools": [
@@ -166,9 +166,9 @@
   ]
  },
  "response": {
-  "id": "gen-1790503955-qvUZMnzqNgbptzbvXDhr",
+  "id": "gen-1790571936-kpm0xXAAjzkZxfjMqZPD",
   "object": "chat.completion",
-  "created": 1790503955,
+  "created": 1790571936,
   "model": "anthropic/claude-sonnet-4",
   "provider": "Amazon Bedrock",
   "system_fingerprint": null,
@@ -188,10 +188,10 @@
       {
        "type": "function",
        "index": 0,
-       "id": "toolu_bdrk_01GVYs3zyBzJxQJcazUV6B6c",
+       "id": "toolu_bdrk_01JgYPz6S6XEmv67YCQNaH7k",
        "function": {
         "name": "send_message_to_agent",
-        "arguments": "{\"agent_id\": \"a501\", \"instructions\": \"Change the reservation to 3 people instead of 2.\"}"
+        "arguments": "{\"agent_id\": \"a6\", \"instructions\": \"When you contact the wedding photographer about setting up the call, also ask if she does video services in addition to photography.\"}"
        }
       }
      ]
@@ -199,21 +199,21 @@
    }
   ],
   "usage": {
-   "prompt_tokens": 4222,
-   "completion_tokens": 88,
-   "total_tokens": 4310,
-   "cost": 0.00402645,
+   "prompt_tokens": 4229,
+   "completion_tokens": 99,
+   "total_tokens": 4328,
+   "cost": 0.0042177,
    "is_byok": false,
    "prompt_tokens_details": {
     "cached_tokens": 3804,
-    "cache_write_tokens": 415,
+    "cache_write_tokens": 422,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.00402645,
-    "upstream_inference_prompt_cost": 0.00270645,
-    "upstream_inference_completions_cost": 0.00132
+    "upstream_inference_cost": 0.0042177,
+    "upstream_inference_prompt_cost": 0.0027327,
+    "upstream_inference_completions_cost": 0.001485
    },
    "completion_tokens_details": {
     "reasoning_tokens": 0,

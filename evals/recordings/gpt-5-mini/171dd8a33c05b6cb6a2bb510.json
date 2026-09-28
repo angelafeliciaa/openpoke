@@ -1,8 +1,8 @@
 {
- "case": "drift-04@5",
+ "case": "drift-02@5",
  "trial": 1,
  "request": {
-  "model": "anthropic/claude-sonnet-4",
+  "model": "gpt-5-mini",
   "messages": [
    {
     "role": "system",
@@ -10,7 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 03:13:08\">whats the cheapest way to ship a package to berlin</user_message>\n<poke_reply timestamp=\"2026-09-27 03:13:11\">On it.</poke_reply>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a1\" name=\"Lunch with Will\">Scheduling lunch with Will.</agent>\n<agent id=\"a2\" name=\"Hotel in Seattle\">Hotel booking in Seattle.</agent>\n<agent id=\"a3\" name=\"Email to Sara\">Email thread with Sara.</agent>\n<agent id=\"a4\" name=\"Lunch with Farah\">Scheduling lunch with Farah.</agent>\n<agent id=\"a5\" name=\"Databricks Interview Prep\">Preparing for Databricks interviews.</agent>\n<agent id=\"a6\" name=\"Berlin Package Shipping\">Finding cheapest shipping options to Berlin</agent>\n</active_agents>\n\n<new_user_message>\nok book that option\n</new_user_message>"
+    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 22:05:55\">find out when the next f1 race is</user_message>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a1\" name=\"Theater Tickets Hamilton\">Theater Tickets Hamilton.</agent>\n<agent id=\"a2\" name=\"Email to Bella\">Email thread with Bella.</agent>\n<agent id=\"a3\" name=\"Rippling Recruiter Follow-up\">Following up with the Rippling recruiter.</agent>\n<agent id=\"a4\" name=\"Flight to Montreal\">Finding and booking a flight to Montreal.</agent>\n<agent id=\"a5\" name=\"Call Hugo Back\">Returning Hugo's call.</agent>\n<agent id=\"a6\" name=\"Find Next F1 Race\">Look up the next scheduled Formula 1 Grand Prix (date, venue, country), include local start time, session type (race/sprint), and quick note if it's a weekend event. Provide source links.</agent>\n</active_agents>\n\n<new_user_message>\nand where is it?\n</new_user_message>"
    }
   ],
   "tools": [
@@ -166,57 +166,72 @@
   ]
  },
  "response": {
-  "id": "gen-1790503991-lChfevc69knGSItDBx5Q",
+  "id": "gen-1790571955-Ybky70y0TsU0AKUdyrbx",
   "object": "chat.completion",
-  "created": 1790503991,
-  "model": "anthropic/claude-sonnet-4",
-  "provider": "Amazon Bedrock",
+  "created": 1790571955,
+  "model": "openai/gpt-5-mini",
+  "provider": "OpenAI",
   "system_fingerprint": null,
-  "service_tier": null,
+  "service_tier": "default",
   "choices": [
    {
     "index": 0,
     "logprobs": null,
     "finish_reason": "tool_calls",
-    "native_finish_reason": "tool_use",
+    "native_finish_reason": "completed",
     "message": {
      "role": "assistant",
      "content": null,
      "refusal": null,
-     "reasoning": null,
+     "reasoning": "**Processing race information**\n\nI need to follow the interaction rules regarding the user\u2019s request. When I get a message about finding the next F1 race, I should notify the user first. I'll send a message to them, letting them know I'm checking. After that, I\u2019ll use the agent a6 to perform the lookup. I just need to remember to properly call the functions to send messages to both the user and the agent. Let's get started on that!",
      "tool_calls": [
       {
        "type": "function",
        "index": 0,
-       "id": "toolu_bdrk_013pwhTNUbqRyrMB34tHvSZD",
+       "id": "call_rlefhzCvIK8q01OVPQSprAwX",
        "function": {
         "name": "send_message_to_agent",
-        "arguments": "{\"agent_id\": \"a6\", \"instructions\": \"The user wants to book the cheapest shipping option we found. Please proceed with booking that option.\"}"
+        "arguments": "{\"agent_id\":\"a6\",\"instructions\":\"Please find the next scheduled Formula 1 Grand Prix (date, venue, country). For that event include local race start time, whether it's a race or a sprint weekend (and session type), and a quick note if it falls on a weekend. Provide source links for the schedule (official F1 site or reputable motorsport sources). Keep the answer concise and formatted for quick reading.\"}"
        }
+      }
+     ],
+     "reasoning_details": [
+      {
+       "type": "reasoning.summary",
+       "summary": "**Processing race information**\n\nI need to follow the interaction rules regarding the user\u2019s request. When I get a message about finding the next F1 race, I should notify the user first. I'll send a message to them, letting them know I'm checking. After that, I\u2019ll use the agent a6 to perform the lookup. I just need to remember to properly call the functions to send messages to both the user and the agent. Let's get started on that!",
+       "format": "openai-responses-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqufW3Ajzujl13-saBBMEudB_r-ZC5TVzCKFRChG6Yk_JjxkN3F6ldinIp7OFTSWOP5fjmZTdcvieNRKljStSRnW7OE0ZYWOY6HJRDoNf7vGjn2G9gnvVFHOEVC5R95O7p99YguTazdPrPgcVkVSQgc2nthmC1EXZsu8nLrCZVI8zP6iegUMrgQ5w3K6YjQngGPWGRjPkv4Rh76lWkkRhDpEJKXXCRMWpQNZaQJ6-jXH7qUsCkO3xi7oRKgJOdTusKSCXE63kvANv7CgnoNQtsFnp2-oXSRCjfv_IteG5ouTJpttFu7pPFAtKxUdkdaL-1ZPzmHBG4AYP3L9W_oyuOsc2Qhw0TDmPLZc0vJyink0Zwhk0_0Fhrq1gmAi_ZCLhVPbtsKM73-XdOKC6tld7f93HIBQ3O4-754fHsJMk-9BDGlYRQP6IRciBgTgFXdLqQlrXH4Gd8v5Ah6HhgXIhEg_qmbbxmzecxP22RGnxEjki2NzO4zsz9UC0jMgtEloHeUtM4AQk2IwOeS_XSAqEOKwXPoHXzZcxCo-ZAvFq33nzG-lTCwfZxWwltpJtlIMn_TC2bhf6rZaJp5bG653XItHZ8FgVppTpfI0DXRJ_sJ0QRvC606Yzaqkrs1QAI18W1GKy2EXvZQHB5hdtVi5Hfh1kWkudpMjbZn0M5CZv7YPipX9M1kXTEt6sSRSKOz9-y4lQ9_booVcN2obF22poXLSRmjJBvteH8-9Tam3B6rnNOduDBBj0l_w89wmgWPN06d2YSF5hJylQBaIHzaCEmA4ja1TEIjKOtiNwhzIScTT0dZrb0Tk3poMRYxsu6esBSQ55Oa0fVqdh9m9lltk9Qca4UZCLsQF8yPzHVoVJgkzve_Lw1fCLyz3MKqHVjdnKBCXAumBoZnjnW6uduBpUvx8mqtsvkQefgoF2ad-X3Rjw5qw2TFQuE8WzZkydwhe81e9qnyADU-xLyQq5EXMYK63TbcVV0SpZGkaFFMdiYuQfta6PtTxgn1Fnfab75a0VSUvqC9DHP_-wFQUgdRpfnY28wmkkMfXwvvCgHTjmrFbMM10jusiveqEotxlnKAedYL97gfKAy7-79sf7wLNKqdqXGtNp0iSEQ3-1Q3-okyq2qHS2nlg05Bwu0SE5Uq4WF1bnadhDcr1gEe-smEE8AsDGeaGfO__W3H_OIPDQaCzaQkbCdDXMJ9fte4fEYhlx3BbiDgigHsp2EMwDG5z1R91pTYVBCzsDHQ3d80YC2FKv__PSPAw1IHe0ax-0BBtYuikL5QRUxxt8IEsx7OssifG1RA5C58Ink08reGqxXjvCWrXF6uKdpoaeb5RxOlZcjosCuxgMoCxdi7OGNMrPz9uGeLCc0257K5s-Ft3LuxKHe5IKxg1QS2j0XiI7cD01rgnHsqP8UnekkZBs-9sCtE1ZWAzB_qPSpAYwivunSFSr_f-s-ySwHzYVW0i8Ui6jVf1M_jJCTc3EisKLDDPcWbHBuhGGH7rbkyr62S4cxg5VIitwLefXeP9y4zu0wtIHGrCgFQM_-mYU0z17Ih6uoZ-St78tRvdsbX55gh7PTQipcSw6UDexYg_HbryBYsxbsgmyOPJjVncWQyZ5aLFSBvIripy4D49_1k7ZhNrbfaWC2ONprat1eSEVJtcQvizpoufYSJhffZnCnxDsBIReaHxRgUagEWmARJzXdNMRKAf7yWMc9eQU_0R_avpVWefJwpB3MAhIxpLHH_TFhBgbF0tXv3zY2Pf1gEFMkKPF_b0XzIyHbnIjB-cQUcv9cUjyMsHKK43JE43INzncjugXgMh07GxIAy7I9DZyQAlwXswA3x81seNZZWuXkBko0DDLbSky6_H3YeF7iXKAKuIzPZoq4G6BGLpofRI3a-S3iovDii1CNRJ41JMBFYRYHtbZm0BgNERsZifVWpdQItjdZ9kDyrwB4ardsR1HamzZSDsMI9LwjIkVL3mFXGwxIkP9VzXijjnMLiGjal8uZzkzn31gMBA==.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC01LW1pbmktMjAyNS0wOC0wN3xvcGVuYWkifQ",
+       "format": "openai-responses-v1",
+       "id": "rs_052c930849c22925016ab9f5b45e7c87d18f809beca2eb9d5f",
+       "index": 1
       }
      ]
     }
    }
   ],
   "usage": {
-   "prompt_tokens": 4198,
-   "completion_tokens": 95,
-   "total_tokens": 4293,
-   "cost": 0.00404145,
+   "prompt_tokens": 3197,
+   "completion_tokens": 209,
+   "total_tokens": 3406,
+   "cost": 0.00064125,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 3804,
-    "cache_write_tokens": 391,
+    "cached_tokens": 2560,
+    "cache_write_tokens": 0,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.00404145,
-    "upstream_inference_prompt_cost": 0.00261645,
-    "upstream_inference_completions_cost": 0.001425
+    "upstream_inference_cost": 0.00064125,
+    "upstream_inference_prompt_cost": 0.00022325,
+    "upstream_inference_completions_cost": 0.000418
    },
    "completion_tokens_details": {
-    "reasoning_tokens": 0,
+    "reasoning_tokens": 64,
     "image_tokens": 0,
     "audio_tokens": 0
    }

@@ -93,16 +93,17 @@ DRIFT = [
 ]
 
 
-# (candidates that fit equally, message with no history to break the tie, keywords excluded from distractors)
+# (candidates that fit equally, message with no history to break the tie, keywords excluded from distractors,
+#  read_only). An action must be asked about; a question can instead be put to every candidate.
+# Each pair is two things the user can tell apart; two agents splitting one job are a duplicate, not ambiguity.
 AMBIGUOUS = [
-    (["Email to Alice Park", "Email to Alice Wong"], "tell alice im running 10 min late", ["alice"]),
-    (["Dentist Appointment", "Dentist Appointment for Kids"], "move the dentist appointment to friday", ["dentist"]),
-    (["Hotel in Paris", "Hotel in Paris for Mom"], "does the paris hotel have late checkout?", ["paris"]),
-    (["Car Insurance Renewal", "Home Insurance Renewal"], "did the insurance renewal go through?", ["insurance"]),
-    (["Birthday Gift for Mom", "Birthday Dinner for Mom"], "whats the status on mom's birthday thing", ["mom", "birthday"]),
-    (["Flight to Tokyo", "Flight to Tokyo for Sam"], "is the tokyo flight confirmed?", ["tokyo"]),
-    (["Email to Professor Chen", "Email to Professor Cheng"], "follow up with the professor about the letter", ["chen", "professor"]),
-    (["Stripe Job Offer", "Stripe Offer Negotiation"], "ask stripe if the offer deadline can move to next week", ["stripe"]),
+    (["Email to Alice Park", "Email to Alice Wong"], "tell alice im running 10 min late", ["alice"], False),
+    (["Dentist Appointment", "Dentist Appointment for Kids"], "move the dentist appointment to friday", ["dentist"], False),
+    (["Hotel in Paris", "Hotel in Paris for Mom"], "does the paris hotel have late checkout?", ["paris"], True),
+    (["Car Insurance Renewal", "Home Insurance Renewal"], "did the insurance renewal go through?", ["insurance"], True),
+    (["Birthday Gift for Mom", "Birthday Dinner for Mom"], "whats the status on mom's birthday thing", ["mom", "birthday"], True),
+    (["Flight to Tokyo", "Flight to Tokyo for Sam"], "is the tokyo flight confirmed?", ["tokyo"], True),
+    (["Email to Professor Chen", "Email to Professor Cheng"], "follow up with the professor about the letter", ["chen", "professor"], False),
 ]
 
 
@@ -172,11 +173,11 @@ def main() -> None:
             })
     # own seed, so adding these never reshuffles the rosters above
     amb_rng = random.Random(20260927)
-    for i, (candidates, message, exclude) in enumerate(AMBIGUOUS, 1):
+    for i, (candidates, message, exclude, read_only) in enumerate(AMBIGUOUS, 1):
         for size in SIZES:
             lines.append({
                 "id": f"amb-{i:02d}@{size}", "kind": "ambiguous", "family": "ambiguous",
-                "target": None, "candidates": candidates, "history": [], "message": message,
+                "target": None, "candidates": candidates, "read_only": read_only, "history": [], "message": message,
                 "roster_size": size, "roster": roster_entries(_with_candidates(amb_rng, size, pool, candidates, exclude)),
             })
     new_rng = random.Random(20260928)

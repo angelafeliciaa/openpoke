@@ -1,5 +1,5 @@
 {
- "case": "drift-07@500",
+ "case": "drift-05@5",
  "trial": 1,
  "request": {
   "model": "anthropic/claude-sonnet-4",
@@ -10,7 +10,27 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 03:13:54\">set up a call with the wedding photographer</user_message>\n<poke_reply timestamp=\"2026-09-27 03:14:01\">On it.</poke_reply>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a497\" name=\"Grocery Order\">Grocery Order.</agent>\n<agent id=\"a498\" name=\"Call Ursula Back\">Returning Ursula's call.</agent>\n<agent id=\"a499\" name=\"Lunch with Anika\">Scheduling lunch with Anika.</agent>\n<agent id=\"a500\" name=\"Reminder 3\">Reminder #3 the user set.</agent>\n<agent id=\"a501\" name=\"Wedding Photographer Call\">Setting up a call with the wedding photographer</agent>\n(496 more agents not listed; search_agents finds them by topic)\n</active_agents>\n\n<new_user_message>\nask if she does video too\n</new_user_message>"
+    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 22:05:15\">look up if the apple store has the new macbook in stock</user_message>\n<poke_reply timestamp=\"2026-09-27 22:05:15\">I'll check if the Apple Store has the new MacBook in stock for you.</poke_reply>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a1\" name=\"Call Emma Back\">Returning Emma's call.</agent>\n<agent id=\"a2\" name=\"Lunch with Marco\">Scheduling lunch with Marco.</agent>\n<agent id=\"a3\" name=\"Reminder 4\">Reminder #4 the user set.</agent>\n<agent id=\"a4\" name=\"Call Kofi Back\">Returning Kofi's call.</agent>\n<agent id=\"a5\" name=\"Lunch with Theo\">Scheduling lunch with Theo.</agent>\n<agent id=\"a6\" name=\"MacBook Stock Check\">Checking Apple Store stock availability for new MacBook</agent>\n</active_agents>\n\n<new_user_message>\nreserve one for pickup\n</new_user_message>"
+   },
+   {
+    "role": "assistant",
+    "content": "",
+    "tool_calls": [
+     {
+      "type": "function",
+      "index": 0,
+      "id": "toolu_bdrk_01XmzNcbupqYuawGbiaY5kPq",
+      "function": {
+       "name": "send_message_to_user",
+       "arguments": "{\"message\": \"I'll reserve one for pickup for you.\"}"
+      }
+     }
+    ]
+   },
+   {
+    "role": "tool",
+    "tool_call_id": "toolu_bdrk_01XmzNcbupqYuawGbiaY5kPq",
+    "content": "{\"tool\": \"send_message_to_user\", \"status\": \"success\", \"arguments\": {\"message\": \"I'll reserve one for pickup for you.\"}, \"result\": {\"status\": \"delivered\"}}"
    }
   ],
   "tools": [
@@ -166,9 +186,9 @@
   ]
  },
  "response": {
-  "id": "gen-1790504041-AXfM4Au39z77j8aeA8Gb",
+  "id": "gen-1790571930-Oo2FOcL9vXKTB5D0Ufqr",
   "object": "chat.completion",
-  "created": 1790504041,
+  "created": 1790571930,
   "model": "anthropic/claude-sonnet-4",
   "provider": "Amazon Bedrock",
   "system_fingerprint": null,
@@ -188,10 +208,10 @@
       {
        "type": "function",
        "index": 0,
-       "id": "toolu_bdrk_01MLvGKDeqtFUGZyv6t2Z5qk",
+       "id": "toolu_bdrk_01TQPrQXwYXVdBY8njhUAngZ",
        "function": {
         "name": "send_message_to_agent",
-        "arguments": "{\"agent_id\": \"a501\", \"instructions\": \"When setting up the call with the wedding photographer, also ask if she does video services in addition to photography.\"}"
+        "arguments": "{\"agent_id\": \"a6\", \"instructions\": \"Reserve a new MacBook for pickup. Make the reservation under the user's name.\"}"
        }
       }
      ]
@@ -199,21 +219,21 @@
    }
   ],
   "usage": {
-   "prompt_tokens": 4194,
-   "completion_tokens": 97,
-   "total_tokens": 4291,
-   "cost": 0.00405645,
+   "prompt_tokens": 4340,
+   "completion_tokens": 92,
+   "total_tokens": 4432,
+   "cost": 0.0030168,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 3804,
-    "cache_write_tokens": 387,
+    "cached_tokens": 4216,
+    "cache_write_tokens": 0,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.00405645,
-    "upstream_inference_prompt_cost": 0.00260145,
-    "upstream_inference_completions_cost": 0.001455
+    "upstream_inference_cost": 0.0030168,
+    "upstream_inference_prompt_cost": 0.0016368,
+    "upstream_inference_completions_cost": 0.00138
    },
    "completion_tokens_details": {
     "reasoning_tokens": 0,

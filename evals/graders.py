@@ -50,8 +50,10 @@ def grade(run: CaseRun) -> Verdict:
     if case.kind == "ambiguous":
         if last.new_agents:
             return Verdict(False, "spawned_duplicate")
-        # harmless for a read-only question, wrong for "tell alice i'm late"; kept apart so it shows
+        # answers "did the renewal go through?" for both; does "tell alice i'm late" to both
         if all(_any_of(last.dispatched, [c]) for c in case.candidates):
+            if case.read_only:
+                return Verdict(True, "checked_every_candidate")
             return Verdict(False, "messaged_every_candidate")
         if _any_of(last.dispatched, case.candidates):
             return Verdict(False, "guessed_candidate")

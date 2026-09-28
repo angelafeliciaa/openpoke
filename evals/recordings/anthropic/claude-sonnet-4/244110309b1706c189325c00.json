@@ -1,5 +1,5 @@
 {
- "case": "amb-08@5",
+ "case": "drift-10@5",
  "trial": 1,
  "request": {
   "model": "anthropic/claude-sonnet-4",
@@ -10,7 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a1\" name=\"Hotel in Dublin\">Hotel booking in Dublin.</agent>\n<agent id=\"a2\" name=\"Lunch with Sofia\">Scheduling lunch with Sofia.</agent>\n<agent id=\"a3\" name=\"Stripe Job Offer\">The Stripe job offer.</agent>\n<agent id=\"a4\" name=\"Oil Change\">Oil Change.</agent>\n<agent id=\"a5\" name=\"Stripe Offer Negotiation\">Negotiating the Stripe offer.</agent>\n</active_agents>\n\n<new_user_message>\nask stripe if the offer deadline can move to next week\n</new_user_message>"
+    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 22:05:41\">renew my library card</user_message>\n<poke_reply timestamp=\"2026-09-27 22:05:41\">I'll help you renew your library card. Let me look into how to get that done for you.</poke_reply>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a1\" name=\"Lunch with Farah\">Scheduling lunch with Farah.</agent>\n<agent id=\"a2\" name=\"Flight to Seattle\">Finding and booking a flight to Seattle.</agent>\n<agent id=\"a3\" name=\"Airbnb Job Offer\">The Airbnb job offer.</agent>\n<agent id=\"a4\" name=\"Marathon Registration\">Marathon Registration.</agent>\n<agent id=\"a5\" name=\"Okta Job Offer\">The Okta job offer.</agent>\n<agent id=\"a6\" name=\"Library Card Renewal\">Renewing the user's library card</agent>\n</active_agents>\n\n<new_user_message>\ndid that go through?\n</new_user_message>"
    }
   ],
   "tools": [
@@ -166,9 +166,9 @@
   ]
  },
  "response": {
-  "id": "gen-1790504131-tJ7c4wopwxfmxOJWAcNI",
+  "id": "gen-1790571941-Jq46SCcQKbBWgLN5JpzK",
   "object": "chat.completion",
-  "created": 1790504131,
+  "created": 1790571941,
   "model": "anthropic/claude-sonnet-4",
   "provider": "Amazon Bedrock",
   "system_fingerprint": null,
@@ -188,10 +188,10 @@
       {
        "type": "function",
        "index": 0,
-       "id": "toolu_bdrk_018SWtevfYtzd9ndhv49hLWy",
+       "id": "toolu_bdrk_012u6YNCBEFt1GwgSUuFNFHr",
        "function": {
-        "name": "send_message_to_user",
-        "arguments": "{\"message\": \"I'll reach out to Stripe to ask about extending the offer deadline to next week.\"}"
+        "name": "send_message_to_agent",
+        "arguments": "{\"agent_id\": \"a6\", \"instructions\": \"The user is asking if the library card renewal went through. Please provide an update on the status of their library card renewal.\"}"
        }
       }
      ]
@@ -199,21 +199,21 @@
    }
   ],
   "usage": {
-   "prompt_tokens": 4111,
-   "completion_tokens": 73,
-   "total_tokens": 4184,
-   "cost": 0.0033852,
+   "prompt_tokens": 4216,
+   "completion_tokens": 100,
+   "total_tokens": 4316,
+   "cost": 0.00418395,
    "is_byok": false,
    "prompt_tokens_details": {
     "cached_tokens": 3804,
-    "cache_write_tokens": 304,
+    "cache_write_tokens": 409,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.0033852,
-    "upstream_inference_prompt_cost": 0.0022902,
-    "upstream_inference_completions_cost": 0.001095
+    "upstream_inference_cost": 0.00418395,
+    "upstream_inference_prompt_cost": 0.00268395,
+    "upstream_inference_completions_cost": 0.0015
    },
    "completion_tokens_details": {
     "reasoning_tokens": 0,

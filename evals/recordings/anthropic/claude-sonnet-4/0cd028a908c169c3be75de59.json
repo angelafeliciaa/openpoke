@@ -1,5 +1,5 @@
 {
- "case": "drift-07@5",
+ "case": "drift-06@5",
  "trial": 1,
  "request": {
   "model": "anthropic/claude-sonnet-4",
@@ -10,7 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 03:13:51\">set up a call with the wedding photographer</user_message>\n<poke_reply timestamp=\"2026-09-27 03:13:53\">On it.</poke_reply>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a1\" name=\"Reddit Recruiter Follow-up\">Following up with the Reddit recruiter.</agent>\n<agent id=\"a2\" name=\"Lunch with Jade\">Scheduling lunch with Jade.</agent>\n<agent id=\"a3\" name=\"Email to Aarav\">Email thread with Aarav.</agent>\n<agent id=\"a4\" name=\"Laptop Warranty Claim\">Laptop Warranty Claim.</agent>\n<agent id=\"a5\" name=\"Lunch with Isha\">Scheduling lunch with Isha.</agent>\n<agent id=\"a6\" name=\"Wedding Photographer Call\">Setting up a call with the wedding photographer</agent>\n</active_agents>\n\n<new_user_message>\nask if she does video too\n</new_user_message>"
+    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 22:05:32\">find a plumber that can come this weekend</user_message>\n<poke_reply timestamp=\"2026-09-27 22:05:32\">I'll help you find a plumber available this weekend. Let me search for local options and check their availability.</poke_reply>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a1\" name=\"Hotel in Seattle\">Hotel booking in Seattle.</agent>\n<agent id=\"a2\" name=\"Email to Gita\">Email thread with Gita.</agent>\n<agent id=\"a3\" name=\"Lunch with Pia\">Scheduling lunch with Pia.</agent>\n<agent id=\"a4\" name=\"Call Kofi Back\">Returning Kofi's call.</agent>\n<agent id=\"a5\" name=\"Flight to Vancouver\">Finding and booking a flight to Vancouver.</agent>\n<agent id=\"a6\" name=\"Weekend Plumber\">Finding a plumber available this weekend for emergency service.</agent>\n</active_agents>\n\n<new_user_message>\ngo with whoever is cheapest\n</new_user_message>"
    }
   ],
   "tools": [
@@ -166,9 +166,9 @@
   ]
  },
  "response": {
-  "id": "gen-1790504033-9YAcrScXzOKSMA4m5R2P",
+  "id": "gen-1790571934-N97LLcdVrJ6DbCzPvJgn",
   "object": "chat.completion",
-  "created": 1790504033,
+  "created": 1790571934,
   "model": "anthropic/claude-sonnet-4",
   "provider": "Amazon Bedrock",
   "system_fingerprint": null,
@@ -188,10 +188,10 @@
       {
        "type": "function",
        "index": 0,
-       "id": "toolu_bdrk_015Jfv4vfawXvZcxXxaHTFhp",
+       "id": "toolu_bdrk_0168MbadUu49DViQzBV5x4EJ",
        "function": {
         "name": "send_message_to_agent",
-        "arguments": "{\"agent_id\": \"a6\", \"instructions\": \"Ask the wedding photographer if she also does videography services.\"}"
+        "arguments": "{\"agent_id\": \"a6\", \"instructions\": \"The user wants to go with whichever plumber option is cheapest. Please proceed with booking the most affordable plumber you found who's available this weekend.\"}"
        }
       }
      ]
@@ -199,21 +199,21 @@
    }
   ],
   "usage": {
-   "prompt_tokens": 4211,
-   "completion_tokens": 87,
-   "total_tokens": 4298,
-   "cost": 0.0039702,
+   "prompt_tokens": 4224,
+   "completion_tokens": 108,
+   "total_tokens": 4332,
+   "cost": 0.00433395,
    "is_byok": false,
    "prompt_tokens_details": {
     "cached_tokens": 3804,
-    "cache_write_tokens": 404,
+    "cache_write_tokens": 417,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.0039702,
-    "upstream_inference_prompt_cost": 0.0026652,
-    "upstream_inference_completions_cost": 0.001305
+    "upstream_inference_cost": 0.00433395,
+    "upstream_inference_prompt_cost": 0.00271395,
+    "upstream_inference_completions_cost": 0.00162
    },
    "completion_tokens_details": {
     "reasoning_tokens": 0,

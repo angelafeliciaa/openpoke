@@ -1,8 +1,8 @@
 {
- "case": "drift-02@5",
+ "case": "drift-01@5",
  "trial": 1,
  "request": {
-  "model": "gpt-5-mini",
+  "model": "anthropic/claude-sonnet-4",
   "messages": [
    {
     "role": "system",
@@ -10,7 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 02:01:39\">find out when the next f1 race is</user_message>\n<poke_reply timestamp=\"2026-09-27 02:01:43\">On it.</poke_reply>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a1\" name=\"Theater Tickets Hamilton\">Theater Tickets Hamilton.</agent>\n<agent id=\"a2\" name=\"Email to Bella\">Email thread with Bella.</agent>\n<agent id=\"a3\" name=\"Rippling Recruiter Follow-up\">Following up with the Rippling recruiter.</agent>\n<agent id=\"a4\" name=\"Flight to Montreal\">Finding and booking a flight to Montreal.</agent>\n<agent id=\"a5\" name=\"Call Hugo Back\">Returning Hugo's call.</agent>\n<agent id=\"a6\" name=\"Find Next F1 Race\">Look up the next scheduled Formula 1 Grand Prix (date, venue, country), include local start time, session type (race/sprint), and quick note if it's a weekend event. Provide source links.</agent>\n</active_agents>\n\n<new_user_message>\nand where is it?\n</new_user_message>"
+    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 22:04:46\">book me a table for 2 at a thai place near soho tomorrow 7pm</user_message>\n<poke_reply timestamp=\"2026-09-27 22:04:46\">The existing agents don't handle this type of booking, so let me create a new one.</poke_reply>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a1\" name=\"Trip Planning Austin\">Itinerary for a trip to Austin.</agent>\n<agent id=\"a2\" name=\"Notion Recruiter Follow-up\">Following up with the Notion recruiter.</agent>\n<agent id=\"a3\" name=\"Lunch with Amit\">Scheduling lunch with Amit.</agent>\n<agent id=\"a4\" name=\"Dropbox Interview Prep\">Preparing for Dropbox interviews.</agent>\n<agent id=\"a5\" name=\"Hotel in Singapore\">Hotel booking in Singapore.</agent>\n<agent id=\"a6\" name=\"Thai Restaurant Soho\">Booking a table for 2 at a Thai restaurant near Soho for tomorrow 7pm</agent>\n</active_agents>\n\n<new_user_message>\nmake it 3 people instead\n</new_user_message>"
    }
   ],
   "tools": [
@@ -166,19 +166,19 @@
   ]
  },
  "response": {
-  "id": "gen-1790499703-TQ7GQxm96KAVZ7foCka0",
+  "id": "gen-1790571887-I5AjroRwcrnDRnzpXAWJ",
   "object": "chat.completion",
-  "created": 1790499703,
-  "model": "openai/gpt-5-mini",
-  "provider": "OpenAI",
+  "created": 1790571887,
+  "model": "anthropic/claude-sonnet-4",
+  "provider": "Amazon Bedrock",
   "system_fingerprint": null,
-  "service_tier": "default",
+  "service_tier": null,
   "choices": [
    {
     "index": 0,
     "logprobs": null,
     "finish_reason": "tool_calls",
-    "native_finish_reason": "completed",
+    "native_finish_reason": "tool_use",
     "message": {
      "role": "assistant",
      "content": null,
@@ -188,44 +188,35 @@
       {
        "type": "function",
        "index": 0,
-       "id": "call_Lgn0CWnigNul0kQ3fvZVcYiD",
+       "id": "toolu_bdrk_01TY6oK25NULut6wa8TSP3q8",
        "function": {
         "name": "send_message_to_agent",
-        "arguments": "{\"agent_id\":\"a6\",\"instructions\":\"Find the next scheduled Formula 1 Grand Prix. For the next event, provide: - race name - date - venue and city - country - local race start time (and timezone) - session type (race or sprint) - whether it falls on a weekend (Sat/Sun) - 1\u20132 quick notes (e.g., if sprint format this weekend, or any calendar anomalies) - include source links (official F1 site, FIA, or reputable motorsport news). Reply with concise bullet points.\"}"
+        "arguments": "{\"agent_id\": \"a6\", \"instructions\": \"Change the reservation from 2 people to 3 people for tomorrow 7pm at the Thai restaurant near Soho.\"}"
        }
-      }
-     ],
-     "reasoning_details": [
-      {
-       "type": "reasoning.encrypted",
-       "data": "gAAAAABquNt6EzxgIBFSa4dCnD0usbnZIq2m9llztbns4g5XbUVtUqSFh57w1qYhtEI7CowBx4-EdYrjO0-7GopvlwUthn_SY7cnvHmSVMcWZ5TFxknlfTKw68lB8_42Od9uZcwn3CERLXEKtFA3H6bVq746eoWnTlBN8wKAnx7l2-w6kECiLJyHChNOhn8w_whfT8bVAc_bysvIIW8vsmbTluPLgvnkeL6RDAMkpBomf3lokmNV4dLEcGdCAwp_28kfU3yz9H9ahgrQIHzHOgCCoaKsAPZeeLfwPJgiEpFk-JVFbaj_mXEeGZG4CMib-d8Efjl--ui2i7WwTVSPmQyK_o--Kki7556VJdNoH74HuA3vQwTg6dC7BI5CD-y6ec2bYKqiPbum2H6McAtokx5-Rn9BwUKUNI_V8AQgzNzisq8g40u7yZoLTJeX9vFMhzjDAdJMzjGPuuXuKMuAM2OtO2t4q430f55avihYgN1ZRolrHn3VQcbMYegzjB0ndTVpJAADzNCCF-CMpSZ92hOWlpHTUhIarA0-PEwJu7HFt9ynDQlwoHf1FBF0JXHwKhd2fXuNhEsG8dGFtrg1Yhd7dt8B26Sl4IKZcHN2kQwwmwxNxHOzDW6Uwkc0jdDnSRD6NHRhc_u0qaM--6N9zTxWKadOGxKHdwAg8ILNBJFO9nepQhEa_eN8ozCKm_za57L3K4Hya2lTbUunK_YJwGkneW6XI09vmdAQV1IGdXScLi5xUS6tkz6qW2kuNF0mfoP4Boupz3cC_WLzX4sKsldHVXBos-fDNOTHGCoFRRINSKKDVwUm_wlVP3jDshSUlbuuBp5tgB71kzsLpTtM7stWY6wccsToa8Yzb7YgBLJBOFXZM4wpDpvlc2wo6Yvy_dzAF7uW0eAx2TMg72uUtwmFOMWDmOJjog6y00AEBPOahU82eeu0ZTMKA64JgTz3Ie9_pvtOWQMabYCybs1skd2rjU8bQTKeYwIsY_B9RytZ2umY3EIMGCzAyoSQ5qqRHy8ZP-Slb-dmcAP9yDbLX-B347vHy4ot3f6O1Y37b27GKuSpvZzI4CXdqwFvOxJ8hyHl8KzRUXCiux3q1DanmR5hW883c78ehpNJdn1l4_3flB9CjAhn3qfRLDzwiXXV1OvtGFPgQdusGTBBMlck0GhOX5nKdwCJtUyLK_9Xl9E8he4H0b27NWFWhH3ZLHS1OtLX1js3zW2xpI_1uFPRaaz9ALXyMu3m9ysLBcYDMPLyp2ADYH29RUKMy1dZMFaU-_kte7m-Re4E-wv8Ye_o--r2ci7gtXFTSUGIWKjDym7ds7K_ImvAxnRuVJ60CB1MN-fyT90LakYw6SoysxlIbtCioSGSnkI_0_74YqO6TID3T0IHVY4S_5O0bJ37w0X6UljiavJ6pVgO5mfjaCIozbY15JQ8nKHK6JeMcOngwPjFg0Z6ghJpTGbSi2-T8Lfp6l2e4q7Cg_10ToRSIORuRGNl75eGMhSfBY7VdU6t7SWc9cFk_zmTjguSl1nZ6gug6ChbwtKOby8dbvzQ5TkRSvw2Vz2GTECISLrmp4LCSZsCiJT__q1gy4b02HtNixA0-NP0-cNTja9AC774CefigSV4oxoD6_EDvDVkMFT_4kXjFs4OgBnMPbSQJ72vJECdpnppARZdHQZ4-BIsiYXhxXv0QBrM6m5ntF6g2HH2FHKJeL5Hc3Ti8DSh3I3sKubWAOJSbrxi4FyOzWqbQ3jqmv0ds3tUdiS9ZsnOuIHU73oxd9pJ83sYyDOXqPG5nBjOu1mgfMuWHM8S74tHvETuXanZofIIYda1-MTJd4yz3-w4kmE1x2eCgUK2fT7kiLMUSFZhj1zNq7MAoUQOuqpNPPHRXnbB7OzNow3_BEr5TJeUIK6lM7QSJZ7DUCtvvfuG5iDSgcIkJH6gvdK8I1XmZkp620ymCTHq7FWbfwMjm6zmlgcVV5jqQmLETYUVQ0-SqEw-7JwFzfFPCNx08-MJPgREvhhaGF0DhFN5nGWf8XIIjaA56pvG1Wf1HJKlRduCKwmmkikGhh-Lw8rE-5eQTCox6nxgpthM34BQcPKBO2oeQN3-Qfup5EUXc8guBonWRxbHLs8LlvrRsEvVIm9zHuxRD2sL9qUg6WMCp9fhcvPTqTJfw-uYHklVazf-kDfP0mSdmicLWKANTOr0x_jw8fzKPo3drSjPTUU3Ze8E7DWxQXneljyU1B2H1fHOFM5efKSDxJZsOlF2NBMl-GtxGh0e0dUQhKYA-94vHrz1-p1QX0msYZud0WcDNi9kjKPMbkIvFo1VrbT5oOse49VvsXg1Uyo7TmLC2xQrEX3MbbzAE7MIiNYW-SBB0KOYzp1yEp7ZyBCHSPApxVfIaU6GPxqImfknAj7xL53BCVMLRrw3cY88dhVO_38Dv0-I14sisyH_zYmxrZe5pFpSOaXTanlsObl184DYZqyQtb8amJnrV0hhDB-4lr4x9Lh2EKHWlVHM-mrEUjpZTxjlnXHVZpm3HuHu-MZOoVSa09XRxaZcZPlIjo490sKQWMccMUfKz58B-GQjFAIfYCr1BEh7exnQ0jtA_xcSFYt4j6w9X7_3Ywrw4-Gs6mh0KuRxrFkK9kQo1wlDL_VwkLWXRC3MTzFE5wljGd9fS4_lTFFAIw27b7AeYgbigR4PudTimQVoekZOxByGFd9H4hjY0cj0Y0mt7qfiunT7JOOd-VmPV_PZ4ei7NAy-EDezLJ6bSTmAS__tl0jiL-pgVIFPrrOB1ATDqq8mSHthe_MRTIYF6d5Fjp6nEzCxu5gOo-2pH2kT4Gefwd72CxBh594bHSa1SeMU-FGiFSHWZl-FfvxSl183TSIGmCY6cacGNnXyiNGfshl6Jan4yZxVe05OUa7asFYgabIQhK3Ddb9oDGs_Fp4O-xmWPVQ9UgA=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC01LW1pbmktMjAyNS0wOC0wN3xvcGVuYWkifQ",
-       "format": "openai-responses-v1",
-       "id": "rs_0dd2b4a7d789ebac016ab8db78712887d19dfb6a18a2f13b87",
-       "index": 0
       }
      ]
     }
    }
   ],
   "usage": {
-   "prompt_tokens": 3221,
-   "completion_tokens": 375,
-   "total_tokens": 3596,
-   "cost": 0.00097925,
+   "prompt_tokens": 4249,
+   "completion_tokens": 102,
+   "total_tokens": 4351,
+   "cost": 0.0174615,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 2560,
-    "cache_write_tokens": 0,
+    "cached_tokens": 0,
+    "cache_write_tokens": 4246,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.00097925,
-    "upstream_inference_prompt_cost": 0.00022925,
-    "upstream_inference_completions_cost": 0.00075
+    "upstream_inference_cost": 0.0174615,
+    "upstream_inference_prompt_cost": 0.0159315,
+    "upstream_inference_completions_cost": 0.00153
    },
    "completion_tokens_details": {
-    "reasoning_tokens": 192,
+    "reasoning_tokens": 0,
     "image_tokens": 0,
     "audio_tokens": 0
    }

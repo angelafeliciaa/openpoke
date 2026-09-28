@@ -2,7 +2,7 @@
  "case": "drift-01@5",
  "trial": 1,
  "request": {
-  "model": "anthropic/claude-sonnet-4",
+  "model": "gpt-5-mini",
   "messages": [
    {
     "role": "system",
@@ -10,7 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 03:12:24\">book me a table for 2 at a thai place near soho tomorrow 7pm</user_message>\n<poke_reply timestamp=\"2026-09-27 03:12:29\">On it.</poke_reply>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a1\" name=\"Trip Planning Austin\">Itinerary for a trip to Austin.</agent>\n<agent id=\"a2\" name=\"Notion Recruiter Follow-up\">Following up with the Notion recruiter.</agent>\n<agent id=\"a3\" name=\"Lunch with Amit\">Scheduling lunch with Amit.</agent>\n<agent id=\"a4\" name=\"Dropbox Interview Prep\">Preparing for Dropbox interviews.</agent>\n<agent id=\"a5\" name=\"Hotel in Singapore\">Hotel booking in Singapore.</agent>\n<agent id=\"a6\" name=\"Thai Restaurant Soho\">Booking a table for 2 at a Thai restaurant near Soho for tomorrow 7pm</agent>\n</active_agents>\n\n<new_user_message>\nmake it 3 people instead\n</new_user_message>"
+    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 22:05:44\">book me a table for 2 at a thai place near soho tomorrow 7pm</user_message>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a1\" name=\"Trip Planning Austin\">Itinerary for a trip to Austin.</agent>\n<agent id=\"a2\" name=\"Notion Recruiter Follow-up\">Following up with the Notion recruiter.</agent>\n<agent id=\"a3\" name=\"Lunch with Amit\">Scheduling lunch with Amit.</agent>\n<agent id=\"a4\" name=\"Dropbox Interview Prep\">Preparing for Dropbox interviews.</agent>\n<agent id=\"a5\" name=\"Hotel in Singapore\">Hotel booking in Singapore.</agent>\n<agent id=\"a6\" name=\"Thai table booking near Soho\">Find and reserve a table for 2 at a Thai restaurant near Soho tomorrow at 7pm</agent>\n</active_agents>\n\n<new_user_message>\nmake it 3 people instead\n</new_user_message>"
    }
   ],
   "tools": [
@@ -166,57 +166,72 @@
   ]
  },
  "response": {
-  "id": "gen-1790503949-b9HjV7JLySwqec4jdAwn",
+  "id": "gen-1790571944-GxEM7qiiNd5xNfU4R72Z",
   "object": "chat.completion",
-  "created": 1790503949,
-  "model": "anthropic/claude-sonnet-4",
-  "provider": "Amazon Bedrock",
+  "created": 1790571944,
+  "model": "openai/gpt-5-mini",
+  "provider": "OpenAI",
   "system_fingerprint": null,
-  "service_tier": null,
+  "service_tier": "default",
   "choices": [
    {
     "index": 0,
     "logprobs": null,
     "finish_reason": "tool_calls",
-    "native_finish_reason": "tool_use",
+    "native_finish_reason": "completed",
     "message": {
      "role": "assistant",
      "content": null,
      "refusal": null,
-     "reasoning": null,
+     "reasoning": "**Planning message flow**\n\nI\u2019m thinking about the steps I need to follow. First, I\u2019ll call `send_message_to_user` before making the agent call. After that, I\u2019ll use `send_message_to_agent`. Then, once everything\u2019s done, I need to send a summary back to the user using `send_message_to_user`. It\u2019s all about keeping things organized and ensuring clear communication throughout the process! Let\u2019s implement this and see how it plays out.",
      "tool_calls": [
       {
        "type": "function",
        "index": 0,
-       "id": "toolu_bdrk_01RF9ocw52F6dVNdDTaTwSkx",
+       "id": "call_k1QABLT8odYWYbZui2h6XNbC",
        "function": {
-        "name": "send_message_to_agent",
-        "arguments": "{\"agent_id\": \"a6\", \"instructions\": \"Change the reservation to 3 people instead of 2.\"}"
+        "name": "send_message_to_user",
+        "arguments": "{\"message\":\"Got it \u2014 I'll update the reservation to 3 people for tomorrow at 7pm. Any dietary restrictions or seating preference (inside/outside/high-top) I should tell them?\"}"
        }
+      }
+     ],
+     "reasoning_details": [
+      {
+       "type": "reasoning.summary",
+       "summary": "**Planning message flow**\n\nI\u2019m thinking about the steps I need to follow. First, I\u2019ll call `send_message_to_user` before making the agent call. After that, I\u2019ll use `send_message_to_agent`. Then, once everything\u2019s done, I need to send a summary back to the user using `send_message_to_user`. It\u2019s all about keeping things organized and ensuring clear communication throughout the process! Let\u2019s implement this and see how it plays out.",
+       "format": "openai-responses-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqufWuPMk7U1o_ScvUL7cJqGVgFjc_ZDBi3UoALuFEdi5r-FljsrBpZWcFGHfnwk87xpyICyB2Dxol6PsDnhISUaQpCszbgDFilG-xJAId-zoSXABq6Bfjr-VGerU3mVyjiIODufNVShbeWedR7AwLLScTIfvyOoHV5_knCvnA3rzOUzjz7yvGeGQcn5ZgUNO_Vqw26teGrLz1bsce9hHh8KYfb6GSeDWhvTjAuGANBHhIiQxPwlaz0ZAEPSJLopkyyRAYQWis6pG4tPQthrukgs3iG6rynZDj4InpjeSsTmhp1q3f_Sv3SKgfRVL-9dbxyJ58FXRgsz5U9Uq2_BMK-uDmBLATKroKRZnFLPS9nSS7u1WQXKSjRZFSXwsgyGqaRwNBDK1UrME4MVx4DZ3L4LSGJ5inSc1RoJB0tHZwNGZRqPvuPg6nX9HNPw7Y4UzIDcwZcdcumA8nAJnibn607nNEZngkmYzl83VwBcQNVjRobzxI-OvFZ0w6CKpoopktQvwDfi0jPlc3GO7otipJzUvz3ftcmxTPTLQVJ5BZrQhtGewI3PVQBr6dIH4o2v0kcm9jGL7ds9yg-gLFSbSr1kiKalD44tPHkr5rKzCyw0SE9p_wwisrNEo-NQiwDdl3qasKBZq0MjN2qHCH45G-sHe38ikOEx-6MbMRb-9AdZJD8SbJTyr3VglDZrQH7pW6FldF_RaXCIAfpAHofHp0rC263JdR4txByLQD_DGrOSJqHX-81X860mrGNJzjj9jzYv-9isisFqzLVm1brmQBg5nFnuGj_ZBKhuetNbA9Iq4wOlZTX_9SMAqwIVdrFXSkHgGBNgY2R1u8zYrKyi3UblcU53KQ59nrdopT3P4L_3i6kIs4cQucL4-BguTci1evrSdZ31j4W2KSvbY_rZh5EawE1FMC6isQ76nIqDoD4EbGeTCkF0Zr43ePBOUr4hPyC87Xr_DIhS0KhTGigJP-q4eOtsy8uxmPQEZv6aTs6nF1SZpVJFdOacJpTVNNEOcxThA70ktEYeQ5mR-taRlkeFD2tnoxB5B_Ryp7easmvss6RongK31A4P2D2s47cvb4FhDH-iILd84fBzKv8g2PvxFieDXaEPPUmV4Ff6J-qNYuISiKaSJQhXZYdPF7pYtoGRwsaAKeQHtjpe_A1Ot5Q60vl5CHJ2hU1VUcXz2wLmWsAlL8pZ1cp0rmp3lbzxaoJspIq0E9pyYZMAQ42NO0zwP2Z9Y0V8XFG6cSoFvQ2W2LBmK_a_zPMj7C0NODqIyOzRhxiop0N8nmsGqbc9b0ZWgsJeD8C6V9Va-vYhnoFbEHxYYjJqLvUx43zjJZ2Cfc3TRySfuGOOncBcBNGQhAyV7YzvjORXEssBUJTuYYC39uSgsZx3xmhYUYw6zzifdgLkgUiWnShRqwT1oKIY-d-wN3mUeB85GkItDmNJfzJD-3l70-V24bgSJixwkh4X5oYECzqzoZZCFYG2OXaMeAqFJ9VIGB7vbrFIYVXYmVXs8SvEnMYcB_jwMy_MVIBmx7swMyqv5H1vvc7HOEeBRo4Kyp0ASaDSwzf2Ase7mUX-RR7IxP54MxVVwX1Mc1cGdAEUwTXXz1F8QXNGq9MRpEaAECDRTEKLn2OtPyv9ld7XSoP8JjYyRIw82_2Mws-XQI4SxWDKtxKbswUjD61gGI5wpp6XGIRR4M9Cj64A_krc_PbIC0jPq0-OdLwMbj0x1zkDBpb9t2aYnIRLrdRscm80hRA3dqTNSi5YRtyf96JTr7s7jPKNxD1zYnXq17XsP-X1hfIANWbF96290LdYaZAib1t2_Ms4ZC4bEQ31sbMW1NEuylNFxlowk9jBt9DkrFuxnXpAV9usGCUx9p19Cqodc8IAOKuSU3TjQb9fzOCfoX7pUcCWmrjsQzN92w4YAVHkvfYCZMNkW5JP80PdwGJkscKNoCsUZ3FLfTp3YNCa6rz2ZSZd3k3o9FkkkNrhOZutaapQsqd3xeR66UiR6l4Ng0LSMGl1TcvW_ht9aBPR1HI72h2IiRZyi0X4kAh6a5R6ji3-_oDpsdlCs3LM8YLOoW-u4FDgvC-VEMz48Nul0vbr4jY0twRSjKu7UC0paCxJ0s_7yXfO9_a6gpweS58Y_zzLmr1lcEDzViZQ1agt2k5mZ7vTZ3U1aEOLraQVZtcFdVb_MUpfATdwd5Mw0TuF5K_eaLojmMlzQ4iuETa7OoTGPYilrNNh8pywRyQf-hprDKAhWzBokQdLb__JMWQ20gGy4s-pikHjuc40i60W7YSp5ETGaEQCCrUC_1r8yzOve6sJlehDVXh_vUiDHBfz4Ms3TBqWbAn1eTTwY_U1ITRihMkznV3v7OCQywsU5fxSVzBS4yuRR_23JrJRmOt7htCViA3JGlHHBBR2oIOK0lUbsHyc6ccyESLjm0LP1rqJZMGsGlhYhE4OARRoT9W4SJN3E5LYAixkjhp2qSO2fl5_WHfSg6nvI1eRLDwh-l9LiThTSxRnE5-xLTnHgg2wI3IWlcKWkYSqMIkTsjj5x4QI54mo7lyq6mapjsjhyrHiiVv79BydAvOiUoZzRL9qPKKrP6yQYyVcLBfXYz_HNOGvlRun89vHjBz5O2S0qX8S8KUn92DiymYmB-5jL1VilaY4oc92-CJEzyn4yKYVCvTbZ16lLcU5lyztKPFzg3tMlyGyN7RuxV4EH9-iE3pc6OfXAQRe1h6b4fwW-RihqDX_JjhZeSo_l_K_TWjfpMpomjw6uWkwvfM6nemD9Aa9wjK9XmNKovBNCg12GqhjdjktNR_ubCx30Wz1fYqzsbnTZJmH1O1sd8fV3iv6P9GeGhZZ7vgnB2KiJzQp-P6tKcmO-GMG24H3FgLfQr4bAb810sljlcvzjAQuaQSJ-OR9_HDMaBXXo_GyuuE4LKs8itthQ=.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC01LW1pbmktMjAyNS0wOC0wN3xvcGVuYWkifQ",
+       "format": "openai-responses-v1",
+       "id": "rs_0e6f1cfd0af1f950016ab9f5a9bac487d19cab5467fba1964e",
+       "index": 1
       }
      ]
     }
    }
   ],
   "usage": {
-   "prompt_tokens": 4233,
-   "completion_tokens": 88,
-   "total_tokens": 4321,
-   "cost": 0.0040677,
+   "prompt_tokens": 3185,
+   "completion_tokens": 301,
+   "total_tokens": 3486,
+   "cost": 0.00139825,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 3804,
-    "cache_write_tokens": 426,
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.0040677,
-    "upstream_inference_prompt_cost": 0.0027477,
-    "upstream_inference_completions_cost": 0.00132
+    "upstream_inference_cost": 0.00139825,
+    "upstream_inference_prompt_cost": 0.00079625,
+    "upstream_inference_completions_cost": 0.000602
    },
    "completion_tokens_details": {
-    "reasoning_tokens": 0,
+    "reasoning_tokens": 192,
     "image_tokens": 0,
     "audio_tokens": 0
    }

@@ -1,5 +1,5 @@
 {
- "case": "amb-08@5",
+ "case": "drift-04@5",
  "trial": 1,
  "request": {
   "model": "anthropic/claude-sonnet-4",
@@ -10,27 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\nNone\n</conversation_history>\n\n<active_agents>\n<agent id=\"a1\" name=\"Hotel in Dublin\">Hotel booking in Dublin.</agent>\n<agent id=\"a2\" name=\"Lunch with Sofia\">Scheduling lunch with Sofia.</agent>\n<agent id=\"a3\" name=\"Stripe Job Offer\">The Stripe job offer.</agent>\n<agent id=\"a4\" name=\"Oil Change\">Oil Change.</agent>\n<agent id=\"a5\" name=\"Stripe Offer Negotiation\">Negotiating the Stripe offer.</agent>\n</active_agents>\n\n<new_user_message>\nask stripe if the offer deadline can move to next week\n</new_user_message>"
-   },
-   {
-    "role": "assistant",
-    "content": "",
-    "tool_calls": [
-     {
-      "type": "function",
-      "index": 0,
-      "id": "toolu_bdrk_018SWtevfYtzd9ndhv49hLWy",
-      "function": {
-       "name": "send_message_to_user",
-       "arguments": "{\"message\": \"I'll reach out to Stripe to ask about extending the offer deadline to next week.\"}"
-      }
-     }
-    ]
-   },
-   {
-    "role": "tool",
-    "tool_call_id": "toolu_bdrk_018SWtevfYtzd9ndhv49hLWy",
-    "content": "{\"tool\": \"send_message_to_user\", \"status\": \"success\", \"arguments\": {\"message\": \"I'll reach out to Stripe to ask about extending the offer deadline to next week.\"}, \"result\": {\"status\": \"delivered\"}}"
+    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 22:06:30\">whats the cheapest way to ship a package to berlin</user_message>\n<poke_reply timestamp=\"2026-09-27 22:06:30\">I'll help you find the cheapest way to ship a package to Berlin. Let me look into the current shipping options and rates for you.</poke_reply>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a1\" name=\"Lunch with Will\">Scheduling lunch with Will.</agent>\n<agent id=\"a2\" name=\"Hotel in Seattle\">Hotel booking in Seattle.</agent>\n<agent id=\"a3\" name=\"Email to Sara\">Email thread with Sara.</agent>\n<agent id=\"a4\" name=\"Lunch with Farah\">Scheduling lunch with Farah.</agent>\n<agent id=\"a5\" name=\"Databricks Interview Prep\">Preparing for Databricks interviews.</agent>\n<agent id=\"a6\" name=\"Berlin Package Shipping\">Finding cheapest shipping options to Berlin</agent>\n</active_agents>\n\n<new_user_message>\nok book that option\n</new_user_message>"
    }
   ],
   "tools": [
@@ -186,9 +166,9 @@
   ]
  },
  "response": {
-  "id": "gen-1790504133-VG0vZRnebLpdOeIuCT8a",
+  "id": "gen-1790572027-VyQkp2QUwgsOCEBdTKb0",
   "object": "chat.completion",
-  "created": 1790504133,
+  "created": 1790572027,
   "model": "anthropic/claude-sonnet-4",
   "provider": "Amazon Bedrock",
   "system_fingerprint": null,
@@ -208,10 +188,10 @@
       {
        "type": "function",
        "index": 0,
-       "id": "toolu_bdrk_01B3HNuG6kSaT6Rg5LPFqSgP",
+       "id": "toolu_bdrk_0113AUqHqbVNRZs64BadQnPz",
        "function": {
         "name": "send_message_to_agent",
-        "arguments": "{\"agent_id\": \"a5\", \"instructions\": \"Ask Stripe if they can extend the offer deadline to next week. Be professional and explain that you need a bit more time to make a decision.\"}"
+        "arguments": "{\"agent_id\": \"a6\", \"instructions\": \"The user wants to book the cheapest shipping option we found. Please proceed with booking that option for their package to Berlin.\"}"
        }
       }
      ]
@@ -219,21 +199,21 @@
    }
   ],
   "usage": {
-   "prompt_tokens": 4250,
-   "completion_tokens": 105,
-   "total_tokens": 4355,
-   "cost": 0.0032334,
+   "prompt_tokens": 4224,
+   "completion_tokens": 100,
+   "total_tokens": 4324,
+   "cost": 0.00421395,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 4108,
-    "cache_write_tokens": 0,
+    "cached_tokens": 3804,
+    "cache_write_tokens": 417,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.0032334,
-    "upstream_inference_prompt_cost": 0.0016584,
-    "upstream_inference_completions_cost": 0.001575
+    "upstream_inference_cost": 0.00421395,
+    "upstream_inference_prompt_cost": 0.00271395,
+    "upstream_inference_completions_cost": 0.0015
    },
    "completion_tokens_details": {
     "reasoning_tokens": 0,

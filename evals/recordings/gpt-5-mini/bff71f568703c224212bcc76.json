@@ -1,8 +1,8 @@
 {
- "case": "drift-05@5",
+ "case": "drift-01@5",
  "trial": 1,
  "request": {
-  "model": "anthropic/claude-sonnet-4",
+  "model": "gpt-5-mini",
   "messages": [
    {
     "role": "system",
@@ -10,7 +10,7 @@
    },
    {
     "role": "user",
-    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 03:13:21\">look up if the apple store has the new macbook in stock</user_message>\n<poke_reply timestamp=\"2026-09-27 03:13:23\">On it.</poke_reply>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a1\" name=\"Call Emma Back\">Returning Emma's call.</agent>\n<agent id=\"a2\" name=\"Lunch with Marco\">Scheduling lunch with Marco.</agent>\n<agent id=\"a3\" name=\"Reminder 4\">Reminder #4 the user set.</agent>\n<agent id=\"a4\" name=\"Call Kofi Back\">Returning Kofi's call.</agent>\n<agent id=\"a5\" name=\"Lunch with Theo\">Scheduling lunch with Theo.</agent>\n<agent id=\"a6\" name=\"MacBook Stock Check\">Checking Apple Store stock availability for new MacBook</agent>\n</active_agents>\n\n<new_user_message>\nreserve one for pickup\n</new_user_message>"
+    "content": "<conversation_history>\n<user_message timestamp=\"2026-09-27 22:05:44\">book me a table for 2 at a thai place near soho tomorrow 7pm</user_message>\n</conversation_history>\n\n<active_agents>\n<agent id=\"a1\" name=\"Trip Planning Austin\">Itinerary for a trip to Austin.</agent>\n<agent id=\"a2\" name=\"Notion Recruiter Follow-up\">Following up with the Notion recruiter.</agent>\n<agent id=\"a3\" name=\"Lunch with Amit\">Scheduling lunch with Amit.</agent>\n<agent id=\"a4\" name=\"Dropbox Interview Prep\">Preparing for Dropbox interviews.</agent>\n<agent id=\"a5\" name=\"Hotel in Singapore\">Hotel booking in Singapore.</agent>\n<agent id=\"a6\" name=\"Thai table booking near Soho\">Find and reserve a table for 2 at a Thai restaurant near Soho tomorrow at 7pm</agent>\n</active_agents>\n\n<new_user_message>\nmake it 3 people instead\n</new_user_message>"
    },
    {
     "role": "assistant",
@@ -19,18 +19,18 @@
      {
       "type": "function",
       "index": 0,
-      "id": "toolu_bdrk_01V3Yeuhk5veSeu3pb64FjA8",
+      "id": "call_k1QABLT8odYWYbZui2h6XNbC",
       "function": {
        "name": "send_message_to_user",
-       "arguments": "{\"message\": \"I'll reserve one for pickup for you.\"}"
+       "arguments": "{\"message\":\"Got it \u2014 I'll update the reservation to 3 people for tomorrow at 7pm. Any dietary restrictions or seating preference (inside/outside/high-top) I should tell them?\"}"
       }
      }
     ]
    },
    {
     "role": "tool",
-    "tool_call_id": "toolu_bdrk_01V3Yeuhk5veSeu3pb64FjA8",
-    "content": "{\"tool\": \"send_message_to_user\", \"status\": \"success\", \"arguments\": {\"message\": \"I'll reserve one for pickup for you.\"}, \"result\": {\"status\": \"delivered\"}}"
+    "tool_call_id": "call_k1QABLT8odYWYbZui2h6XNbC",
+    "content": "{\"tool\": \"send_message_to_user\", \"status\": \"success\", \"arguments\": {\"message\": \"Got it \\u2014 I'll update the reservation to 3 people for tomorrow at 7pm. Any dietary restrictions or seating preference (inside/outside/high-top) I should tell them?\"}, \"result\": {\"status\": \"delivered\"}}"
    }
   ],
   "tools": [
@@ -186,57 +186,72 @@
   ]
  },
  "response": {
-  "id": "gen-1790504005-OIFMt1fHLByx6OTzwOoU",
+  "id": "gen-1790571951-cs8iwpniLJZzQFaPVawT",
   "object": "chat.completion",
-  "created": 1790504005,
-  "model": "anthropic/claude-sonnet-4",
-  "provider": "Amazon Bedrock",
+  "created": 1790571951,
+  "model": "openai/gpt-5-mini",
+  "provider": "OpenAI",
   "system_fingerprint": null,
-  "service_tier": null,
+  "service_tier": "default",
   "choices": [
    {
     "index": 0,
     "logprobs": null,
     "finish_reason": "tool_calls",
-    "native_finish_reason": "tool_use",
+    "native_finish_reason": "completed",
     "message": {
      "role": "assistant",
      "content": null,
      "refusal": null,
-     "reasoning": null,
+     "reasoning": "**Updating agent process**\n\nI see I've already asked the user two questions, so it's time to take action. I'll make sure to update agent a6. I need to use the `send_message_to_agent` function before I can call any tools. I\u2019ve already informed the user about this, so I just need to send the message to the agent instructing the update. Let's go ahead and do that!",
      "tool_calls": [
       {
        "type": "function",
        "index": 0,
-       "id": "toolu_bdrk_01SwJ6JQoFtK8rPRJ7anTVLi",
+       "id": "call_DjEV4KxdY7XWDJXX2V6K8Die",
        "function": {
         "name": "send_message_to_agent",
-        "arguments": "{\"agent_id\": \"a6\", \"instructions\": \"Reserve one of the MacBooks for pickup. The user wants to reserve it.\"}"
+        "arguments": "{\"agent_id\":\"a6\",\"instructions\":\"Update the existing task: change the reservation from 2 to 3 people for tomorrow at 7pm at a Thai restaurant near Soho. Ask the restaurant about seating preference if needed and confirm availability. Report back with the restaurant name, confirmation number (if any), and any notes (dietary accommodations, seating).\"}"
        }
+      }
+     ],
+     "reasoning_details": [
+      {
+       "type": "reasoning.summary",
+       "summary": "**Updating agent process**\n\nI see I've already asked the user two questions, so it's time to take action. I'll make sure to update agent a6. I need to use the `send_message_to_agent` function before I can call any tools. I\u2019ve already informed the user about this, so I just need to send the message to the agent instructing the update. Let's go ahead and do that!",
+       "format": "openai-responses-v1",
+       "index": 0
+      },
+      {
+       "type": "reasoning.encrypted",
+       "data": "gAAAAABqufWyy77Z6bGePxIJV_A-TUWpiUZfdZ08j2TL0TGVXsS_sUd4Hgz-zftRU4pfdIWkeSU9_6rCKefQliTrZ3Mp8Kyq91Bw_Qm8hbgPa-oxJcAnlwaX_0ObGvpNPoLvhhr56QJGN5188l8Q-OnxYelcE19rPPXa4il3MxT1I6E612UfcGgR5zzZ-nRsnn2Z5yN7E77FcgOd1cbGH66-oa31yrFD9HIntGXZUGFAX0PLO-aI8ua8y9zG4_ddzptbFsR8WuVn74KAtJN4ooaW1tAbYPeihYG6HXaX4qVu1iYeYwBjQ9mfwqQHfS8nVAxcTeCrtft6rsoTKqVdP71u5JLdCA0MAEaCtNK5bPqn3_VPI-Y9GM_J83WBg3ALoMTfuxkFaMkVhtiZVyPneWZ8bcw01cGAROZR2xrKavl_0IUmubCc9w4-sSWsG-7iUGmVf4_1VW6xJ470HyfJ_c3qOQz18h55Gm9oOVs74TihRdrmXSodV52kDXPovcDekfJroZTX57Pln3IPweQDwvA1MezzXHyC6uMZkdwnthTGfH56btNQHafF06VHNQcq-kULoHHnAYLZUfu6ZFHQbKEqDwXcsRFznbrC17QjFTA5yfasskRapBMJ0Sh642PkWHMeHrmx3onFAg1Uayc2q5Po83KZQ_NG2rgQJcHsW052D8gHGXh2nlf-W3syawNtUzVNA-WaE6Oxv_UKae_5VxFJnp3CAOK1mhB-PudNXTYBYEwn9KU-EMreHwhdWcB25cDQwgArEW4XPFx2Oz9chJmvpJDi2kaQSnI5dthZXKYwnyn14h814JLCUO3ADGemZcRgMuyHVS_FUqX6ELM6WmEbnHMbm9bhCnmhMG5F_8TeGcP6YedA-tnPPvLjXTgNb-Vx_U9Z9VF4YGITT_V2et7UAYP7NEznj8EX8R79X--6-8fQqlMY0Pi_oANPSyo0qSwFbycSjA7wvOl4uKVOWnMCTYEda60zkiOwgFW10qtc3plgrrQ1vozg0jcKwaT_HntwJAjkJXwzIUJOTb7SFxwbLfp44svy2Y7gI-od3GRc5cHQHhiIgACby-4dkgJ50WDskfcZcTYoT2XXUk1OeHhEFbGvcgG-2HM4cqskK7xcQHDQkh8S1KHGTKUXugY8vbiAhSmeLbDuvi7bvREW53XxhgxtC_0AaWMXWQK-WHv4UWEBHBl33Fz2T8ARmfg8FsNgo3Nact_BlDH87JsSx4VBNy_rtSo9bn9CEZvYN-OuFJSk5gznHlqGCu_qTS2uL_gl1evd3UhYBpWc4Z1HXlkWNXwLS40yMfK5Afeph4G7l1n0ykfE-lDn6_pzs6ZNhmujAURX5dn6KgaMnf4Ke-B7LWyBMPxSV_VxCl1JI2RTkKHvSYfcoS0jBHSEazf8x-5DoGF-cl3GnLna8Ik_5gJpbmgTgVWBrhGhiGsWlryKCsiBijoD1SmJgTKccS6zfZy7gkFBdGiXCXd8J8nbvFhB6pc6Ko7UAze0I9tVygy9IZDAivQigYRmJlWDHcbuBt10HKsUv6_7FwKGVPVuq-HcdD-fQcXspPFeaiFUGQCSDOzvMdFba81ic_ZNYmBN_SQQRWLABZctfBexRQPvOq7JsbYNU4gbx3-iDqJmw_gg8R_X15v2MCrrr4dmrksjxorUFX_16Cnp.eyJlbmRwb2ludF9zbHVnIjoib3BlbmFpL2dwdC01LW1pbmktMjAyNS0wOC0wN3xvcGVuYWkifQ",
+       "format": "openai-responses-v1",
+       "id": "rs_0273987bd6081ba9016ab9f5b0e04487d191fd510196534e04",
+       "index": 1
       }
      ]
     }
    }
   ],
   "usage": {
-   "prompt_tokens": 4326,
-   "completion_tokens": 91,
-   "total_tokens": 4417,
-   "cost": 0.0029976,
+   "prompt_tokens": 3322,
+   "completion_tokens": 143,
+   "total_tokens": 3465,
+   "cost": 0.0004253,
    "is_byok": false,
    "prompt_tokens_details": {
-    "cached_tokens": 4202,
+    "cached_tokens": 3072,
     "cache_write_tokens": 0,
     "audio_tokens": 0,
     "video_tokens": 0
    },
    "cost_details": {
-    "upstream_inference_cost": 0.0029976,
-    "upstream_inference_prompt_cost": 0.0016326,
-    "upstream_inference_completions_cost": 0.001365
+    "upstream_inference_cost": 0.0004253,
+    "upstream_inference_prompt_cost": 0.0001393,
+    "upstream_inference_completions_cost": 0.000286
    },
    "completion_tokens_details": {
-    "reasoning_tokens": 0,
+    "reasoning_tokens": 92,
     "image_tokens": 0,
     "audio_tokens": 0
    }

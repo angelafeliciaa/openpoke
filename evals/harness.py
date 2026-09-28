@@ -46,8 +46,9 @@ _PRICES = {
     "gpt-4.1-mini": (0.40, 0.10, 1.6),
 }
 # Returned instead of the post-dispatch LLM call: routing is decided by then, and the
-# "on it" reply would cost a full roster-sized prompt per turn.
-_WRAPUP = {"choices": [{"message": {"role": "assistant", "content": "On it."}}], "usage": {}}
+# closing reply would cost a full roster-sized prompt per turn. Empty, so whatever the model
+# already said this turn stays its reply, in the result and in the conversation log.
+_WRAPUP = {"choices": [{"message": {"role": "assistant", "content": ""}}], "usage": {}}
 _DISPATCH_TOOLS = ("send_message_to_agent", "create_agent")
 _SEEDED_AT = "2026-09-01T09:00:00"
 

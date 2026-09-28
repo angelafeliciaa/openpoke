@@ -38,7 +38,8 @@ class Case:
     reuse: `target` is in the roster and must be called, with nothing spawned.
     create: nothing in the roster fits, so a new agent must be spawned.
     drift: turn 1 creates an agent and the last turn must come back to it.
-    ambiguous: two or more `candidates` fit equally well, so the agent must ask the user.
+    ambiguous: two or more `candidates` fit equally well. For an action the agent must ask the user;
+    for a `read_only` question, checking every candidate answers it too.
     """
 
     id: str
@@ -50,6 +51,7 @@ class Case:
     turns: Tuple[str, ...]
     history: Tuple[HistoryEntry, ...] = ()
     candidates: Tuple[str, ...] = ()
+    read_only: bool = False
 
     @property
     def roster_size(self) -> int:
@@ -76,6 +78,9 @@ class Case:
         candidates = tuple(raw.get("candidates") or ())
         if (kind == "ambiguous") != (len(candidates) >= 2):
             raise ValueError(f"{raw['id']}: ambiguous cases need two or more candidates and only they have them")
+        read_only = bool(raw.get("read_only"))
+        if read_only and kind != "ambiguous":
+            raise ValueError(f"{raw['id']}: only ambiguous cases are marked read_only")
         case = cls(
             id=raw["id"],
             suite=suite,
@@ -86,6 +91,7 @@ class Case:
             turns=turns,
             history=history,
             candidates=candidates,
+            read_only=read_only,
         )
         if case.roster_size != raw["roster_size"]:
             raise ValueError(f"{case.id}: roster has {case.roster_size} names, roster_size says {raw['roster_size']}")

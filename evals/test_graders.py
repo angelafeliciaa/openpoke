@@ -16,9 +16,9 @@ ROSTER = tuple(
 )
 
 
-def _case(kind: str, target: Optional[str] = None, turns=("do the thing",), candidates=()) -> Case:
+def _case(kind: str, target: Optional[str] = None, turns=("do the thing",), candidates=(), read_only=False) -> Case:
     return Case(id=f"{kind}-x", suite="t", kind=kind, family=kind, target=target, roster=ROSTER, turns=turns,
-                candidates=candidates)
+                candidates=candidates, read_only=read_only)
 
 
 def _turn(dispatched: List[str], new: List[str] = (), error: Optional[str] = None, response: str = "") -> TurnResult:
@@ -36,6 +36,7 @@ REUSE = _case("reuse", target="Email to Alice")
 CREATE = _case("create")
 DRIFT = _case("drift", turns=("book a table", "make it 3"))
 AMBIGUOUS = _case("ambiguous", candidates=("Email to Alice", "Email to Alicia"))
+AMBIGUOUS_QUESTION = _case("ambiguous", candidates=("Email to Alice", "Email to Alicia"), read_only=True)
 
 
 @pytest.mark.parametrize(
@@ -65,6 +66,9 @@ AMBIGUOUS = _case("ambiguous", candidates=("Email to Alice", "Email to Alicia"))
         (_run(AMBIGUOUS, _turn([], response="on it")), Verdict(False, "no_delegation")),
         (_run(AMBIGUOUS, _turn(["Email to Alicia"])), Verdict(False, "guessed_candidate")),
         (_run(AMBIGUOUS, _turn(["Email to Alicia", "Email to Alice"])), Verdict(False, "messaged_every_candidate")),
+        (_run(AMBIGUOUS_QUESTION, _turn(["Email to Alicia", "Email to Alice"])), Verdict(True, "checked_every_candidate")),
+        (_run(AMBIGUOUS_QUESTION, _turn(["Email to Alicia"])), Verdict(False, "guessed_candidate")),
+        (_run(AMBIGUOUS_QUESTION, _turn([], response=QUESTION)), Verdict(True, "asked_user")),
         (_run(AMBIGUOUS, _turn(["Alice Late"], new=["Alice Late"])), Verdict(False, "spawned_duplicate")),
         (_run(AMBIGUOUS, _turn(["Flight to Tokyo"])), Verdict(False, "wrong_existing_agent")),
     ],
