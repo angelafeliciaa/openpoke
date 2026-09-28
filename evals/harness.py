@@ -320,7 +320,8 @@ class Sandbox:
         settings = get_settings()
         self._stack.enter_context(patch.object(settings, "conversation_summary_threshold", 100))
         try:
-            await summarizer_mod.summarize_conversation()
+            while await summarizer_mod.summarize_conversation():
+                pass  # one pass per 100 lines, as production would have done over time
         except _RecordingMissing:
             pass
 

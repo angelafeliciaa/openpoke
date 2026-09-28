@@ -57,7 +57,7 @@ print both tables side by side:
 |---|---|
 | `cases/__init__.py` | typed `Case` and the one loader for `cases/<suite>.jsonl` |
 | `cases/generate.py` | 15 reuse + 15 create scenarios at roster sizes 5, 50, 500 -> `routing.jsonl` |
-| `cases/generate_hard.py` | paraphrase, trap, drift, ambiguous, sounds_new, relay, long families at sizes 5 and 500 -> `hard.jsonl` |
+| `cases/generate_hard.py` | paraphrase, trap, drift, ambiguous, sounds_new, relay, long, stress families at sizes 5 and 500 -> `hard.jsonl` |
 | `harness.py` | sandbox (temp roster and logs, dispatch recorder), LLM record/replay, multi-turn |
 | `graders.py` | code-only verdict per run |
 | `run.py`, `report.py` | run a suite, write `results/*.jsonl` and baselines, print the table |
@@ -84,6 +84,8 @@ print both tables side by side:
 - **long** (a reuse family): the agent's report sits 108 lines back. The case is marked
   `summarize`, so the harness runs OpenPoke's real conversation summariser over the seeded history
   (through the recorder) before the turn, and Poke sees the briefing plus the last 10 lines.
+- **stress** (a reuse family): like long, but 313 lines, three summarisations, and a follow-up
+  that names nothing ("any word back yet?"), so the briefing is the only route to the agent.
 - **relay**: one question spans two agents ("are the tokyo flight and the lisbon hotel both
   confirmed?"). Both must be checked (`checked_every_candidate`; one is `checked_one_candidate`).
   Then each agent answers with a scripted report, the harness feeds them through the real

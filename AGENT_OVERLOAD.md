@@ -159,6 +159,7 @@ The evals live in `evals/`, and `evals/README.md` has the commands. The design c
   | sounds_new (20) | an agent owns the work but the request reads as new, no history | reuse, don't create |
   | relay (20) | one question spans two agents; both answer with scripted reports | check both, tell the user both |
   | long (20) | the agent's report is 108 lines back, behind the conversation summary | reuse it |
+  | stress (10) | three summarisations deep, and the follow-up names no topic ("any word back yet?") | reuse it |
 - **How ambiguous cases pass.** Each one is marked as an action or a question:
   - an action ("tell alice i'm running late", "move the dentist appointment") must be asked
     about, since doing it to both or to the wrong one changes something real;
@@ -424,11 +425,17 @@ the recorder (so it replays free), and asks the follow-up.
   change request (tracking ID: a5)". The conversation-mention check looks for `(a5)` or the agent's
   name, so it counted as no mention. Every follow-up in this family names its topic ("any word
   back from vercel yet?"), so the keyword match put the agent on the short list anyway.
-- **What is therefore still unmeasured:** a follow-up with no shared words after a summary
-  ("any word back yet?"). It would depend on the model reading "tracking ID: a5" from the
-  briefing. Widening the mention check to bare ids, or telling the summariser to keep reports
-  as `Name (id)`, is a one-line fix each; the case family to prove it is the same generator with
-  the topic word removed.
+- **Then the harder version, `stress`: 313 lines, three summarisations, no topic word in the
+  follow-up.** 8 of 10 pass. The briefing alone carried "any word back yet?" to Vercel Job Offer
+  and "ok let's book it after all" to Flight to Tokyo, at 5 and at 500 agents. The two misses
+  both asked the user: "Which thing? The plumber visit is still scheduled for Tuesday" and "what
+  would you like me to send? Are you referring to the gym...". In both, the briefing still held
+  the task (Poke names the plumber and the gym), so the summary did not lose it; the model judged
+  "did that ever get sorted?" and "ok go ahead and send it" too vague to act on. Defensible, and
+  the first place the summariser measurably costs a turn.
+- **Two one-line fixes not taken:** widen the mention check to bare ids, or tell the summariser to
+  keep reports as `Name (id)`. Either would let a summarised agent make the short list by id
+  instead of by luck of the wording.
 - **The summariser noticed the filler.** Its notes said the small talk "suggests possible testing
   or system validation". 18 exchanges repeated three times is not a real chat. It didn't change
   the outcome, but real transcripts would be the better substrate here too.

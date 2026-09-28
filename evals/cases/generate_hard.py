@@ -9,6 +9,8 @@
   relay       one question spans two agents; both must be checked and both answers told to the user
   long        the agent's report is 100+ messages back, behind the conversation summary; the
               follow-up must still find it
+  stress      same, but three summarisations deep and the follow-up names no topic ("any word
+              back yet?"), so the briefing is the only way back to the agent
 
 Run:  python -m evals.cases.generate_hard   -> evals/cases/hard.jsonl
 """
@@ -188,14 +190,29 @@ SMALL_TALK = [
 ]
 
 
-def _long_history(user_then: str, agent_name: str, agent_text: str, names: list[str]) -> list[dict[str, str]]:
-    """The scenario at the very start, then 108 lines of small talk, so the report is behind the summary."""
+def _long_history(user_then: str, agent_name: str, agent_text: str, names: list[str], pairs: int = 54) -> list[dict[str, str]]:
+    """The scenario at the very start, then `pairs` exchanges of small talk, so the report is behind the summary."""
     history = _with_ids(_hist(user_then, agent_name, agent_text), names)
-    for i in range(54):
+    for i in range(pairs):
         user, reply = SMALL_TALK[i % len(SMALL_TALK)]
         history.append({"role": "user", "text": user})
         history.append({"role": "assistant", "text": reply})
     return history
+
+
+# (target, what the user asked back then, what the agent reported, a follow-up that names nothing)
+STRESS = [
+    ("Vercel Job Offer", "ask vercel if they can bump the start date to november",
+     "Emailed the recruiter asking to push the start date to November. Waiting on a reply.", "any word back yet?"),
+    ("Email to Landlord", "tell the landlord the sink is still leaking",
+     "Sent. He says a plumber can come Tuesday.", "did that ever get sorted?"),
+    ("Flight to Tokyo", "find me a flight to tokyo on the 12th",
+     "Found ANA departing 11:40am for $840. Want me to book it?", "ok let's book it after all"),
+    ("Passport Renewal", "start my passport renewal",
+     "Filled out the DS-82. I need a new photo from you.", "i finally uploaded the photo, keep going"),
+    ("Gym Membership Cancel", "cancel my gym membership",
+     "They need written notice. I drafted one.", "ok go ahead and send it"),
+]
 
 
 def _reports(candidates: list[str]) -> list[dict[str, str]]:
@@ -301,6 +318,15 @@ def main() -> None:
                 "id": f"long-{i:02d}@{size}", "kind": "reuse", "family": "long", "summarize": True,
                 "target": target, "history": _long_history(user_then, target, agent_text, names), "message": follow_up,
                 "roster_size": size, "roster": roster_entries(names),
+            })
+    stress_rng = random.Random(20261001)
+    for i, (target, user_then, agent_text, follow_up) in enumerate(STRESS, 1):
+        for size in SIZES:
+            names = build_roster(stress_rng, size, pool, target, exclude=[])
+            lines.append({
+                "id": f"stress-{i:02d}@{size}", "kind": "reuse", "family": "stress", "summarize": True,
+                "target": target, "history": _long_history(user_then, target, agent_text, names, pairs=155),
+                "message": follow_up, "roster_size": size, "roster": roster_entries(names),
             })
     OUT.write_text("\n".join(json.dumps(l) for l in lines) + "\n")
     print(f"wrote {len(lines)} cases to {OUT}")

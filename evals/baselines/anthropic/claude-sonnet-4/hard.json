@@ -5,44 +5,46 @@
  "summary": [
   {
    "roster_size": 5,
-   "runs": 72,
+   "runs": 77,
    "unscored": 0,
-   "delegation_rate": 0.9861,
-   "ask_rate": 0.0417,
+   "delegation_rate": 0.987,
+   "ask_rate": 0.0519,
    "by_kind": {
     "ambiguous": 1.0,
     "drift": 1.0,
     "relay": 1.0,
-    "reuse": 1.0
+    "reuse": 0.9818
    },
    "names_per_request": 1.0,
    "dup_rate": 0.0,
-   "pass_all_trials": 0.9861,
-   "mean_prompt_tokens": 3894.0972,
-   "cost_usd": 0.8074,
+   "pass_all_trials": 0.974,
+   "mean_prompt_tokens": 3781.1948,
+   "cost_usd": 1.0752,
    "failures": {
-    "no_delegation": 1
+    "no_delegation": 1,
+    "asked_user": 1
    }
   },
   {
    "roster_size": 500,
-   "runs": 72,
+   "runs": 77,
    "unscored": 0,
    "delegation_rate": 1.0,
-   "ask_rate": 0.0556,
+   "ask_rate": 0.0649,
    "by_kind": {
     "ambiguous": 0.8571,
     "drift": 1.0,
     "relay": 1.0,
-    "reuse": 1.0
+    "reuse": 0.9818
    },
    "names_per_request": 1.0,
    "dup_rate": 0.0,
-   "pass_all_trials": 0.9861,
-   "mean_prompt_tokens": 3974.5833,
-   "cost_usd": 0.8672,
+   "pass_all_trials": 0.974,
+   "mean_prompt_tokens": 3856.4545,
+   "cost_usd": 1.1202,
    "failures": {
-    "guessed_candidate": 1
+    "guessed_candidate": 1,
+    "asked_user": 1
    }
   }
  ],
@@ -161,6 +163,16 @@
   "relay-04@500#1": "relayed_every_report",
   "relay-05@5#1": "relayed_every_report",
   "relay-05@500#1": "relayed_every_report",
+  "stress-01@5#1": "reused_target",
+  "stress-01@500#1": "reused_target",
+  "stress-02@5#1": "asked_user",
+  "stress-02@500#1": "reused_target",
+  "stress-03@5#1": "reused_target",
+  "stress-03@500#1": "reused_target",
+  "stress-04@5#1": "reused_target",
+  "stress-04@500#1": "reused_target",
+  "stress-05@5#1": "reused_target",
+  "stress-05@500#1": "asked_user",
   "trap-01@5#1": "reused_target",
   "trap-01@500#1": "reused_target",
   "trap-02@5#1": "reused_target",

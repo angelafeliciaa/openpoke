@@ -81,6 +81,12 @@ The web app proxies API calls to the Python server using the values in `.env`, s
 - `server/` – FastAPI application and agents
 - `web/` – Next.js app
 - `server/data/` – runtime data (ignored by git)
+- `evals/` – routing cases, graders, recorded model calls, and every case as a readable chat in `evals/transcripts/`
+
+## Tests
+```bash
+python -m pytest        # 76 tests: unit tests plus a replay of every recorded case, no API key needed
+```
 
 ## License
 MIT — see [LICENSE](LICENSE).

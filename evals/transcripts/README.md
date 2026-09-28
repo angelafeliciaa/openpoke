@@ -16,3 +16,4 @@ One file per family per model. Regenerate with `python -m evals.transcripts`.
 | sounds_new | 20/20 | [sounds_new.md](claude-sonnet-4/sounds_new.md) |
 | relay | 10/10 | [relay.md](claude-sonnet-4/relay.md) |
 | long | 20/20 | [long.md](claude-sonnet-4/long.md) |
+| stress | 8/10 | [stress.md](claude-sonnet-4/stress.md) |
