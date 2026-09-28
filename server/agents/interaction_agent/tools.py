@@ -18,9 +18,10 @@ SEARCH_RESULTS = 5
 
 @dataclass
 class TurnContext:
-    """What the user just said and what came before it, for the send tool's ambiguity check.
+    """What was just said and what came before it, for the checks the tools run on a turn.
 
-    Only user turns carry one; an agent report names the agent it came from. `batch_ids` are
+    The ambiguity check runs on user turns only; an agent report names the agent it came from.
+    The reply rail runs on every turn. `batch_ids` are
     the agents the model's current response dispatches to together, so a question that spans
     two agents is not mistaken for a guess. `shown_ids` are the candidates a refusal already
     handed back this turn: sending to any of them after that is the model's decision, not a guess.
@@ -28,8 +29,11 @@ class TurnContext:
 
     latest_text: str
     transcript: str
+    user_turn: bool = True
     batch_ids: Set[str] = field(default_factory=set)
     shown_ids: Set[str] = field(default_factory=set)
+    rail_trips: int = 0
+    """Replies the rail sent back for a rewrite this turn. One rewrite, then the reply goes through."""
 
 
 @dataclass
@@ -185,7 +189,7 @@ def send_message_to_agent(agent_id: str, instructions: str, turn: Optional[TurnC
             success=False,
             payload={"error": f"No agent has id {agent_id!r}. Use an id from <active_agents>, or create_agent for new work."},
         )
-    if turn is not None and record.id not in turn.shown_ids:
+    if turn is not None and turn.user_turn and record.id not in turn.shown_ids:
         others = close_alternatives(
             roster.records(), record, turn.latest_text, turn.transcript, also_sent_to=turn.batch_ids - {record.id}
         )

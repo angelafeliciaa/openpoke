@@ -55,6 +55,8 @@ class Settings(BaseModel):
     execution_agent_model: str = Field(default="anthropic/claude-sonnet-4")
     execution_agent_search_model: str = Field(default="anthropic/claude-sonnet-4")
     summarizer_model: str = Field(default="anthropic/claude-sonnet-4")
+    # Reads each reply before the user sees it (reply_rail.py). A small model is enough; it answers OK or LEAK.
+    reply_rail_model: str = Field(default="anthropic/claude-sonnet-4")
     email_classifier_model: str = Field(default="anthropic/claude-sonnet-4")
 
     # Credentials / integrations

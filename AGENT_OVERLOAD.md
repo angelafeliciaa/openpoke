@@ -24,10 +24,10 @@ evals that measure whether it does.
     is gone.
   - Ambiguous requests: 12 of 14 pass, against 8 of 42 runs before, once the send tool refuses
     a pick that another listed agent fits as well. The 2 left are listed in [To do](#to-do).
-- **How we know:** 204 routing cases across 7 case families and roster sizes 5, 50 and 500, run
+- **How we know:** 214 routing cases across 8 case families and roster sizes 5, 50 and 500, run
   against the real interaction agent with recorded LLM responses. Grading is plain code, each
-  stage is diffed against a tagged "before", and `python -m evals.show <case>` prints any run as a
-  chat transcript.
+  stage is diffed against a tagged "before", and every case is committed as a readable chat in
+  [`evals/transcripts/`](evals/transcripts/README.md).
 
 ## What was wrong
 
@@ -351,6 +351,77 @@ both instead of guessing one.
 
 The remaining one-line prompt fix for `amb-02@5` is not done: any prompt change re-records
 every case, and the ask wording is already graded.
+
+### The reply rail: a check on every reply before the user sees it (built)
+
+**Why.** Poke is one persona. Behind it are execution agents with ids, tools and a prompt, and
+the user must never learn that. The prompt says so twice ("never the agents", "never mention your
+agents or what goes on behind the scenes"). The evals showed that a prompt rule lowers the rate
+without ending it: Sonnet 4 asked "I see you have two dentist appointment agents" on `amb-02@5`,
+and gpt-5-mini names agents on 2 to 4% of its questions (`asked_about_agents`). Fixing the
+wording in the prompt would re-record every case and still only lower the rate. This is the
+same lesson as the ambiguity guard: put the rule in code, give the model one more try.
+
+**Where the design comes from.** This is a standard output guardrail, and the shape is borrowed
+from the people who run it at scale:
+
+- Sierra's supervisors review each response as it is generated, enforce policy, and step in
+  before the customer sees the reply ([Confidence in every conversation](https://sierra.ai/blog/confidence-in-every-conversation)).
+- NeMo Guardrails ships a self-check output rail: a second model call asks whether the bot's
+  reply should be shown ([LLM self-check](https://docs.nvidia.com/nemo/guardrails/configure-guardrails/guardrail-catalog/self-check)).
+- OpenAI's Agents SDK runs output guardrails, which can themselves be a model, and trips a
+  tripwire on the final reply ([Guardrails](https://openai.github.io/openai-agents-python/guardrails/)).
+- Anthropic's tool-use guidance: when a tool rejects input, return a specific, actionable error
+  so the model self-corrects, rather than relying on prompt text ([implement tool use](https://platform.claude.com/docs/en/agents-and-tools/tool-use/implement-tool-use)).
+
+The industry pattern is layers: a deterministic check first (microseconds, no cost, never
+disagrees with itself), then a model that reads meaning for what a word list misses, with the
+big-model judge kept in the eval suite rather than on the request path.
+
+**What it checks** (`server/agents/interaction_agent/reply_rail.py`), cheapest first:
+
+1. *Does it name the machinery?* The standalone word "agent" or "agents". It is the one leak we
+   have seen. Everyday compounds pass: "your travel agent", "the real estate agent".
+2. *Does it reveal the internals in any words?* A judge call reads the reply with one question:
+   does it mention agents, sub-agents, assistants, helpers, workers, tools, prompts, ids,
+   instructions, or how the assistant works, or does it read as a normal assistant speaking to
+   the user? It answers OK or LEAK plus one line why. People, bookings, threads, appointments,
+   emails and what the assistant will do are all fine.
+
+**What happens on a trip.** The reply is never dropped or silently edited. `send_message_to_user`
+refuses with the reason ("Not sent: it says 'agent'..."; "Not sent: it reveals how the assistant
+works (mentions the helper that handles bookings)") and the model rewrites in the user's terms.
+One rewrite per turn; a second trip goes through and is logged, so a stubborn model cannot burn
+its iterations on the cap. The rail runs on user turns and on agent-report turns alike.
+
+**Cost.** One short completion per reply, about 450 tokens in and a few out. In production
+`reply_rail_model` can point at a small model; the judge only says OK or LEAK. In the evals the
+judge call goes through the same recorded client as every other call, so `pytest` replays it
+free and every verdict is a file in `evals/recordings/`.
+
+**Results.** Recorded on both models with the rail in place (`evals/transcripts/` has every case as a chat).
+
+- **The word check caught 13 real leaks, 4 on Sonnet 4 and 9 on gpt-5-mini.** Sonnet's: "two dentist
+  appointment agents", "there's already an agent working on this", and twice "let me work with the
+  agent handling that negotiation". Three of those were invisible before: the grader only read
+  questions, and these came alongside a dispatch. gpt-5-mini showed the user an id: "your Tokyo
+  flight (agent a446)".
+- **The judge needed one round of calibration.** Its first prompt flagged "let me check for any
+  reply from your accountant" and "I'll draft a sick day message for your team" as leaks, reading
+  the user's own people as internal helpers (4 false positives in 208 calls), and passed "the
+  teams handling them" (a real leak in other words). The second prompt carries those exact
+  examples labelled OK and LEAK. Result: 7 LEAK verdicts in 208 calls, 6 of them right ("the teams
+  handling both", "thread (a3)"), 1 false positive ("Got it, continuing with your passport
+  renewal"). Reading the disagreements and fixing the rubric is the loop the eval guides describe.
+- **Sonnet 4: `amb-02@5` now passes.** The word check refused "two dentist appointment agents"
+  and the rewrite was "two dentist appointments, one for the kids and one for yourself". Ambiguous
+  stays at 12 of 14: `amb-03@5` moved the other way in this sample, Sonnet answered its clarifying
+  question as plain text instead of through `send_message_to_user`, so the user never saw it.
+- **gpt-5-mini: two more ambiguous passes, two relay cases lost to the iteration cap.** The rail
+  refused "ask the agents for an up-to-date status" (correctly), the rewrite cost an iteration,
+  and a one-tool-per-response model ran out at 8. The cap and `wait` are the fix, not the rail.
+- **Cost of the rail in the evals:** one extra call per reply, 208 calls, $0.25 on Sonnet for the
+  whole suite.
 
 ### Filler that was the target's job under another name (fixed)
 
