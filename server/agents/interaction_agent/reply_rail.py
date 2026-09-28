@@ -2,8 +2,8 @@
 
 Poke is one persona. Behind it, work is delegated to execution agents with ids, tools, and a
 prompt, and the user must never learn that. The prompt says so twice, and the model still slips:
-"I see you have two dentist appointment agents" (Sonnet 4, once in 14 ambiguous cases;
-gpt-5-mini on 2 to 4% of turns). So the reply is checked before the user sees it, the way
+"I see you have two dentist appointment agents" (Sonnet 4, once in 14 ambiguous cases, and
+more often on smaller models). So the reply is checked before the user sees it, the way
 Sierra's supervisors review each response as it is generated and NeMo's self-check output rail
 asks a second model whether the reply should be shown.
 

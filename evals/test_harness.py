@@ -7,9 +7,9 @@ from server.services.execution import get_agent_roster
 
 from evals.cases import load_cases
 from evals.graders import grade
-from evals.harness import _openrouter_body, _with_cache_breakpoints, run_case, scripted_reports
+from evals.harness import _with_cache_breakpoints, run_case, scripted_reports
 
-REPLAY_MODEL = "gpt-5-mini"
+REPLAY_MODEL = "anthropic/claude-sonnet-4"
 
 
 def _case(case_id: str):
@@ -48,11 +48,6 @@ def test_cache_breakpoints_mark_system_and_first_user_message_only() -> None:
         {"role": "user", "content": "later"},
     ]
 
-
-def test_bare_openai_ids_go_through_openrouter_with_low_reasoning() -> None:
-    body = _openrouter_body({"model": "gpt-5-mini", "messages": []})
-
-    assert (body["model"], body["reasoning"]) == ("openai/gpt-5-mini", {"effort": "low"})
 
 
 def test_scripted_reports_look_like_production_batch_payloads() -> None:

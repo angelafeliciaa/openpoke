@@ -95,13 +95,6 @@ def recordings_for(model: str, suite: str) -> Recordings:
     return _open[path]
 MAX_TOKENS = 1024
 _TIMESTAMP = re.compile(r' timestamp=\\"[^"\\]*\\"')  # matches inside a json.dumps string
-# USD per million tokens (input, cached input, output). OpenAI responses carry no cost field.
-_PRICES = {
-    "gpt-5-mini": (0.25, 0.025, 2.0),
-    "gpt-5-nano": (0.05, 0.005, 0.4),
-    "gpt-5": (1.25, 0.125, 10.0),
-    "gpt-4.1-mini": (0.40, 0.10, 1.6),
-}
 # Returned instead of the post-dispatch LLM call: routing is decided by then, and the
 # closing reply would cost a full roster-sized prompt per turn. Empty, so whatever the model
 # already said this turn stays its reply, in the result and in the conversation log.
@@ -188,14 +181,7 @@ class _RecordingBatchManager:
 
 
 def _cost(model: str, usage: Dict[str, Any]) -> float:
-    if "cost" in usage:
-        return float(usage["cost"])
-    if model not in _PRICES:
-        return 0.0
-    inp, cached_p, out = _PRICES[model]
-    cached = int((usage.get("prompt_tokens_details") or {}).get("cached_tokens", 0))
-    prompt = int(usage.get("prompt_tokens", 0)) - cached
-    return (prompt * inp + cached * cached_p + int(usage.get("completion_tokens", 0)) * out) / 1e6
+    return float(usage.get("cost", 0.0))  # OpenRouter reports the price of every call
 
 
 def _recording_key(payload: Dict[str, Any], case_id: str, trial: int) -> str:
@@ -236,13 +222,8 @@ def _with_cache_breakpoints(messages: List[Dict[str, Any]]) -> List[Dict[str, An
 
 
 def _openrouter_body(payload: Dict[str, Any]) -> Dict[str, Any]:
-    """Bare OpenAI ids like `gpt-5-mini` are served as `openai/<id>` with low reasoning effort."""
-    model = payload["model"]
     body = {**payload, "max_tokens": MAX_TOKENS, "stream": False}
-    if "/" not in model:
-        body["model"] = f"openai/{model}"
-        body["reasoning"] = {"effort": "low"}
-    if model.startswith("anthropic/"):
+    if payload["model"].startswith("anthropic/"):
         body["messages"] = _with_cache_breakpoints(payload["messages"])
     return body
 

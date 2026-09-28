@@ -1,7 +1,7 @@
 """Print recorded runs as chat transcripts: what the user said, what the model did, and the verdict.
 
   python -m evals.show amb-04@5 trap-03@500
-  python -m evals.show --family ambiguous --model gpt-5-mini
+  python -m evals.show --family ambiguous
 
 Reads recordings and baselines only; never calls a model.
 """

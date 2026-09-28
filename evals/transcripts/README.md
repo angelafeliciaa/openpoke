@@ -15,16 +15,3 @@ One file per family per model. Regenerate with `python -m evals.transcripts`.
 | ambiguous | 12/14 | [ambiguous.md](claude-sonnet-4/ambiguous.md) |
 | sounds_new | 20/20 | [sounds_new.md](claude-sonnet-4/sounds_new.md) |
 | relay | 10/10 | [relay.md](claude-sonnet-4/relay.md) |
-
-## gpt-5-mini
-
-| family | pass | file |
-|---|---|---|
-| reuse | 33/45 | [reuse.md](gpt-5-mini/reuse.md) |
-| create | 12/45 | [create.md](gpt-5-mini/create.md) |
-| paraphrase | 19/30 | [paraphrase.md](gpt-5-mini/paraphrase.md) |
-| trap | 20/30 | [trap.md](gpt-5-mini/trap.md) |
-| drift | 4/20 | [drift.md](gpt-5-mini/drift.md) |
-| ambiguous | 12/14 | [ambiguous.md](gpt-5-mini/ambiguous.md) |
-| sounds_new | 7/20 | [sounds_new.md](gpt-5-mini/sounds_new.md) |
-| relay | 6/10 | [relay.md](gpt-5-mini/relay.md) |

@@ -8,14 +8,14 @@ agent it created earlier?
 
 ```bash
 .venv/bin/python -m pytest                                          # offline: replays every baseline
-.venv/bin/python -m evals.run --mode live --model gpt-5 --cases hard  # paid: records what's missing
+.venv/bin/python -m evals.run --mode live --cases hard                # paid: records what's missing
 .venv/bin/python -m evals.show amb-06@5                              # free: one run as a chat
 .venv/bin/python -m evals.transcripts                                # free: every run as Markdown
 ```
 
-`--model` defaults to `EVAL_MODEL`, then to the production `interaction_agent_model`. Every live
-call goes through OpenRouter (`OPENROUTER_API_KEY`); bare ids like `gpt-5-mini` are sent as
-`openai/gpt-5-mini` with low reasoning effort. Anthropic calls cache the system prompt and roster.
+`--model` defaults to `EVAL_MODEL`, then to the production `interaction_agent_model`, Sonnet 4.
+Every live call goes through OpenRouter (`OPENROUTER_API_KEY`) and Anthropic calls cache the system
+prompt and roster. Any OpenRouter model id works; only Sonnet 4's baseline is committed.
 Live mode reuses any recording it already has, so it only pays for the gaps.
 
 ## What pytest checks
@@ -29,8 +29,8 @@ Live mode reuses any recording it already has, so it only pays for the gaps.
 - `server/tests/`: the roster, `send_message_to_agent` / `create_agent` / `search_agents`, the
   ambiguity check in the send tool, BM25 search, and the visible agent list, with no LLM.
 
-The pass/fail line is the baseline, not "every case passes". gpt-5-mini asks the user instead of
-routing on about half its turns, and that is a measurement, not a broken build.
+The pass/fail line is the baseline, not "every case passes": a case the model still gets wrong is
+recorded as such, and the build breaks only when a verdict moves.
 
 ## After changing the prompt, tools, or cases
 
@@ -113,7 +113,7 @@ mentions agents is `asked_about_agents` and always fails: the user never sees ag
 
 ## Findings
 
-Results for the original code (tag `stage-0`, Sonnet 4, gpt-5 and gpt-5-mini) and for each stage
+Results for the original code (tag `stage-0`) and for each stage
 of the fix are in [`AGENT_OVERLOAD.md`](../AGENT_OVERLOAD.md). The baselines in this tree are for
 the current code; the original code's baselines and recordings live under `stage-0`.
 

@@ -1,6 +1,6 @@
 """Run routing cases, write results, optionally refresh the committed baseline.
 
-  python -m evals.run --mode live --cases hard --model gpt-5-mini
+  python -m evals.run --mode live --cases hard --model anthropic/claude-sonnet-4
   python -m evals.run --mode replay --cases routing --update-baseline
 
 Results land in evals/results/<timestamp>-<suite>-<mode>.jsonl; see evals.report.

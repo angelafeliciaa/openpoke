@@ -85,7 +85,7 @@ Each stage is a separate commit so its effect can be measured on its own.
   details an agent could find itself.
   - *Why this rule:* guessing between two Alices sends the wrong email. Asking on every turn is
     its own failure. The "before" runs show both: Sonnet guessed on 34 of 42 ambiguous runs, and
-    gpt-5-mini asked on over half of all turns.
+    a smaller model we tried asked on over half of all turns.
 
 ### Stage 3: a short visible list and `search_agents` (`6f8614a`)
 
@@ -197,28 +197,16 @@ Sonnet routes the obvious cases perfectly at every size. Its problems are cost, 
 the roster, and guessing: on ambiguous cases it picked one of the two in 34 of 42 runs. It asked
 only once.
 
-### Each stage on gpt-5-mini (hard set, 1 trial per stage; "before" 2 trials)
+### Each stage, checked end to end on a small model
 
-| | before | stage 1 | stages 2+3 |
-|---|---|---|---|
-| prompt tokens at 500 agents | 7.4k | 13.5k | **3.2k** |
-| paraphrase | 53% | 67% | 63% |
-| trap | 48% | 67% | 67% |
-| drift | 5% | 15% | 20% |
-| ambiguous (asked; graded before the action/question split) | 56% | 69% | 62% |
-| sounds_new (reused) | 32% | 25% | 35% |
-| duplicates created | 0 | 0 | 0 |
-
-- **Stage 1 improved routing on every family except sounds_new.** Its cost was prompt size:
-  descriptions for all 500 agents.
-- **Stages 2+3 kept stage 1's accuracy at a quarter of the prompt.** Prompt size no longer depends
-  on roster size (3.1k to 3.2k tokens at 5, 50 and 500). Offline, the right agent made the short
-  list in every case at every size.
-- **gpt-5-mini is a poor router regardless of our code.** It asks a needless question on about
-  half its turns ("what's your ZIP?"), which caps every score above. It was the cheap instrument
-  for checking each stage works end to end. It also can't show duplicates: a model that asks
-  instead of acting never creates one. Sonnet, which almost never asks, is where duplicates would
-  appear.
+While Sonnet credits were short, every stage was run on a cheaper model (gpt-5-mini, no longer
+committed) to confirm it worked end to end before recording Sonnet. Two things from those runs
+carry over. Stage 1 alone raised routing on every family but made the prompt at 500 agents
+almost twice as large (descriptions for every agent); stages 2 and 3 kept that accuracy at a
+quarter of the prompt, 3.2k tokens at 5, 50 and 500 alike. And a small model is a poor router
+regardless of our code: it asked a needless question on about half its turns, sent one tool call
+per response and ran into the runtime's 8-iteration cap, and under the original code its routing
+fell to 71% at 500 agents where Sonnet held 100%. Smaller models feel the roster first.
 
 ### After (stages 1 to 3, Sonnet 4)
 
@@ -250,9 +238,8 @@ full diff.
   dentist-related agents". The system prompt forbids ever mentioning agents to the user.
   - *Fix:* the ask rule now says to name the options in the user's terms.
   - *Evaluator:* a new verdict, `asked_about_agents`, fails any question that mentions agents.
-    It still catches gpt-5-mini doing it on 3 to 4% of runs.
-- **Over-asking is a model trait the prompt has to manage.** gpt-5-mini asked on 53 to 67% of
-  turns in the original code, while Sonnet almost never asks. Swapping the interaction model
+- **Over-asking is a model trait the prompt has to manage.** The small model we tried asked on
+  53 to 67% of turns in the original code, while Sonnet almost never asks. Swapping the interaction model
   without an eval like `ask rate` would silently change the product. The prompt now says when not
   to ask; the metric tracks it.
 - **The roster only grows.** There's no way to retire an agent; `clear()` deletes everything.
@@ -346,9 +333,6 @@ tool schemas and prompt did not change, so only the seven runs it fired on were 
 | `amb-02@5` | asks, but says "two dentist appointment **agents**" | a wording leak the `asked_about_agents` grader already fails; the guard never fires because Sonnet asked on its own |
 | `amb-07@500` | "follow up with the professor about the letter" goes to Chen | only Chen's description mentions a letter, so "letter" reads as a word that tells them apart |
 
-gpt-5-mini moved from 8 to 10 of 14, and on `amb-05` the refusal made it check both and relay
-both instead of guessing one.
-
 The remaining one-line prompt fix for `amb-02@5` is not done: any prompt change re-records
 every case, and the ask wording is already graded.
 
@@ -358,7 +342,7 @@ every case, and the ask wording is already graded.
 the user must never learn that. The prompt says so twice ("never the agents", "never mention your
 agents or what goes on behind the scenes"). The evals showed that a prompt rule lowers the rate
 without ending it: Sonnet 4 asked "I see you have two dentist appointment agents" on `amb-02@5`,
-and gpt-5-mini names agents on 2 to 4% of its questions (`asked_about_agents`). Fixing the
+and smaller models do it more often (`asked_about_agents`). Fixing the
 wording in the prompt would re-record every case and still only lower the rate. This is the
 same lesson as the ambiguity guard: put the rule in code, give the model one more try.
 
@@ -401,26 +385,27 @@ free and every verdict is a file in `evals/recordings/`.
 
 **Results.** Recorded on both models with the rail in place (`evals/transcripts/` has every case as a chat).
 
-- **The word check caught 13 real leaks, 4 on Sonnet 4 and 9 on gpt-5-mini.** Sonnet's: "two dentist
-  appointment agents", "there's already an agent working on this", and twice "let me work with the
-  agent handling that negotiation". Three of those were invisible before: the grader only read
-  questions, and these came alongside a dispatch. gpt-5-mini showed the user an id: "your Tokyo
-  flight (agent a446)".
+- **The word check caught 4 real leaks on Sonnet 4:** "two dentist appointment agents", "there's
+  already an agent working on this", and twice "let me work with the agent handling that
+  negotiation". Three of those were invisible before: the grader only read questions, and these
+  came alongside a dispatch. On a smaller model it also caught an id shown to the user, "your
+  Tokyo flight (agent a446)".
 - **The judge needed one round of calibration.** Its first prompt flagged "let me check for any
   reply from your accountant" and "I'll draft a sick day message for your team" as leaks, reading
   the user's own people as internal helpers (4 false positives in 208 calls), and passed "the
   teams handling them" (a real leak in other words). The second prompt carries those exact
-  examples labelled OK and LEAK. Result: 7 LEAK verdicts in 208 calls, 6 of them right ("the teams
-  handling both", "thread (a3)"), 1 false positive ("Got it, continuing with your passport
-  renewal"). Reading the disagreements and fixing the rubric is the loop the eval guides describe.
+  examples labelled OK and LEAK. Result on Sonnet: 1 LEAK verdict in 120 calls, a false positive
+  ("Got it, continuing with your passport renewal"); on the small model it caught "the teams
+  handling both" and "thread (a3)", real leaks in other words. Reading the disagreements and
+  fixing the rubric is the loop the eval guides describe.
 - **Sonnet 4: `amb-02@5` now passes.** The word check refused "two dentist appointment agents"
   and the rewrite was "two dentist appointments, one for the kids and one for yourself". Ambiguous
   stays at 12 of 14: `amb-03@5` moved the other way in this sample, Sonnet answered its clarifying
   question as plain text instead of through `send_message_to_user`, so the user never saw it.
-- **gpt-5-mini: two more ambiguous passes, two relay cases lost to the iteration cap.** The rail
-  refused "ask the agents for an up-to-date status" (correctly), the rewrite cost an iteration,
-  and a one-tool-per-response model ran out at 8. The cap and `wait` are the fix, not the rail.
-- **Cost of the rail in the evals:** one extra call per reply, 208 calls, $0.25 on Sonnet for the
+- **A rewrite costs an iteration.** On a one-tool-per-response model, a correct refusal of "ask
+  the agents for an up-to-date status" was enough to hit the 8-iteration cap on two relay cases.
+  The cap and `wait` are the fix, not the rail.
+- **Cost of the rail in the evals:** one extra call per reply, 120 calls, $0.25 on Sonnet for the
   whole suite.
 
 ### Filler that was the target's job under another name (fixed)
@@ -435,9 +420,8 @@ reasonable one has to be placed on purpose, as the trap and ambiguous families d
 candidates (`same_job` in `evals/cases/generate.py`; template words like "email", "renewal" or
 "appointment" don't count). Swaps come from a per-case seeded draw, so the 182 rosters that had
 no such filler are byte-identical and their recordings still replay. 22 rosters changed, all but
-one at 500 agents. `evals/test_cases.py` holds the invariant. Re-recording the 10 prompts per
-model that actually changed moved no Sonnet verdict; on gpt-5-mini three of the decoy-driven
-misses became `reused_target` and one case moved to `asked_user`.
+one at 500 agents. `evals/test_cases.py` holds the invariant. Re-recording the 10 prompts that
+actually changed moved no Sonnet verdict.
 
 Also gone with this: the "Vercel Job Offer next to Vercel Recruiter Follow-up" reuse cases that
 graded only one of two reasonable owners. Look-alikes of that kind now appear only in the trap
@@ -459,10 +443,9 @@ reports too.
   at both sizes, with parallel tool calls in one response.
 - **The first run showed two eval bugs, not model bugs.** A marker of "DS-82" failed a reply that
   said "6 weeks"; markers have to be the answer, not a form number. And the harness's post-dispatch
-  shortcut cut off models that dispatch one agent per response, so gpt-5-mini looked like it
-  checked one agent on 9 of 10 relay cases. Report cases now run the turn to the model's own end
-  and gpt-5-mini checks both on 8 of 10.
-- **gpt-5-mini hits the runtime's tool-iteration cap.** On `relay-03` at both sizes it spent its 8
+  shortcut cut off models that dispatch one agent per response, so a small model looked like it
+  checked one agent on 9 of 10 relay cases. Report cases now run the turn to the model's own end.
+- **One-tool-per-response models hit the runtime's iteration cap.** The small model spent its 8
   iterations on a message, two searches, two dispatches, two `wait`s and another message, and the
   runtime raised. It routed correctly and then could not end its turn. That is now a scored verdict,
   `hit_tool_iteration_limit`, and a product limit worth its own fix: `MAX_TOOL_ITERATIONS = 8` is
